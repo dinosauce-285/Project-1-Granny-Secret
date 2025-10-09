@@ -8,7 +8,10 @@ module.exports = {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
-      }
+        roboto: ['Roboto', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
+      },
+
     }
   },
   plugins: [],
