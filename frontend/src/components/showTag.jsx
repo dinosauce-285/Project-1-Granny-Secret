@@ -3,13 +3,14 @@ import React from 'react';
 function ShowTag({ url, children, description, className }) {
     return (
         <div
-            className={`card relative bg-[#fafafa] border border-2 border-white flex flex-col justify-start items-center p-4 rounded-lg shadow-lg ${className}`}>
+            className={`group card relative bg-[#fafafa] border border-2 border-white flex flex-col justify-start items-center p-4 rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-110 ${className}`}>
 
             <img
                 style={{ filter: "drop-shadow(10px 10px 20px rgba(0,0,0,0.5))" }}
                 src={url}
                 alt={children}
-                className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-cover rounded-full shadow-lg -mt-14 sm:-mt-20 mb-3 sm:mb-4" />
+                className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-cover rounded-full shadow-lg -mt-14 sm:-mt-20 mb-3 sm:mb-4
+                transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
 
             <h3 className="font-semibold font-inter text-base sm:text-lg md:text-xl text-center mb-1 sm:mb-2 leading-tight">
                 {children}
