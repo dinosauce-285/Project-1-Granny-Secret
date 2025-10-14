@@ -29,9 +29,16 @@ function SignIn() {
                         Email address
                     </label>
                     <Input id="email" placeholder="Enter your email" />
-                    <label htmlFor="password" className="mt-6 sm:mt-8 block font-poppins font-medium text-sm sm:text-base md:text-lg">
-                        Password
-                    </label>
+                    <div className="flex items-center justify-between mt-6 sm:mt-8">
+                        <label htmlFor="password" className="block font-poppins font-medium text-sm sm:text-base md:text-lg">
+                            Password
+                        </label>    
+                        <Link to="/forgot-password">
+                        <div className="font-poppins text-sm sm:text-base text-blue-600 hover:text-blue-800">
+                            Forgot password?
+                        </div>
+                        </Link>
+                    </div>
                     <Input id="password" placeholder="Enter your password" />
                     <div className="flex items-center mt-6">
                         <input type="checkbox" id="remember" className="w-4 h-4 cursor-pointer" />

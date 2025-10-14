@@ -21,7 +21,11 @@ function LandingPage() {
     return (
         <div className="min-h-screen px-4 sm:px-8 md:px-12 lg:px-20 bg-[#f9f6e8]">
             <div className="header h-[10vh] sm:h-[12vh] md:h-[14vh]  flex flex-row justify-between">
-                <Logo className="w-24 sm:w-28 md:w-32 transition-transform duration-300 hover:scale-110"></Logo>
+                <Logo className="w-24 sm:w-28 md:w-32">
+                    <div className="font-poppins font-semibold ml-5" style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}>
+                        <div>Granny's</div>
+                        <div>Secret</div>
+                    </div></Logo>
                 <div className="accountButton flex flex-row justify-center items-center space-x-4">
                     <Link to="/signin">
                         <Button1 className="w-20 sm:w-24 md:w-28 px-3 py-2 text-sm sm:text-base transition-all duration-300 hover:scale-105 hover:shadow-lg border border-black hover:bg-black hover:text-white">Login</Button1>
