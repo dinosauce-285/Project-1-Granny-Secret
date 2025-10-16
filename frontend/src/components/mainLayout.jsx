@@ -1,7 +1,7 @@
 import sampleAva from "../assets/sampleAva.jpg"
-function MainLayout() {
+function MainLayout({children}) {
     return (
-        <div className="flex flex-row h-full mt-3">
+        <div className="flex flex-row h-full pt-2">
             <div className="navBar w-[5%] h-full ml-3 flex flex-col items-center ">
                 <div className="logoWrapper h-[10vh] flex items-center justify-center">
                     <img src="logo.webp" alt="" className="h-[60%]"/>
@@ -17,7 +17,7 @@ function MainLayout() {
 
                 </div>
             </div>
-            <div className="mainContent ml-3 mr-8 flex-1">
+            <div className="mainContent ml-3 mr-8 flex-1 min-w-0">
                 <div className="header w-full h-[10vh] flex flex-row items-center ">
                     <div className="searchBar mx-auto">
                         <div className="flex items-center border-2 border-gray-200 rounded-full focus-within:border-gray-400 transition-all duration-200 bg-white">
@@ -35,12 +35,11 @@ function MainLayout() {
 
 
                     </div>
-                    <div className="avatar rounded-full bg-green-300 overflow-hidden">
+                    <div className="avatar rounded-full overflow-hidden">
                         <img src={sampleAva} alt="" className="w-10 h-10" />
                     </div>
                 </div>
-                <div className="header w-full h-[10vh] bg-green-100"></div>
-                <div className="recipes w-full h-[80vh] bg-gray-500"></div>
+                {children}
             </div>
         </div>
     )
