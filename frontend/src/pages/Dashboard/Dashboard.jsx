@@ -1,12 +1,18 @@
 import MainLayout from "../../components/mainLayout"
 import FilterSection from "../../components/filterSection"
+import Recipe from "../../components/recipe"
+import { mockRecipes } from "../../data/mockRecipes"
 function Dashboard()
 {
     return (
         <div className="h-screen w-full bg-[#f9f6e8]">
             <MainLayout>
                 <FilterSection/>
-                <div className="recipes w-full h-[80vh] bg-gray-500"></div>
+                <div className="recipes w-full mt-4">
+                    <Recipe {...mockRecipes[0]}>
+                            
+                    </Recipe>
+                </div>
             </MainLayout>
         </div>
     )
