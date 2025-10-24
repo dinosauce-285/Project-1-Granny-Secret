@@ -8,10 +8,10 @@ function Dashboard()
         <div className="h-screen w-full bg-[#f9f6e8]">
             <MainLayout>
                 <FilterSection/>
-                <div className="recipes w-full mt-4">
-                    <Recipe {...mockRecipes[0]}>
-                            
-                    </Recipe>
+                <div className="recipes w-[95%] mx-auto">
+                    <Recipe {...mockRecipes[0]}/>
+                    <Recipe {...mockRecipes[1]}/>
+                    <Recipe {...mockRecipes[1]}/>
                 </div>
             </MainLayout>
         </div>
