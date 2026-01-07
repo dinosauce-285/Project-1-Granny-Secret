@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -21,7 +21,7 @@ model User {
   password  String
   fullName  String?
   avatarUrl String?
-  recipes   Recipe[] // Một user có nhiều công thức
+  recipes   Recipe[] // Một user có nhiều công thức 
   createdAt DateTime @default(now())
 }
 

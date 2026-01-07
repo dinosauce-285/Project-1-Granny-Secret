@@ -15,7 +15,7 @@ function CreateRecipe() {
                     <div className="image w-full space-y-2">
                         <label htmlFor="image" className="font-medium text-2xl">Recipe Image</label>
                         <div className="py-2">
-                            {/* Hidden file input: clicking the dashed area will open file chooser */}
+            
                             <input id="image" name="image" type="file" accept="image/*" className="hidden" />
                             <label htmlFor="image" className="block mt-1 cursor-pointer" aria-label="Upload image">
                                 <div className="py-6 text-sm border border-dashed border-gray-300 w-full rounded-lg flex flex-col justify-center items-center hover:bg-gray-50">
