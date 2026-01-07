@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  fullName  String?
+  avatarUrl String?
+  recipes   Recipe[] // Một user có nhiều công thức
+  createdAt DateTime @default(now())
+}
+
+model Recipe {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title      String
+  imageUrl   String?
+  prepTime   Int?
+  cookTime   Int?
+  servings   Int?
+  spiciness  Int     @default(0)
+  difficulty String?
+  note       String?
+  rating     Int?
+
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  ingredients Ingredient[] // Quan hệ 1-nhiều với nguyên liệu
+  steps       Step[] // Quan hệ 1-nhiều với các bước
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ingredient {
+  id       Int     @id @default(autoincrement())
+  recipeId Int
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name     String
+  amount   Float?
+  unit     String?
+}
+
+model Step {
+  id        Int    @id @default(autoincrement())
+  recipeId  Int
+  recipe    Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  stepOrder Int
+  content   String
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  recipes Recipe[]
+}
