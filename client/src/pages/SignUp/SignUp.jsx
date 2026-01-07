@@ -2,8 +2,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { Link } from "react-router-dom"
-import Input from "../../components/input"
-import Button1 from "../../components/button1"
+import { Input, ButtonPrimary } from "../../components"
 import accountPic from "../../assets/accountPic.jpg"
 import logoGoogle from "../../assets/logoGoogle.png"
 import logoFacebook from "../../assets/logoFacebook.png"
@@ -41,21 +40,21 @@ function SignUp() {
                     <Input id="password" placeholder="Re-enter your password" />
 
                 </div>
-                <Button1 className="hover:bg-[#007a00] text-white py-2.5 sm:py-3 bg-[#006400] mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">Sign Up</Button1>
+                <ButtonPrimary className="hover:bg-[#007a00] text-white py-2.5 sm:py-3 bg-[#006400] mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">Sign Up</ButtonPrimary>
                 <div className="divider flex items-center mt-6 sm:mt-8 md:mt-12">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="mx-4 text-gray-500 font-poppins">or</span>
                     <div className="flex-grow border-t border-gray-300"></div>
                 </div>
                 <div className="methods mt-6 sm:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    <Button1 className=" flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">
+                    <ButtonPrimary className=" flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">
                         <img className="h-5 w-5 object-contain mr-2" src={logoGoogle} alt="" />
                         Sign up with Google
-                    </Button1>
-                    <Button1 className=" flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">
+                    </ButtonPrimary>
+                    <ButtonPrimary className=" flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">
                         <img className="h-5 w-5 object-contain mr-2" src={logoFacebook} alt="" />
                         Sign up with Facebook
-                    </Button1>
+                    </ButtonPrimary>
                 </div>
                 <div className="toSignUp font-poppins mt-6 sm:mt-8 lg:mt-10 font-medium flex justify-center items-center flex-wrap gap-2 text-sm sm:text-base">
                     <span>Already have an account?</span>

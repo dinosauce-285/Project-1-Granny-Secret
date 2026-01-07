@@ -1,6 +1,6 @@
 import React from 'react';
 
-function ShowTag({ url, children, description, className }) {
+function Tag({ url, children, description, className }) {
     return (
         <div className={`relative ${className}`}>
             <div className="flex justify-center">
@@ -8,7 +8,7 @@ function ShowTag({ url, children, description, className }) {
                     style={{ filter: "drop-shadow(10px 10px 20px rgba(0,0,0,0.5))" }}
                     src={url}
                     alt={children}
-                    className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 
+                    className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 
                     object-cover rounded-full shadow-lg 
                     transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110 
                     relative z-10" />
@@ -41,4 +41,4 @@ function ShowTag({ url, children, description, className }) {
     );
 }
 
-export default ShowTag;
+export default Tag;
