@@ -38,7 +38,7 @@ model Recipe {
   spiciness  Int     @default(0)
   difficulty String?
   note       String?
-  rating     Int?
+  favourite  Boolean @default(false)
 
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id])

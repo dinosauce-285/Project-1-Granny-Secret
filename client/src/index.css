@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+:root{
+  --color-page: #f9f6e8;
+  --color-primary: #006400;
+  --color-primary-hover: #007a00;
+  --color-olive: #6B8E23;
+  --color-text-muted: #9ca3af;
+  --color-surface: #fafafa;
+  --color-input-border: #d1cbb8;
+  --color-input-bg: #fffdf7;
+  --color-accent-1: #FFE0B2;
+  --color-accent-2: #FFF0B3;
+}
 
 * {
   margin: 0;

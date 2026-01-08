@@ -16,7 +16,7 @@ function LandingPage() {
     });
   }, []);
   return (
-    <div className="min-h-screen px-4 sm:px-8 md:px-12 lg:px-20 bg-[#f9f6e8]">
+    <div className="min-h-screen px-4 sm:px-8 md:px-12 lg:px-20 bg-page">
       <div className="header h-[10vh] sm:h-[12vh] md:h-[14vh]  flex flex-row justify-between">
         <Logo className="w-24 sm:w-28 md:w-32">
           <div
@@ -153,16 +153,16 @@ function LandingPage() {
           </p>
         </div>
       </div>
-      <div className="footer mt-16 md:mt-20 border-t-[1px] border-t-[#9ca3af] h-[auto] py-6 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left">
+      <div className="footer mt-16 md:mt-20 border-t-[1px] border-t-text-muted h-[auto] py-6 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left">
         <div className="flex flex-row space-x-4 mb-4 sm:mb-0">
-          <div className="font-poppins text-[#9ca3af]  text-sm sm:text-base cursor-pointer transition-colors duration-300 hover:text-gray-600 hover:underline">
+          <div className="font-poppins text-text-muted  text-sm sm:text-base cursor-pointer transition-colors duration-300 hover:text-gray-600 hover:underline">
             About
           </div>
-          <div className="font-poppins text-[#9ca3af]  text-sm sm:text-base cursor-pointer transition-colors duration-300 hover:text-gray-600 hover:underline">
+          <div className="font-poppins text-text-muted  text-sm sm:text-base cursor-pointer transition-colors duration-300 hover:text-gray-600 hover:underline">
             Term
           </div>
         </div>
-        <div className="font-poppins text-[#9ca3af] transition-colors duration-300 hover:text-gray-600">
+        <div className="font-poppins text-text-muted transition-colors duration-300 hover:text-gray-600">
           Granny's Secret ©
         </div>
       </div>

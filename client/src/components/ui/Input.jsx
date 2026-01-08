@@ -3,11 +3,11 @@ function Input({ placeholder, className }) {
     <input
       type="text"
       placeholder={placeholder}
-      className={`pl-4 border border-[#d1cbb8] mt-2 rounded-lg w-full h-12
-                  outline-none focus:border-[#007a00]
+      className={`pl-4 border border-input-border mt-2 rounded-lg w-full h-12
+                  outline-none focus:border-primary-hover
                   transition-all ease-in duration-100 
                   hover:scale-[1.01] focus:scale-[1.01]
-                  appear-animation bg-[#fffdf7] ${className}`}
+                  appear-animation bg-input-bg ${className}`}
     />
   );
 }

@@ -14,7 +14,7 @@ function SignUp() {
         })
     }, [])
     return (
-        <div className="min-h-screen flex bg-[#f9f6e8]">
+        <div className="min-h-screen flex bg-page">
             <div data-aos="fade-right" className="halfLeft min-h-screen w-full lg:w-1/2
             px-4 sm:px-8 md:px-12 lg:px-20 py-12 sm:py-16 md:py-20 lg:flex lg:flex-col lg:justify-center">
                 <div className="welcomeBack">
@@ -40,7 +40,7 @@ function SignUp() {
                     <Input id="password" placeholder="Re-enter your password" />
 
                 </div>
-                <ButtonPrimary className="hover:bg-[#007a00] text-white py-2.5 sm:py-3 bg-[#006400] mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">Sign Up</ButtonPrimary>
+                <ButtonPrimary className="hover:bg-primary-hover text-white py-2.5 sm:py-3 bg-primary mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">Sign Up</ButtonPrimary>
                 <div className="divider flex items-center mt-6 sm:mt-8 md:mt-12">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="mx-4 text-gray-500 font-poppins">or</span>

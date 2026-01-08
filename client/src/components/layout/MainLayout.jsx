@@ -4,7 +4,7 @@ import sampleAva from "../../assets/sampleAva.jpg"
 
 function MainLayout({ children }) {
     return (
-        <div className="fixed inset-0 flex flex-row pt-2 px-2 sm:px-0 overflow-hidden bg-[#f9f6e8]">
+        <div className="fixed inset-0 flex flex-row pt-2 px-2 sm:px-0 overflow-hidden bg-page">
             <div className="navBar w-16 sm:w-20 lg:w-[5%] h-full ml-1  sm:ml-3 flex flex-col flex-shrink-0 items-center">
                 <Link to="/dashboard">
                     <div className="logoWrapper h-[6vh] sm:h-[8vh] min-h-[48px] flex items-center justify-center">
@@ -14,14 +14,14 @@ function MainLayout({ children }) {
 
                 <div className="icons mt-auto mb-auto flex flex-col space-y-4 sm:space-y-6 lg:space-y-8 ">
                     <Link to="/dashboard">
-                        <div className="hover:bg-[#6B8E2350] hover:scale-110 p-2 sm:p-3 rounded-md transition-all duration-300">
+                        <div className="hover:bg-olive/30 hover:scale-110 p-2 sm:p-3 rounded-md transition-all duration-300">
                             <svg className="w-8 h-8 " xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                             </svg>
                         </div>
                     </Link>
                     <Link to="/create">
-                        <div className="hover:bg-[#6B8E2350] hover:scale-110 p-2 sm:p-3 rounded-md transition-all duration-300">
+                        <div className="hover:bg-olive/30 hover:scale-110 p-2 sm:p-3 rounded-md transition-all duration-300">
                             <svg className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -41,7 +41,7 @@ function MainLayout({ children }) {
                         </div>
 
 
-                        <div className="avatar border border-white border-2 shadow-xl hover:border-[#6B8E23] hover:border-[2.5px] transition-all duration-300 w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden cursor-pointer">
+                        <div className="avatar border border-white border-2 shadow-xl hover:border-olive hover:border-[2.5px] transition-all duration-300 w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden cursor-pointer">
                             <img src={sampleAva} alt="" className="w-full h-full object-cover" />
                         </div>
                     </div>

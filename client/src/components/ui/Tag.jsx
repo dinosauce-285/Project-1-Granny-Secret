@@ -14,7 +14,7 @@ function Tag({ url, children, description, className }) {
                     relative z-10" />
             </div>
             
-            <div className="group card bg-[#fafafa] border-2 border-white 
+            <div className="group card bg-surface border-2 border-white 
                 flex flex-col justify-start items-center 
                 px-3 sm:px-4 md:px-5
                 pt-12 sm:pt-14 md:pt-16 lg:pt-20
@@ -30,7 +30,7 @@ function Tag({ url, children, description, className }) {
                     line-clamp-2">
                     {children}
                 </h3>
-                <p className="font-light text-[#9ca3af] 
+                <p className="font-light text-text-muted 
                     text-xs sm:text-sm md:text-base 
                     text-center leading-relaxed 
                     line-clamp-3 sm:line-clamp-4">

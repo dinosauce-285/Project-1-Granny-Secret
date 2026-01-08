@@ -14,7 +14,8 @@
     "@prisma/client": "^6.19.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "zod": "^4.3.5"
   },
   "type": "module",
   "devDependencies": {
