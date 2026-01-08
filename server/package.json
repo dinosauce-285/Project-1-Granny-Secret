@@ -11,15 +11,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.19.1",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "morgan": "^1.10.1",
+    "pg": "^8.16.3",
     "zod": "^4.3.5"
   },
   "type": "module",
   "devDependencies": {
     "nodemon": "^3.1.10",
-    "prisma": "^6.19.1"
+    "prisma": "^7.0.0"
   }
 }
