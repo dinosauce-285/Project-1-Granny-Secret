@@ -5,6 +5,7 @@ import { apiKeyAuth } from "../middlewares/apikey.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
 
 router.get("/", apiKeyAuth, recipeController.getRecipes);
+router.get("/:id", apiKeyAuth, recipeController.getRecipeById);
 router.post(
   "/create",
   apiKeyAuth,

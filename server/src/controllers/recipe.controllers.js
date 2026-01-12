@@ -6,10 +6,15 @@ export const recipeController = {
     const result = await recipeService.getRecipes();
     return res.ok(result);
   },
+  async getRecipeById(req, res) {
+    const recipeId = Number(req.params.id);
+    const result = await recipeService.getRecipeById(recipeId);
+    if (!result) return res.notFound("Recipe not found"); 
+    return res.ok(result);
+  },
   async create(req, res) {
     let imageUrl = null;
 
-    // Upload image to Cloudinary if file exists
     if (req.file) {
       const b64 = Buffer.from(req.file.buffer).toString("base64");
       const dataURI = `data:${req.file.mimetype};base64,${b64}`;
@@ -19,7 +24,6 @@ export const recipeController = {
       imageUrl = uploadResult.secure_url;
     }
 
-    // Parse JSON strings from FormData
     let ingredients = req.body.ingredients;
     if (typeof ingredients === "string") {
       ingredients = JSON.parse(ingredients);
@@ -29,8 +33,6 @@ export const recipeController = {
     if (typeof steps === "string") {
       steps = JSON.parse(steps);
     }
-
-    // Transform data
     const data = {
       title: req.body.title,
       imageUrl: imageUrl,

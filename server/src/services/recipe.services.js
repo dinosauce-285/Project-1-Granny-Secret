@@ -12,6 +12,21 @@ export const recipeService = {
     });
     return recipes;
   },
+  async getRecipeById(id)
+  {
+    const recipe = await prisma.recipe.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        ingredients: true,
+        steps: true,
+        category: true,
+        user: true,
+      },
+    });
+    return recipe;
+  },
   async create(data) {
     if (!data.ingredients || !Array.isArray(data.ingredients) || data.ingredients.length === 0) {
       throw new Error("At least one ingredient is required");

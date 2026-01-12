@@ -2,7 +2,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { Link } from "react-router-dom"
-import { Input, ButtonPrimary } from "../../components"
+import ButtonPrimary from "../../components/ui/ButtonPrimary"
+import Input from "../../components/ui/Input"
 import accountPic from "../../assets/accountPic.jpg"
 import logoGoogle from "../../assets/logoGoogle.png"
 import logoFacebook from "../../assets/logoFacebook.png"

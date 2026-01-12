@@ -1,6 +1,8 @@
-import { MainLayout, FilterSection, RecipeCard } from "../../components";
+import FilterSection from "../../components/filters/FilterSection";
+import RecipeCard from "../../components/recipe/RecipeCard";
 import { useState, useEffect } from "react";
-import api from "../../api/api.js";  
+import { Link } from "react-router-dom";
+import api from "../../api/api.js";
 function Dashboard() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,14 +39,14 @@ function Dashboard() {
 
   return (
     <div className="w-full pb-4">
-      <MainLayout>
-        <FilterSection />
-        <div className="recipes w-full sm:w-[95%] mx-auto px-3 sm:px-0">
-          {recipes.map((r) => (
+      <FilterSection />
+      {recipes.map((r) => (
+        <Link to={`/recipe/${r.id}`}>
+          <div className="recipes w-full sm:w-[95%] mx-auto px-3 sm:px-0">
             <RecipeCard key={r.id} {...r} />
-          ))}
-        </div>
-      </MainLayout>
+          </div>
+        </Link>
+      ))}
     </div>
   );
 }
