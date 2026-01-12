@@ -65,5 +65,9 @@ export const recipeController = {
   async unfavourite(req, res) {
     const result = await recipeService.toggleFavourite(req.params.id, false);
     return res.ok(result);
+  },  
+  async delete(req, res) {
+    await recipeService.delete(req.params.id);
+    return res.ok({ message: "Recipe deleted successfully" });
   },
 };

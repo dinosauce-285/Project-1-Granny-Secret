@@ -83,4 +83,11 @@ export const recipeService = {
       data: { favourite: value },
     });
   },
+  async delete(id) {
+    await prisma.ingredient.deleteMany({ where: { recipeId: Number(id) } });
+    await prisma.step.deleteMany({ where: { recipeId: Number(id) } });
+    return await prisma.recipe.delete({
+      where: { id: Number(id) },
+    });
+  },
 };
