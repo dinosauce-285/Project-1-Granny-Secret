@@ -5,15 +5,14 @@ export const recipeService = {
     const recipes = await prisma.recipe.findMany({
       include: {
         category: true,
-      },  
+      },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
     return recipes;
   },
-  async getRecipeById(id)
-  {
+  async getRecipeById(id) {
     const recipe = await prisma.recipe.findUnique({
       where: {
         id: id,
@@ -28,7 +27,11 @@ export const recipeService = {
     return recipe;
   },
   async create(data) {
-    if (!data.ingredients || !Array.isArray(data.ingredients) || data.ingredients.length === 0) {
+    if (
+      !data.ingredients ||
+      !Array.isArray(data.ingredients) ||
+      data.ingredients.length === 0
+    ) {
       throw new Error("At least one ingredient is required");
     }
 
@@ -38,10 +41,10 @@ export const recipeService = {
       prepTime: data.prepTime,
       cookTime: data.cookTime,
       servings: data.servings,
-      spiciness: typeof data.spiciness === 'number' ? data.spiciness : 0,
+      spiciness: typeof data.spiciness === "number" ? data.spiciness : 0,
       difficulty: data.difficulty,
       note: data.note,
-      favourite: typeof data.favourite === 'boolean' ? data.favourite : false,
+      favourite: typeof data.favourite === "boolean" ? data.favourite : false,
       categoryId: data.categoryId,
       userId: data.userId,
       ingredients: {
@@ -55,7 +58,10 @@ export const recipeService = {
 
     if (data.steps && Array.isArray(data.steps) && data.steps.length > 0) {
       createPayload.steps = {
-        create: data.steps.map((s) => ({ stepOrder: s.stepOrder, content: s.content })),
+        create: data.steps.map((s) => ({
+          stepOrder: s.stepOrder,
+          content: s.content,
+        })),
       };
     }
 
@@ -70,5 +76,11 @@ export const recipeService = {
     });
 
     return recipe;
-  }
+  },
+  async toggleFavourite(id, value) {
+    return await prisma.recipe.update({
+      where: { id: Number(id) },
+      data: { favourite: value },
+    });
+  },
 };

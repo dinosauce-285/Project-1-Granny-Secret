@@ -12,4 +12,6 @@ router.post(
   upload.single("image"),
   recipeController.create
 );
+router.patch("/:id/favourite", apiKeyAuth, recipeController.favourite);
+router.patch("/:id/unfavourite", apiKeyAuth, recipeController.unfavourite);
 export default router;

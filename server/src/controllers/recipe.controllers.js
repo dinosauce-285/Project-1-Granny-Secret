@@ -9,7 +9,7 @@ export const recipeController = {
   async getRecipeById(req, res) {
     const recipeId = Number(req.params.id);
     const result = await recipeService.getRecipeById(recipeId);
-    if (!result) return res.notFound("Recipe not found"); 
+    if (!result) return res.notFound("Recipe not found");
     return res.ok(result);
   },
   async create(req, res) {
@@ -56,6 +56,14 @@ export const recipeController = {
     };
 
     const result = await recipeService.create(data);
+    return res.ok(result);
+  },
+  async favourite(req, res) {
+    const result = await recipeService.toggleFavourite(req.params.id, true);
+    return res.ok(result);
+  },
+  async unfavourite(req, res) {
+    const result = await recipeService.toggleFavourite(req.params.id, false);
     return res.ok(result);
   },
 };
