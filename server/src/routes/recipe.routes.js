@@ -2,18 +2,25 @@ import { Router } from "express";
 const router = Router();
 import { recipeController } from "../controllers/recipe.controllers.js";
 import { apiKeyAuth } from "../middlewares/apikey.middleware.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/upload.middleware.js";
 
 router.get("/", apiKeyAuth, recipeController.getRecipes);
+router.get("/my-recipes", authMiddleware, recipeController.getMyRecipes);
 router.get("/:id", apiKeyAuth, recipeController.getRecipeById);
 router.post(
   "/create",
-  apiKeyAuth,
+  authMiddleware,
   upload.single("image"),
   recipeController.create
 );
-router.patch("/:id/favourite", apiKeyAuth, recipeController.favourite);
-router.patch("/:id/unfavourite", apiKeyAuth, recipeController.unfavourite);
-router.put("/:id", apiKeyAuth, upload.single("image"), recipeController.update);
-router.delete("/:id", apiKeyAuth, recipeController.delete);
+router.patch("/:id/favourite", authMiddleware, recipeController.favourite);
+router.patch("/:id/unfavourite", authMiddleware, recipeController.unfavourite);
+router.put(
+  "/:id",
+  authMiddleware,
+  upload.single("image"),
+  recipeController.update
+);
+router.delete("/:id", authMiddleware, recipeController.delete);
 export default router;

@@ -10,6 +10,9 @@ export const recipeService = {
     if (filters.favourite === true || filters.favourite === "true") {
       where.favourite = true;
     }
+    if (filters.userId) {
+      where.userId = Number(filters.userId);
+    }
 
     const recipes = await prisma.recipe.findMany({
       where,

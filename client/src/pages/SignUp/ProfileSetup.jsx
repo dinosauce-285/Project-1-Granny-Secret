@@ -47,7 +47,7 @@ function ProfileSetup() {
       await api.put("/auth/profile", {
         userId,
         fullName,
-        avatarUrl: selectedAvatar, // Saves just "avatar1", "avatar2", etc.
+        avatarUrl: selectedAvatar,
       });
 
       navigate("/signin");

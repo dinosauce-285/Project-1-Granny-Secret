@@ -1,5 +1,5 @@
 import { authService } from "../services/auth.services.js";
-import { registerSchema } from "../schemas/auth.schema.js";
+import { registerSchema, loginSchema } from "../schemas/auth.schema.js";
 
 export const authController = {
   async register(req, res) {
@@ -29,6 +29,28 @@ export const authController = {
         return res.error("Username already exists", [], 400);
       }
       return res.error("Registration failed", [], 500);
+    }
+  },
+
+  async login(req, res) {
+    try {
+      const result = loginSchema.safeParse(req.body);
+
+      if (!result.success) {
+        const errors = result.error.flatten().fieldErrors;
+        return res.error("Validation failed", errors, 400);
+      }
+
+      const { email, password } = result.data;
+
+      const data = await authService.login({ email, password });
+
+      return res.ok(data, "Login successful");
+    } catch (error) {
+      if (error.message === "Invalid email or password") {
+        return res.error("Invalid email or password", [], 401);
+      }
+      return res.error("Login failed", [], 500);
     }
   },
 

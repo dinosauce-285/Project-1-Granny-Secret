@@ -10,6 +10,15 @@ export const recipeController = {
     const result = await recipeService.getRecipes(filters);
     return res.ok(result);
   },
+  async getMyRecipes(req, res) {
+    const filters = {
+      userId: req.user.userId,
+      categoryId: req.query.category,
+      favourite: req.query.favourite,
+    };
+    const result = await recipeService.getRecipes(filters);
+    return res.ok(result);
+  },
   async getRecipeById(req, res) {
     const recipeId = Number(req.params.id);
     const result = await recipeService.getRecipeById(recipeId);
@@ -47,7 +56,7 @@ export const recipeController = {
       difficulty: req.body.difficulty || null,
       note: req.body.note || null,
       categoryId: req.body.category ? Number(req.body.category) : null,
-      userId: 1, // TODO: Replace with actual user from auth
+      userId: req.user.userId,
       ingredients: ingredients.map((ing) => ({
         name: ing.name,
         amount: ing.amount ? Number(ing.amount) : null,

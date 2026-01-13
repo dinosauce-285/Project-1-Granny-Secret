@@ -1,9 +1,13 @@
 import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../ui/SearchBar";
 
-const sampleAva = "/sampleAva.jpg";
+const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
 function MainLayout() {
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? JSON.parse(userStr) : null;
+  const avatarUrl = user?.avatarUrl ? user.avatarUrl : defaultAvatar;
+
   return (
     <div className="fixed inset-0 flex flex-row pt-2 px-2 sm:px-0 overflow-hidden bg-page">
       <div className="navBar w-16 sm:w-20 lg:w-[5%] h-full ml-1  sm:ml-3 flex flex-col flex-shrink-0 items-center">
@@ -75,7 +79,7 @@ function MainLayout() {
 
             <div className="avatar border border-white border-2 shadow-xl hover:border-olive hover:border-[2.5px] transition-all duration-300 w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden cursor-pointer">
               <img
-                src={sampleAva}
+                src={avatarUrl}
                 alt=""
                 className="w-full h-full object-cover"
               />

@@ -14,11 +14,11 @@ function Dashboard() {
     try {
       setLoading(true);
 
-      let url = "/recipes";
+      let url = "/recipes/my-recipes";
       if (filter.type === "category" && filter.categoryId) {
-        url = `/recipes?category=${filter.categoryId}`;
+        url += `?category=${filter.categoryId}`;
       } else if (filter.type === "favourite") {
-        url = `/recipes?favourite=true`;
+        url += `?favourite=true`;
       }
 
       const res = await api.get(url);
