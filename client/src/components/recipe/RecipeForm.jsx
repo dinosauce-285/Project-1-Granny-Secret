@@ -23,7 +23,6 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
     note: "",
   });
 
-  // Pre-populate form when initialData changes (Edit mode)
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -109,12 +108,11 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
         steps: steps.filter((s) => s.trim()),
       };
 
-      // Skip image validation for edit mode if no new image uploaded
+   
       if (isEdit && !formDataRaw.image) {
         delete formDataRaw.image;
       }
 
-      // Use appropriate schema based on mode
       const schema = isEdit ? EditRecipeSchema : CreateRecipeSchema;
       const result = schema.safeParse(formDataRaw);
 

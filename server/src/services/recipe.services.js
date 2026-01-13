@@ -1,8 +1,18 @@
 import { prisma } from "../prisma.js";
 
 export const recipeService = {
-  async getRecipes() {
+  async getRecipes(filters = {}) {
+    const where = {};
+
+    if (filters.categoryId) {
+      where.categoryId = Number(filters.categoryId);
+    }
+    if (filters.favourite === true || filters.favourite === "true") {
+      where.favourite = true;
+    }
+
     const recipes = await prisma.recipe.findMany({
+      where,
       include: {
         category: true,
       },

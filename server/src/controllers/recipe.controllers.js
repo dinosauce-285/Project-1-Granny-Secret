@@ -3,7 +3,11 @@ import cloudinary from "../config/cloudinary.config.js";
 
 export const recipeController = {
   async getRecipes(req, res) {
-    const result = await recipeService.getRecipes();
+    const filters = {
+      categoryId: req.query.category,
+      favourite: req.query.favourite,
+    };
+    const result = await recipeService.getRecipes(filters);
     return res.ok(result);
   },
   async getRecipeById(req, res) {

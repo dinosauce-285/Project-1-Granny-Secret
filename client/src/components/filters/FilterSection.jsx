@@ -2,9 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import FilterButton from "./FilterButton";
 import api from "../../api/api";
 
-function FilterSection() {
-  const [filters, setFilters] = useState([]);
-  const [activeFilter, setActiveFilter] = useState(null);
+function FilterSection({ onFilterChange }) {
+  const [categories, setCategories] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("all");
   const [showLeftGradient, setShowLeftGradient] = useState(false);
   const [showRightGradient, setShowRightGradient] = useState(true);
   const scrollRef = useRef(null);
@@ -13,8 +13,7 @@ function FilterSection() {
     const fetchCategories = async () => {
       try {
         const res = await api.get("/categories");
-        const categories = res.data.data.map((cat) => cat.name);
-        setFilters(["All", ...categories]);
+        setCategories(res.data.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -32,10 +31,21 @@ function FilterSection() {
 
   useEffect(() => {
     handleScroll();
-  }, [filters]);
+  }, [categories]);
 
-  const handleFilterClick = (filter) => {
-    setActiveFilter(filter === activeFilter ? null : filter);
+  const handleFilterClick = (filterKey) => {
+    const newFilter = filterKey === activeFilter ? "all" : filterKey;
+    setActiveFilter(newFilter);
+
+    if (onFilterChange) {
+      if (newFilter === "all") {
+        onFilterChange({ type: "all" });
+      } else if (newFilter === "favourites") {
+        onFilterChange({ type: "favourite" });
+      } else {
+        onFilterChange({ type: "category", categoryId: newFilter });
+      }
+    }
   };
 
   return (
@@ -51,15 +61,27 @@ function FilterSection() {
         className="overflow-x-auto overflow-y-hidden no-scrollbar"
       >
         <div className="flex flex-nowrap items-center gap-2 sm:gap-3 py-3 px-3 sm:px-2">
-          {filters.map((item, index) => (
+          <FilterButton
+            isActive={activeFilter === "all"}
+            onClick={() => handleFilterClick("all")}
+          >
+            All
+          </FilterButton>
+
+          <FilterButton
+            isActive={activeFilter === "favourites"}
+            onClick={() => handleFilterClick("favourites")}
+          >
+            Favourites
+          </FilterButton>
+
+          {categories.map((cat) => (
             <FilterButton
-              key={index}
-              isActive={
-                activeFilter === item || (item === "All" && !activeFilter)
-              }
-              onClick={() => handleFilterClick(item === "All" ? null : item)}
+              key={cat.id}
+              isActive={activeFilter === cat.id}
+              onClick={() => handleFilterClick(cat.id)}
             >
-              {item}
+              {cat.name}
             </FilterButton>
           ))}
         </div>
