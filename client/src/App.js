@@ -6,6 +6,7 @@ import SignUp from "./pages/SignUp/SignUp";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
+import EditRecipe from "./pages/EditRecipe/EditRecipe";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import MainLayout from "./components/layout/MainLayout";
 
@@ -20,6 +21,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create" element={<CreateRecipe />} />
+          <Route path="/edit/:id" element={<EditRecipe />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
         </Route>
       </Routes>

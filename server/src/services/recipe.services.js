@@ -90,4 +90,59 @@ export const recipeService = {
       where: { id: Number(id) },
     });
   },
+  async update(id, data) {
+    // Delete existing ingredients and steps
+    await prisma.ingredient.deleteMany({ where: { recipeId: Number(id) } });
+    await prisma.step.deleteMany({ where: { recipeId: Number(id) } });
+
+    const updatePayload = {
+      title: data.title,
+      prepTime: data.prepTime,
+      cookTime: data.cookTime,
+      servings: data.servings,
+      spiciness: typeof data.spiciness === "number" ? data.spiciness : 0,
+      difficulty: data.difficulty,
+      note: data.note,
+      categoryId: data.categoryId,
+    };
+
+    // Only update imageUrl if provided
+    if (data.imageUrl) {
+      updatePayload.imageUrl = data.imageUrl;
+    }
+
+    // Create new ingredients
+    if (data.ingredients && Array.isArray(data.ingredients)) {
+      updatePayload.ingredients = {
+        create: data.ingredients.map((ing) => ({
+          name: ing.name,
+          amount: ing.amount ?? null,
+          unit: ing.unit ?? null,
+        })),
+      };
+    }
+
+    // Create new steps
+    if (data.steps && Array.isArray(data.steps) && data.steps.length > 0) {
+      updatePayload.steps = {
+        create: data.steps.map((s) => ({
+          stepOrder: s.stepOrder,
+          content: s.content,
+        })),
+      };
+    }
+
+    const recipe = await prisma.recipe.update({
+      where: { id: Number(id) },
+      data: updatePayload,
+      include: {
+        ingredients: true,
+        steps: true,
+        category: true,
+        user: true,
+      },
+    });
+
+    return recipe;
+  },
 };

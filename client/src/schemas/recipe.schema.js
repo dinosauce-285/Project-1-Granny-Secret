@@ -33,3 +33,9 @@ export const CreateRecipeSchema = z.object({
 
   note: z.string().optional(),
 });
+
+export const EditRecipeSchema = CreateRecipeSchema.omit({ image: true }).extend(
+  {
+    image: z.any().optional(),
+  }
+);

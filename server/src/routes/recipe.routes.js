@@ -14,5 +14,6 @@ router.post(
 );
 router.patch("/:id/favourite", apiKeyAuth, recipeController.favourite);
 router.patch("/:id/unfavourite", apiKeyAuth, recipeController.unfavourite);
+router.put("/:id", apiKeyAuth, upload.single("image"), recipeController.update);
 router.delete("/:id", apiKeyAuth, recipeController.delete);
 export default router;

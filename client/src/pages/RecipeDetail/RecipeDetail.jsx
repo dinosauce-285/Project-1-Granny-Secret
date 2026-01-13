@@ -13,6 +13,10 @@ function RecipeDetail() {
   const [error, setError] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  const handleEditClick = () => {
+    navigate(`/edit/${id}`);
+  };
+
   const handleDeleteClick = () => {
     setShowDeleteDialog(true);
   };
@@ -102,6 +106,7 @@ function RecipeDetail() {
               className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110"
             />
             <MoreOptions
+              onEdit={handleEditClick}
               onDelete={handleDeleteClick}
               size="large"
               className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110 text-white"

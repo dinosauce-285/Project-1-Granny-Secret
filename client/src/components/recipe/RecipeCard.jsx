@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Heart from "../ui/Heart";
 import MoreOptions from "../ui/MoreOptions";
 import Dialog from "../ui/Dialog";
@@ -18,12 +19,21 @@ function RecipeCard({
   note,
   favourite,
 }) {
+  const navigate = useNavigate();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleEditClick = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    navigate(`/edit/${id}`);
+  };
 
   const handleDeleteClick = (e) => {
     if (e) {
       e.preventDefault();
-      e.stopPropagation(); 
+      e.stopPropagation();
     }
     setShowDeleteDialog(true);
   };
@@ -36,7 +46,7 @@ function RecipeCard({
     try {
       await api.delete(`/recipes/${id}`);
       window.location.reload();
-    } catch (error) { 
+    } catch (error) {
       console.error("Error deleting recipe:", error);
     }
   };
@@ -75,7 +85,10 @@ function RecipeCard({
                 recipeId={id}
                 initialFavourite={favourite}
               />
-              <MoreOptions onDelete={handleDeleteClick} />
+              <MoreOptions
+                onEdit={handleEditClick}
+                onDelete={handleDeleteClick}
+              />
             </div>
           </div>
           <div className="info flex flex-wrap sm:flex-nowrap gap-3 sm:gap-4 lg:gap-6 font-poppins text-xs sm:text-sm w-full">
