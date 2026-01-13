@@ -14,6 +14,11 @@ datasource db {
   // Connection URL moved to prisma.config.ts for Prisma v7 compatibility
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
@@ -21,6 +26,7 @@ model User {
   password  String
   fullName  String?
   avatarUrl String?
+  role      Role     @default(USER)
   recipes   Recipe[] // Một user có nhiều công thức 
   createdAt DateTime @default(now())
 }

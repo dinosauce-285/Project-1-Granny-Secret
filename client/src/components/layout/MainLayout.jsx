@@ -1,6 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import SearchBar from "../ui/SearchBar";
-import sampleAva from "../../assets/sampleAva.jpg";
+
+const sampleAva = "/sampleAva.jpg";
 
 function MainLayout() {
   return (

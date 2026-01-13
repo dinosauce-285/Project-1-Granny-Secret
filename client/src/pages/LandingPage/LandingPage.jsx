@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Logo from "../../components/ui/Logo";
 import Tag from "../../components/ui/Tag";
-import ShowPic1 from "../../assets/showPic1.webp";
-import ShowPic2 from "../../assets/showPic2.webp";
-import ShowPic3 from "../../assets/showPic3.webp";
-import ShowPic4 from "../../assets/showPic4.webp";
+const ShowPic1 = "/landingPage/showPic1.webp";
+const ShowPic2 = "/landingPage/showPic2.webp";
+const ShowPic3 = "/landingPage/showPic3.webp";
+const ShowPic4 = "/landingPage/showPic4.webp";
 
 function LandingPage() {
   useEffect(() => {
@@ -62,7 +62,7 @@ function LandingPage() {
               <img
                 style={{ filter: "drop-shadow(5px 5px 10px rgba(0,0,0,0.5))" }}
                 className="h-12 sm:h-16 md:h-28 lg:h-[180px] ml-2 mt-2 md:mt-0 sm:ml-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110"
-                src="./smallPic.webp"
+                src="/landingPage/smallPic.webp"
                 alt=""
               />
             </div>
@@ -82,7 +82,7 @@ function LandingPage() {
             <img
               style={{ filter: "drop-shadow(10px 10px 20px rgba(0,0,0,0.5))" }}
               className="w-5/6 transition-transform duration-500 hover:scale-105 hover:rotate-2"
-              src="./LandingPagePic1.png"
+              src="/landingPage/landingPagePic1.png"
               alt=""
             />
           </div>
@@ -126,7 +126,7 @@ function LandingPage() {
           <img
             style={{ filter: "drop-shadow(10px 10px 20px rgba(0,0,0,0.5))" }}
             className="w-5/6 transition-transform duration-500 hover:scale-105 hover:-rotate-2"
-            src="./LandingPagePic2.png"
+            src="/landingPage/landingPagePic2.png"
             alt=""
           />
         </div>
