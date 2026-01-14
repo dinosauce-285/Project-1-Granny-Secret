@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import SearchBar from "../ui/SearchBar";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
@@ -7,6 +7,17 @@ function MainLayout() {
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
   const avatarUrl = user?.avatarUrl ? user.avatarUrl : defaultAvatar;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const currentSearch = searchParams.get("search") || "";
+
+  const handleSearch = (query) => {
+    if (query.trim()) {
+      navigate(`/dashboard?search=${encodeURIComponent(query)}`);
+    } else {
+      navigate("/dashboard");
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex flex-row pt-2 px-2 sm:px-0 overflow-hidden bg-page">
@@ -58,7 +69,7 @@ function MainLayout() {
 
       <div className="mainContent ml-2 sm:ml-3 mr-2 sm:mr-4 lg:mr-8 flex-1 min-w-0 flex flex-col overflow-hidden">
         <div className="header w-full mb-3 sm:mb-4 min-h-[8vh] flex flex-col sm:flex-row items-center flex-shrink-0">
-          <SearchBar />
+          <SearchBar initialValue={currentSearch} onSearch={handleSearch} />
           <div className="flex flex-row items-center gap-4 sm:gap-6 lg:gap-8 ">
             <div className="w-9 h-9 sm:w-10 sm:h-10 cursor-pointer flex rounded-lg items-center justify-center hover:bg-white transition-all duration-300`">
               <svg

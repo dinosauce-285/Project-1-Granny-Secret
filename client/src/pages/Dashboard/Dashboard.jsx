@@ -1,14 +1,28 @@
 import FilterSection from "../../components/filters/FilterSection";
 import RecipeCard from "../../components/recipe/RecipeCard";
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import api from "../../api/api.js";
 
 function Dashboard() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState({ type: "all" });
+  const [searchParams] = useSearchParams();
+
+  const [filter, setFilter] = useState({
+    type: "all",
+    search: searchParams.get("search") || "", 
+  });
+
+  useEffect(() => {
+    const search = searchParams.get("search");
+    if (search) {
+      setFilter((prev) => ({ ...prev, type: "search", search }));
+    } else {
+      setFilter((prev) => ({ ...prev, search: "" }));
+    }
+  }, [searchParams]);
 
   const fetchRecipes = useCallback(async () => {
     try {
@@ -19,6 +33,9 @@ function Dashboard() {
         url += `?category=${filter.categoryId}`;
       } else if (filter.type === "favourite") {
         url += `?favourite=true`;
+      }
+      if (filter.search) {
+        url += (url.includes("?") ? "&" : "?") + `search=${filter.search}`;
       }
 
       const res = await api.get(url);
@@ -37,7 +54,7 @@ function Dashboard() {
   }, [fetchRecipes]);
 
   const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
+    setFilter((prev) => ({ ...prev, ...newFilter }));
   };
 
   if (error)

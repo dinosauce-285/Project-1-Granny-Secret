@@ -13,6 +13,26 @@ export const recipeService = {
     if (filters.userId) {
       where.userId = Number(filters.userId);
     }
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: "insensitive" } },
+        {
+          ingredients: {
+            some: {
+              name: { contains: filters.search, mode: "insensitive" },
+            },
+          },
+        },
+        {
+          steps: {
+            some: {
+              content: { contains: filters.search, mode: "insensitive" },
+            },
+          },
+        },
+        { note: { contains: filters.search, mode: "insensitive" } },
+      ];
+    }
 
     const recipes = await prisma.recipe.findMany({
       where,

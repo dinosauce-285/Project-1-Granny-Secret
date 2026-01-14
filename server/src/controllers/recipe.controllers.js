@@ -6,6 +6,7 @@ export const recipeController = {
     const filters = {
       categoryId: req.query.category,
       favourite: req.query.favourite,
+      search: req.query.search,
     };
     const result = await recipeService.getRecipes(filters);
     return res.ok(result);
@@ -15,6 +16,7 @@ export const recipeController = {
       userId: req.user.userId,
       categoryId: req.query.category,
       favourite: req.query.favourite,
+      search: req.query.search,
     };
     const result = await recipeService.getRecipes(filters);
     return res.ok(result);
