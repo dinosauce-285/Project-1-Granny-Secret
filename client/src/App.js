@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
 import EditRecipe from "./pages/EditRecipe/EditRecipe";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
+import Settings from "./pages/Settings/Settings";
 import MainLayout from "./components/layout/MainLayout";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/create" element={<CreateRecipe />} />
           <Route path="/edit/:id" element={<EditRecipe />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </Router>

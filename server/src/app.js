@@ -9,6 +9,7 @@ import {
 import categoryRoutes from "./routes/category.routes.js";
 import recipeRoutes from "./routes/recipe.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 export const app = express();
 app.use(
@@ -26,5 +27,6 @@ app.get("/", (req, res) => res.send("Welcome to the API"));
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/recipes", recipeRoutes);
+app.use("/api/users", userRoutes);  
 app.use(notFoundHandler);
 app.use(errorHandler);
