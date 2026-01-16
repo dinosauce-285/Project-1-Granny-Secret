@@ -7,13 +7,14 @@ function RightSidebar() {
 
   useEffect(() => {
     const fetchFollowedUsers = async () => {
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        setLoading(false);
+        return;
+      }
       try {
-        // TODO: Create endpoint for followed users
-        // const res = await api.get("/users/following");
-        // setFollowedUsers(res.data.data || []);
-
-        // Placeholder data for now
-        setFollowedUsers([]);
+        const res = await api.get("/users/me/following");
+        setFollowedUsers(res.data.data || []);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching followed users:", error);
@@ -35,7 +36,10 @@ function RightSidebar() {
             followedUsers.slice(0, 5).map((user) => (
               <div
                 key={user.id}
+                onClick={() => (window.location.href = `/profile/${user.id}`)}
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                role="button"
+                tabIndex={0}
               >
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
                   <img

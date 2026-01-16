@@ -56,7 +56,7 @@ function MainLayout() {
         <div className="flex flex-row items-center gap-3 sm:gap-4 lg:gap-6">
           <Link
             to="/create"
-            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-olive text-white rounded-lg hover:bg-olive/90 transition-all duration-300 font-medium"
+            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium"
           >
             <svg
               className="w-5 h-5"

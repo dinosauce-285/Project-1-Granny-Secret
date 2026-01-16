@@ -91,4 +91,71 @@ export const userService = {
 
     return recipes;
   },
+
+  async checkIsFollowing(followerId, followingId) {
+    const follow = await prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: Number(followerId),
+          followingId: Number(followingId),
+        },
+      },
+    });
+    return !!follow;
+  },
+
+  async toggleFollow(followerId, followingId) {
+    if (Number(followerId) === Number(followingId)) {
+      throw new Error("You cannot follow yourself");
+    }
+
+    const existingFollow = await prisma.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: Number(followerId),
+          followingId: Number(followingId),
+        },
+      },
+    });
+
+    if (existingFollow) {
+      await prisma.follow.delete({
+        where: {
+          followerId_followingId: {
+            followerId: Number(followerId),
+            followingId: Number(followingId),
+          },
+        },
+      });
+      return { isFollowing: false };
+    } else {
+      await prisma.follow.create({
+        data: {
+          followerId: Number(followerId),
+          followingId: Number(followingId),
+        },
+      });
+      return { isFollowing: true };
+    }
+  },
+
+  async getFollowedUsers(userId) {
+    const follows = await prisma.follow.findMany({
+      where: {
+        followerId: Number(userId),
+      },
+      include: {
+        following: {
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    });
+
+    return follows.map((follow) => follow.following);
+  },
 };

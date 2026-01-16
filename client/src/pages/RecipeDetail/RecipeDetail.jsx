@@ -39,10 +39,17 @@ function RecipeDetail() {
   };
 
   const handleFollowToggle = async () => {
+    if (!user) {
+      navigate("/signin");
+      return;
+    }
+    if (user.id === recipe.user.id) {
+      return;
+    }
+
     try {
-      // TODO: Implement follow/unfollow API
-      // await api.post(`/users/${recipe.user.id}/follow`);
-      setIsFollowing(!isFollowing);
+      const res = await api.post(`/users/${recipe.user.id}/follow`);
+      setIsFollowing(res.data.data.isFollowing);
     } catch (error) {
       console.error("Error toggling follow:", error);
     }
@@ -81,7 +88,21 @@ function RecipeDetail() {
     const fetchRecipe = async () => {
       try {
         const res = await api.get(`/recipes/${id}`);
-        setRecipe(res.data.data);
+        const recipeData = res.data.data;
+        setRecipe(recipeData);
+
+        // Fetch follow status if user is logged in and not the owner
+        if (user && recipeData.userId && user.id !== recipeData.userId) {
+          try {
+            const followRes = await api.get(
+              `/users/${recipeData.userId}/is-following`
+            );
+            setIsFollowing(followRes.data.data.isFollowing);
+          } catch (followError) {
+            console.error("Error checking follow status:", followError);
+          }
+        }
+
         setLoading(false);
       } catch (err) {
         setError(
@@ -92,7 +113,7 @@ function RecipeDetail() {
       }
     };
     fetchRecipe();
-  }, [id]);
+  }, [id, user]);
 
   const renderSpiciness = (level) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -212,7 +233,7 @@ function RecipeDetail() {
 
           <div className="absolute bottom-6 left-6 right-6">
             <div className="flex items-center gap-3 mb-2">
-              <span className="px-3 py-1 bg-olive text-white text-sm rounded-full">
+              <span className="px-3 py-1 bg-primary text-white text-sm rounded-full">
                 {recipe.category?.name}
               </span>
             </div>
@@ -342,7 +363,7 @@ function RecipeDetail() {
               className={`px-6 py-2 rounded-lg font-medium transition-all ${
                 isFollowing
                   ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  : "bg-olive text-white hover:bg-olive/90"
+                  : "bg-primary text-white hover:bg-primary/90"
               }`}
             >
               {isFollowing ? "Following" : "Follow"}
@@ -362,14 +383,14 @@ function RecipeDetail() {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Share your thoughts or ask a question..."
-              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-olive resize-none"
+              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               rows="3"
             />
             <div className="flex justify-end mt-2">
               <button
                 onClick={handlePostComment}
                 disabled={!newComment.trim()}
-                className="px-6 py-2 bg-olive text-white rounded-lg hover:bg-olive/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
               >
                 Post Comment
               </button>
