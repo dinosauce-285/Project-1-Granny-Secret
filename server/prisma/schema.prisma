@@ -27,7 +27,14 @@ model User {
   fullName  String?
   avatarUrl String?
   role      Role     @default(USER)
-  recipes   Recipe[] // Một user có nhiều công thức 
+  recipes   Recipe[] 
+  
+  // Social features
+  followers    Follow[] @relation("UserFollowers") 
+  following    Follow[] @relation("UserFollowing") 
+  comments     Comment[] 
+  bookmarks    Bookmark[] 
+  
   createdAt DateTime @default(now())
 }
 
@@ -51,6 +58,10 @@ model Recipe {
 
   ingredients Ingredient[] // Quan hệ 1-nhiều với nguyên liệu
   steps       Step[] // Quan hệ 1-nhiều với các bước
+  
+  // Social features
+  comments    Comment[] // Comments on this recipe
+  bookmarks   Bookmark[] // Bookmarks on this recipe
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -78,3 +89,52 @@ model Category {
   name    String   @unique
   recipes Recipe[]
 }
+
+// Social Media Features
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followerId  Int      // User đang follow
+  followingId Int      // User được follow
+  
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  
+  @@unique([followerId, followingId]) // Một user chỉ follow một user khác một lần
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  recipeId  Int
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([recipeId])
+  @@index([userId])
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  recipeId  Int
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, recipeId]) // Một user chỉ bookmark một recipe một lần
+  @@index([userId])
+  @@index([recipeId])
+}
+
