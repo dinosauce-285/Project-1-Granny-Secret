@@ -8,7 +8,7 @@ function CreateRecipe() {
   const handleCreate = async (formData) => {
     try {
       await api.post("/recipes/create", formData);
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Error creating recipe:", error);
     }

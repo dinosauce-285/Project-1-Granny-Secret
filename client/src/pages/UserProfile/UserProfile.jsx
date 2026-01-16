@@ -81,7 +81,7 @@ function UserProfile() {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <p className="text-gray-500 mb-4">User not found</p>
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/")}
           className="px-4 py-2 bg-olive text-white rounded-lg hover:bg-olive/90"
         >
           Back to Dashboard

@@ -30,7 +30,7 @@ function RecipeDetail() {
   const handleConfirmDelete = async () => {
     try {
       await api.delete(`/recipes/${id}`);
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Error deleting recipe:", error);
     }

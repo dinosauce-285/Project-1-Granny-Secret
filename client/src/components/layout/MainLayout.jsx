@@ -28,9 +28,9 @@ function MainLayout() {
 
   const handleSearch = (query) => {
     if (query.trim()) {
-      navigate(`/dashboard?search=${encodeURIComponent(query)}`);
+      navigate(`/?search=${encodeURIComponent(query)}`);
     } else {
-      navigate("/dashboard");
+      navigate("/");
     }
   };
 
@@ -39,7 +39,7 @@ function MainLayout() {
       {/* Top Header */}
       <div className="header w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 min-h-[8vh] flex flex-row items-center gap-4 sm:gap-6 flex-shrink-0 border-b border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm">
         {/* Logo */}
-        <Link to="/dashboard" className="flex-shrink-0">
+        <Link to="/" className="flex-shrink-0">
           <img
             src="/logo.webp"
             alt="Grany Secret"

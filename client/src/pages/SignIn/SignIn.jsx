@@ -62,7 +62,7 @@ function SignIn() {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       const message =
         error.response?.data?.message || "Login failed. Please try again.";

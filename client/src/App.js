@@ -12,23 +12,26 @@ import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import Settings from "./pages/Settings/Settings";
 import UserProfile from "./pages/UserProfile/UserProfile";
 import MainLayout from "./components/layout/MainLayout";
+import ProtectedRoute from "./components/route/ProtectedRoute";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/landing-page" element={<LandingPage />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile-setup" element={<ProfileSetup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/create" element={<CreateRecipe />} />
-          <Route path="/edit/:id" element={<EditRecipe />} />
-          <Route path="/recipe/:id" element={<RecipeDetail />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/profile/:id" element={<UserProfile />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/create" element={<CreateRecipe />} />
+            <Route path="/edit/:id" element={<EditRecipe />} />
+            <Route path="/recipe/:id" element={<RecipeDetail />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/profile/:id" element={<UserProfile />} />
+          </Route>
         </Route>
       </Routes>
     </Router>
