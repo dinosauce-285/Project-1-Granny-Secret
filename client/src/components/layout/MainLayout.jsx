@@ -37,7 +37,7 @@ function MainLayout() {
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-page">
       {/* Top Header */}
-      <div className="header w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 min-h-[8vh] flex flex-row items-center gap-4 sm:gap-6 flex-shrink-0 border-b border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm">
+      <div className="header w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 min-h-[8vh] flex flex-row items-center gap-4 sm:gap-6 flex-shrink-0 border-b border-gray-100 bg-white/80 backdrop-blur-sm shadow-sm z-50 relative">
         {/* Logo */}
         <Link to="/" className="flex-shrink-0">
           <img
@@ -104,7 +104,7 @@ function MainLayout() {
             </div>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute z-50 right-0 top-12 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                 <div className="px-4 py-2 border-b border-gray-100">
                   <p className="text-sm font-semibold text-gray-800">
                     {user?.fullName || user?.username || "User"}

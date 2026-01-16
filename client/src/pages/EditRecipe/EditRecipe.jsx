@@ -14,7 +14,19 @@ function EditRecipe() {
     const fetchRecipe = async () => {
       try {
         const res = await api.get(`/recipes/${id}`);
-        setRecipe(res.data.data);
+        const recipeData = res.data.data;
+        setRecipe(recipeData);
+
+        const userStr = localStorage.getItem("user");
+        const currentUser = userStr ? JSON.parse(userStr) : null;
+
+        if (
+          !currentUser ||
+          (recipeData.userId && currentUser.id !== recipeData.userId)
+        ) {
+          navigate("/");
+        }
+
         setLoading(false);
       } catch (err) {
         setError(

@@ -18,6 +18,8 @@ function RecipeDetail() {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const defaultAvatar = "/avatars/sampleAvatar.jpg";
+  const userStr = localStorage.getItem("user");
+  const user = userStr ? JSON.parse(userStr) : null;
 
   const handleEditClick = () => {
     navigate(`/edit/${id}`);
@@ -176,12 +178,17 @@ function RecipeDetail() {
                 />
               </svg>
             </button>
-            <MoreOptions
-              onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
-              size="large"
-              className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110 text-white"
-            />
+            {user &&
+              recipe.user &&
+              (user.id === recipe.user.id ||
+                String(user.id) === String(recipe.user.id)) && (
+                <MoreOptions
+                  onEdit={handleEditClick}
+                  onDelete={handleDeleteClick}
+                  size="large"
+                  className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110 text-white"
+                />
+              )}
           </div>
           <button
             onClick={() => window.history.back()}

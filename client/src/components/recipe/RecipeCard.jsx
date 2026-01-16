@@ -29,7 +29,10 @@ function RecipeCard({
 
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
-  const isOwner = currentUser && user && currentUser.userId === user.id;
+  const isOwner =
+    currentUser &&
+    user &&
+    (currentUser.id === user.id || String(currentUser.id) === String(user.id));
 
   const getTimeAgo = (dateString) => {
     const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
