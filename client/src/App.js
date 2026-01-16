@@ -10,6 +10,7 @@ import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
 import EditRecipe from "./pages/EditRecipe/EditRecipe";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import Settings from "./pages/Settings/Settings";
+import UserProfile from "./pages/UserProfile/UserProfile";
 import MainLayout from "./components/layout/MainLayout";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/edit/:id" element={<EditRecipe />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/profile/:id" element={<UserProfile />} />
         </Route>
       </Routes>
     </Router>

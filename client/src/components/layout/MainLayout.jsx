@@ -114,6 +114,13 @@ function MainLayout() {
                   </p>
                 </div>
                 <Link
+                  to={`/profile/${user?.id}`}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  My Profile
+                </Link>
+                <Link
                   to="/settings"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   onClick={() => setIsDropdownOpen(false)}
