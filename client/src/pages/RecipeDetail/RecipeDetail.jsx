@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import Heart from "../../components/ui/Heart";
+import Bookmark from "../../components/ui/Bookmark";
 import MoreOptions from "../../components/ui/MoreOptions";
 import Dialog from "../../components/ui/Dialog";
 
@@ -12,6 +13,11 @@ function RecipeDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
   const handleEditClick = () => {
     navigate(`/edit/${id}`);
@@ -27,6 +33,46 @@ function RecipeDetail() {
       navigate("/dashboard");
     } catch (error) {
       console.error("Error deleting recipe:", error);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    try {
+      // TODO: Implement follow/unfollow API
+      // await api.post(`/users/${recipe.user.id}/follow`);
+      setIsFollowing(!isFollowing);
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+    }
+  };
+
+  const handleShare = () => {
+    setShowShareDialog(true);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Link copied to clipboard!");
+    setShowShareDialog(false);
+  };
+
+  const handlePostComment = async () => {
+    if (!newComment.trim()) return;
+    try {
+      // TODO: Implement comment API
+      // const res = await api.post(`/recipes/${id}/comments`, { content: newComment });
+      setComments([
+        ...comments,
+        {
+          id: Date.now(),
+          content: newComment,
+          user: { fullName: "You" },
+          createdAt: new Date(),
+        },
+      ]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Error posting comment:", error);
     }
   };
   useEffect(() => {
@@ -89,8 +135,8 @@ function RecipeDetail() {
         confirmStyle="danger"
         onConfirm={handleConfirmDelete}
       />
-      <div className="w-[95%] mx-auto pb-8">
-        <div className="relative max-h-[600px] rounded-2xl overflow-hidden shadow-2xl mb-8 flex items-center justify-center bg-black">
+      <div className="w-[95%] max-w-4xl mx-auto pb-8 pt-4">
+        <div className="relative max-h-[600px] rounded-2xl overflow-hidden shadow-2xl mb-8 flex items-center justify-center bg-black mt-4">
           <img
             src={recipe.imageUrl}
             alt={recipe.title}
@@ -105,6 +151,31 @@ function RecipeDetail() {
               size="large"
               className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110"
             />
+            <Bookmark
+              recipeId={recipe.id}
+              initialBookmark={recipe.bookmarked}
+              size="large"
+              className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110"
+            />
+            <button
+              onClick={handleShare}
+              className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110 transition-all"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="white"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                />
+              </svg>
+            </button>
             <MoreOptions
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
@@ -235,7 +306,133 @@ function RecipeDetail() {
             </div>
           </div>
         </div>
+
+        {/* Author Section */}
+        <div className="bg-white rounded-2xl p-6 shadow-md mt-8">
+          <h3 className="text-lg font-semibold mb-4">Recipe by</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
+                <img
+                  src={recipe.user?.avatarUrl || defaultAvatar}
+                  alt={recipe.user?.fullName || recipe.user?.username}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg">
+                  {recipe.user?.fullName ||
+                    recipe.user?.username ||
+                    "Anonymous"}
+                </h4>
+                <p className="text-gray-500 text-sm">
+                  @{recipe.user?.username || "user"}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleFollowToggle}
+              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+                isFollowing
+                  ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-olive text-white hover:bg-olive/90"
+              }`}
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </button>
+          </div>
+        </div>
+
+        {/* Comments Section */}
+        <div className="bg-white rounded-2xl p-6 shadow-md mt-8">
+          <h3 className="text-xl font-semibold mb-4">
+            Comments ({comments.length})
+          </h3>
+
+          {/* Add Comment */}
+          <div className="mb-6">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Share your thoughts or ask a question..."
+              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-olive resize-none"
+              rows="3"
+            />
+            <div className="flex justify-end mt-2">
+              <button
+                onClick={handlePostComment}
+                disabled={!newComment.trim()}
+                className="px-6 py-2 bg-olive text-white rounded-lg hover:bg-olive/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+              >
+                Post Comment
+              </button>
+            </div>
+          </div>
+
+          {/* Comments List */}
+          <div className="space-y-4">
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <div
+                  key={comment.id}
+                  className="flex gap-3 p-4 bg-gray-50 rounded-lg"
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
+                    <img
+                      src={comment.user?.avatarUrl || defaultAvatar}
+                      alt={comment.user?.fullName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-sm">
+                        {comment.user?.fullName || "User"}
+                      </span>
+                      <span className="text-gray-400 text-xs">
+                        {new Date(comment.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-gray-700">{comment.content}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <svg
+                  className="w-16 h-16 mx-auto text-gray-300 mb-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"
+                  />
+                </svg>
+                <p className="text-gray-500">No comments yet</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Be the first to share your thoughts!
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* Share Dialog */}
+      <Dialog
+        isOpen={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        title="Share Recipe"
+        message="Share this recipe with your friends!"
+        confirmText="Copy Link"
+        cancelText="Close"
+        onConfirm={handleCopyLink}
+      />
     </>
   );
 }

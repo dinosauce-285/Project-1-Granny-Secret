@@ -108,7 +108,6 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
         steps: steps.filter((s) => s.trim()),
       };
 
-   
       if (isEdit && !formDataRaw.image) {
         delete formDataRaw.image;
       }
@@ -165,8 +164,8 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
   };
 
   return (
-    <div>
-      <div className="w-[95%] shadow-2xl font-inter mx-auto bg-white rounded-2xl py-4 px-4 flex flex-col space-y-10 justify-between items-start border border-dashed border-gray-300">
+    <div className="pt-4">
+      <div className="w-[95%] max-w-4xl shadow-2xl font-inter mx-auto bg-white rounded-2xl py-4 px-4 flex flex-col space-y-10 justify-between items-start border border-dashed border-gray-300">
         <div className="title font-bold text-4xl">
           {isEdit ? "Edit Recipe" : "Create New Recipe"}
         </div>

@@ -38,6 +38,14 @@ export const recipeService = {
       where,
       include: {
         category: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

@@ -42,6 +42,8 @@ function FilterSection({ onFilterChange }) {
         onFilterChange({ type: "all" });
       } else if (newFilter === "favourites") {
         onFilterChange({ type: "favourite" });
+      } else if (newFilter === "my-recipes") {
+        onFilterChange({ type: "my-recipes" });
       } else {
         onFilterChange({ type: "category", categoryId: newFilter });
       }
@@ -73,6 +75,13 @@ function FilterSection({ onFilterChange }) {
             onClick={() => handleFilterClick("favourites")}
           >
             Favourites
+          </FilterButton>
+
+          <FilterButton
+            isActive={activeFilter === "my-recipes"}
+            onClick={() => handleFilterClick("my-recipes")}
+          >
+            My Recipes
           </FilterButton>
 
           {categories.map((cat) => (
