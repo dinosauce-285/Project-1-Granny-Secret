@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { LuCheck } from "react-icons/lu";
 import { useNavigate, useLocation } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -105,20 +106,7 @@ function ProfileSetup() {
                 />
                 {selectedAvatar === avatarId && (
                   <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={3}
-                      stroke="currentColor"
-                      className="w-8 h-8 text-primary"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
-                    </svg>
+                    <LuCheck className="w-8 h-8 text-primary" />
                   </div>
                 )}
               </button>

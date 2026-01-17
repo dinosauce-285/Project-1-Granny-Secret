@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { RiThumbUpLine, RiThumbUpFill } from "react-icons/ri";
 import api from "../../api/api";
 
 function LikeButton({
@@ -10,28 +11,31 @@ function LikeButton({
   onLike,
 }) {
   const [isLiked, setIsLiked] = useState(initialLiked);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    setIsLiked(initialLiked);
+  }, [initialLiked]);
 
   const handleToggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
+    const previousLiked = isLiked;
+    setIsLiked(!previousLiked);
+
+    if (!previousLiked) {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 500);
+    }
+
     try {
-      const newLikedState = !isLiked;
-      let res;
-      if (isLiked) {
-        res = await api.patch(`/recipes/${recipeId}/unfavourite`);
-      } else {
-        res = await api.patch(`/recipes/${recipeId}/favourite`);
-      }
-
+      const res = await api.patch(`/recipes/${recipeId}/${previousLiked ? "unfavourite" : "favourite"}`);
       const { isLiked: apiLiked, likeCount: apiCount } = res.data.data;
-
       setIsLiked(apiLiked);
-      if (onLike) {
-        onLike(apiLiked, apiCount);
-      }
+      if (onLike) onLike(apiLiked, apiCount);
     } catch (error) {
-      console.error("Error toggling like:", error);
+      setIsLiked(previousLiked);
     }
   };
 
@@ -42,27 +46,36 @@ function LikeButton({
     large: "w-7 h-7 sm:w-8 sm:h-8",
   };
 
+  const iconSize = sizeClasses[size] || sizeClasses.default;
+
   return (
     <button
       onClick={handleToggle}
-      className={`transition-all duration-300 ${className}`}
-      title={isLiked ? "Unlike" : "Like"}
+      className={`relative flex items-center justify-center active:scale-95 transition-transform duration-100 overflow-visible ${className}`}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill={isLiked ? "#2563EB" : "none"}
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke={isLiked ? "#2563EB" : "currentColor"}
-        className={sizeClasses[size] || sizeClasses.default}
+      <div
+        className={`relative origin-center ${
+          isAnimating 
+            ? "animate-[jump-pop_0.5s_cubic-bezier(0.175,0.885,0.32,1.275)_forwards]" 
+            : ""
+        }`}
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z"
-        />
-      </svg>
+        {isLiked ? (
+          <RiThumbUpFill className={`${iconSize} text-blue-600`} />
+        ) : (
+          <RiThumbUpLine className={`${iconSize} text-gray-500 hover:text-blue-500 transition-colors duration-200`} />
+        )}
+      </div>
+
       {children}
+
+      <style jsx>{`
+        @keyframes jump-pop {
+          0% { transform: scale(1) translateY(0) rotate(0deg); }
+          50% { transform: scale(1.4) translateY(-15px) rotate(-15deg);}
+          100% { transform: scale(1) translateY(0) rotate(0deg); }
+        }
+      `}</style>
     </button>
   );
 }

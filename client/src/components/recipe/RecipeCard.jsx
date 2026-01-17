@@ -1,5 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import {
+  LuClock,
+  LuUsers,
+  LuFlame,
+  LuMessageSquare,
+  LuShare2,
+} from "react-icons/lu";
 import Bookmark from "../ui/Bookmark";
 import LikeButton from "../ui/LikeButton";
 import MoreOptions from "../ui/MoreOptions";
@@ -171,59 +178,15 @@ function RecipeCard({
           {/* Recipe Info */}
           <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-600">
             <div className="flex items-center gap-1.5">
-              <svg
-                className="w-4 h-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
+              <LuClock className="w-4 h-4" />
               <span>{prepTime + cookTime}m</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <svg
-                className="w-4 h-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                />
-              </svg>
+              <LuUsers className="w-4 h-4" />
               <span>{servings} servings</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <svg
-                className="w-4 h-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"
-                />
-              </svg>
+              <LuFlame className="w-4 h-4" />
               <span>{difficulty}</span>
             </div>
           </div>
@@ -256,20 +219,7 @@ function RecipeCard({
                 onClick={handleCommentClick}
                 className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors group"
               >
-                <svg
-                  className="w-6 h-6 group-hover:scale-110 transition-transform"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
-                  />
-                </svg>
+                <LuMessageSquare className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 <span className="text-sm font-medium">Comment</span>
               </button>
 
@@ -278,20 +228,7 @@ function RecipeCard({
                 onClick={handleShareClick}
                 className="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors group"
               >
-                <svg
-                  className="w-6 h-6 group-hover:scale-110 transition-transform"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
-                  />
-                </svg>
+                <LuShare2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 <span className="text-sm font-medium">Share</span>
               </button>
             </div>

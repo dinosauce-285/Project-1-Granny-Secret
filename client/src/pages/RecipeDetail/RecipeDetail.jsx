@@ -1,5 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
+import {
+  LuArrowLeft,
+  LuMessageSquare,
+  LuShare2,
+  LuFlame,
+} from "react-icons/lu";
 import api from "../../api/api";
 import LikeButton from "../../components/ui/LikeButton";
 import Bookmark from "../../components/ui/Bookmark";
@@ -338,20 +344,9 @@ function RecipeDetail() {
   const renderSpiciness = (level) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i} className={i < level ? "text-red-500" : "text-gray-300"}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-          />
-        </svg>
+        <span key={i} className={i < level ? "text-red-500" : "text-gray-300"}>
+          <LuFlame className="w-6 h-6" />
+        </span>
       </span>
     ));
   };
@@ -385,20 +380,7 @@ function RecipeDetail() {
             onClick={() => window.history.back()}
             className="absolute top-4 left-4 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 text-white transition-all z-10"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-              />
-            </svg>
+            <LuArrowLeft className="w-6 h-6" />
           </button>
           <img
             src={recipe.imageUrl}
@@ -447,20 +429,7 @@ function RecipeDetail() {
               }
               className="flex items-center gap-2 hover:text-blue-600 transition-colors group text-gray-600 font-medium"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6 group-hover:scale-110 transition-transform"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
-                />
-              </svg>
+              <LuMessageSquare className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span className="text-sm">Comment</span>
             </button>
 
@@ -468,20 +437,7 @@ function RecipeDetail() {
               onClick={handleShare}
               className="flex items-center gap-2 hover:text-green-600 transition-colors group text-gray-600 font-medium"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6 group-hover:scale-110 transition-transform"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
-                />
-              </svg>
+              <LuShare2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span className="text-sm">Share</span>
             </button>
 
@@ -689,20 +645,7 @@ function RecipeDetail() {
               ))
             ) : (
               <div className="text-center py-8">
-                <svg
-                  className="w-16 h-16 mx-auto text-gray-300 mb-2"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"
-                  />
-                </svg>
+                <LuMessageSquare className="w-16 h-16 mx-auto text-gray-300 mb-2" />
                 <p className="text-gray-500">No comments yet</p>
                 <p className="text-gray-400 text-sm mt-1">
                   Be the first to share your thoughts!
