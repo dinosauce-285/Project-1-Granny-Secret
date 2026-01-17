@@ -17,14 +17,18 @@ function LikeButton({
 
     try {
       const newLikedState = !isLiked;
+      let res;
       if (isLiked) {
-        await api.patch(`/recipes/${recipeId}/unfavourite`);
+        res = await api.patch(`/recipes/${recipeId}/unfavourite`);
       } else {
-        await api.patch(`/recipes/${recipeId}/favourite`);
+        res = await api.patch(`/recipes/${recipeId}/favourite`);
       }
-      setIsLiked(newLikedState);
+
+      const { isLiked: apiLiked, likeCount: apiCount } = res.data.data;
+
+      setIsLiked(apiLiked);
       if (onLike) {
-        onLike(newLikedState);
+        onLike(apiLiked, apiCount);
       }
     } catch (error) {
       console.error("Error toggling like:", error);

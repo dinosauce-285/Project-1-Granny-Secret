@@ -8,7 +8,7 @@ export const recipeController = {
       favourite: req.query.favourite,
       search: req.query.search,
     };
-    const result = await recipeService.getRecipes(filters);
+    const result = await recipeService.getRecipes(filters, req.user?.userId);
     return res.ok(result);
   },
   async getMyRecipes(req, res) {
@@ -18,12 +18,15 @@ export const recipeController = {
       favourite: req.query.favourite,
       search: req.query.search,
     };
-    const result = await recipeService.getRecipes(filters);
+    const result = await recipeService.getRecipes(filters, req.user?.userId);
     return res.ok(result);
   },
   async getRecipeById(req, res) {
     const recipeId = Number(req.params.id);
-    const result = await recipeService.getRecipeById(recipeId);
+    const result = await recipeService.getRecipeById(
+      recipeId,
+      req.user?.userId,
+    );
     if (!result) return res.notFound("Recipe not found");
     return res.ok(result);
   },
@@ -74,11 +77,17 @@ export const recipeController = {
     return res.ok(result);
   },
   async favourite(req, res) {
-    const result = await recipeService.toggleFavourite(req.params.id, true);
+    const result = await recipeService.toggleLike(
+      req.user.userId,
+      req.params.id,
+    );
     return res.ok(result);
   },
   async unfavourite(req, res) {
-    const result = await recipeService.toggleFavourite(req.params.id, false);
+    const result = await recipeService.toggleLike(
+      req.user.userId,
+      req.params.id,
+    );
     return res.ok(result);
   },
   async delete(req, res) {
@@ -127,7 +136,7 @@ export const recipeController = {
       })),
     };
 
-    // Only add imageUrl if new image was uploaded
+
     if (imageUrl) {
       data.imageUrl = imageUrl;
     }

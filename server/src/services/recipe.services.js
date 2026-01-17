@@ -1,14 +1,22 @@
 import { prisma } from "../prisma.js";
 
 export const recipeService = {
-  async getRecipes(filters = {}) {
+  async getRecipes(filters = {}, currentUserId = null) {
     const where = {};
 
     if (filters.categoryId) {
       where.categoryId = Number(filters.categoryId);
     }
-    if (filters.favourite === true || filters.favourite === "true") {
-      where.favourite = true;
+
+    if (
+      (filters.favourite === true || filters.favourite === "true") &&
+      currentUserId
+    ) {
+      where.likes = {
+        some: {
+          userId: Number(currentUserId),
+        },
+      };
     }
     if (filters.userId) {
       where.userId = Number(filters.userId);
@@ -34,38 +42,81 @@ export const recipeService = {
       ];
     }
 
-    const recipes = await prisma.recipe.findMany({
-      where,
-      include: {
-        category: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-            fullName: true,
-            avatarUrl: true,
-          },
+    const include = {
+      category: true,
+      user: {
+        select: {
+          id: true,
+          username: true,
+          fullName: true,
+          avatarUrl: true,
         },
       },
+      _count: {
+        select: { likes: true },
+      },
+    };
+
+    if (currentUserId) {
+      include.likes = {
+        where: {
+          userId: Number(currentUserId),
+        },
+        take: 1,
+      };
+    }
+
+    const recipes = await prisma.recipe.findMany({
+      where,
+      include,
       orderBy: {
         createdAt: "desc",
       },
     });
-    return recipes;
+
+    return recipes.map((recipe) => {
+      const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
+      const { likes, ...rest } = recipe;
+      return {
+        ...rest,
+        isLiked: !!isLiked,
+        likeCount: recipe._count.likes,
+      };
+    });
   },
-  async getRecipeById(id) {
+  async getRecipeById(id, currentUserId = null) {
+    const include = {
+      ingredients: true,
+      steps: true,
+      category: true,
+      user: true,
+      _count: { select: { likes: true } },
+    };
+
+    if (currentUserId) {
+      include.likes = {
+        where: { userId: Number(currentUserId) },
+        take: 1,
+      };
+    }
+
     const recipe = await prisma.recipe.findUnique({
       where: {
         id: id,
       },
-      include: {
-        ingredients: true,
-        steps: true,
-        category: true,
-        user: true,
-      },
+      include,
     });
-    return recipe;
+
+    if (!recipe) return null;
+
+    const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
+    const { likes, ...rest } = recipe;
+
+    return {
+      ...rest,
+      isLiked: !!isLiked,
+      likeCount: recipe._count.likes,
+    };
   },
   async create(data) {
     if (
@@ -118,11 +169,36 @@ export const recipeService = {
 
     return recipe;
   },
-  async toggleFavourite(id, value) {
-    return await prisma.recipe.update({
-      where: { id: Number(id) },
-      data: { favourite: value },
+  async toggleLike(userId, recipeId) {
+    const existing = await prisma.like.findUnique({
+      where: {
+        userId_recipeId: {
+          userId: Number(userId),
+          recipeId: Number(recipeId),
+        },
+      },
     });
+
+    if (existing) {
+      await prisma.like.delete({
+        where: { id: existing.id },
+      });
+      const count = await prisma.like.count({
+        where: { recipeId: Number(recipeId) },
+      });
+      return { isLiked: false, likeCount: count };
+    } else {
+      await prisma.like.create({
+        data: {
+          userId: Number(userId),
+          recipeId: Number(recipeId),
+        },
+      });
+      const count = await prisma.like.count({
+        where: { recipeId: Number(recipeId) },
+      });
+      return { isLiked: true, likeCount: count };
+    }
   },
   async delete(id) {
     await prisma.ingredient.deleteMany({ where: { recipeId: Number(id) } });
@@ -147,12 +223,10 @@ export const recipeService = {
       categoryId: data.categoryId,
     };
 
-    // Only update imageUrl if provided
     if (data.imageUrl) {
       updatePayload.imageUrl = data.imageUrl;
     }
 
-    // Create new ingredients
     if (data.ingredients && Array.isArray(data.ingredients)) {
       updatePayload.ingredients = {
         create: data.ingredients.map((ing) => ({
@@ -163,7 +237,6 @@ export const recipeService = {
       };
     }
 
-    // Create new steps
     if (data.steps && Array.isArray(data.steps) && data.steps.length > 0) {
       updatePayload.steps = {
         create: data.steps.map((s) => ({

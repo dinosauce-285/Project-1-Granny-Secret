@@ -323,6 +323,7 @@ function RecipeDetail() {
       }
     };
     fetchRecipe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user?.id]);
 
   useEffect(() => {
@@ -422,11 +423,21 @@ function RecipeDetail() {
           <div className="flex items-center gap-6">
             <LikeButton
               recipeId={recipe.id}
-              initialLiked={recipe.favourite}
+              initialLiked={recipe.isLiked ?? recipe.favourite}
               size="medium"
               className="flex items-center gap-2 hover:text-blue-600 transition-colors group text-gray-600 font-medium"
-              children={<span className="text-sm">Like</span>}
-            />
+              onLike={(liked, count) => {
+                setRecipe((prev) => ({
+                  ...prev,
+                  isLiked: liked,
+                  likeCount: count,
+                }));
+              }}
+            >
+              <span className="text-sm">
+                {recipe.likeCount > 0 ? recipe.likeCount : "Like"}
+              </span>
+            </LikeButton>
 
             <button
               onClick={() =>
@@ -594,7 +605,7 @@ function RecipeDetail() {
           <h3 className="text-lg font-semibold mb-4">Recipe by</h3>
           <Link
             to={`/profile/${recipe.user?.id}`}
-            className="flex items-center justify-between hover:bg-gray-50"
+            className="flex items-center justify-between"
           >
             <div className="flex items-center gap-4  p-2 rounded-lg transition-colors group">
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 group-hover:border-primary transition-colors">

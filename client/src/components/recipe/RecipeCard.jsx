@@ -21,12 +21,13 @@ function RecipeCard({
   color,
   note,
   favourite,
+  isLiked,
+  likeCount: initialLikeCount,
   user,
 }) {
   const navigate = useNavigate();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [likeCount, setLikeCount] = useState(initialLikeCount || 0);
 
   const userStr = localStorage.getItem("user");
   const currentUser = userStr ? JSON.parse(userStr) : null;
@@ -85,13 +86,6 @@ function RecipeCard({
     }
   };
 
-  const handleLikeClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-  };
-
   const handleCommentClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -103,6 +97,8 @@ function RecipeCard({
     e.stopPropagation();
     // TODO: Implement share functionality
   };
+
+  const effectiveIsLiked = isLiked !== undefined ? isLiked : favourite;
 
   return (
     <>
@@ -245,12 +241,10 @@ function RecipeCard({
               {/* Like Button - Thumbs Up */}
               <LikeButton
                 recipeId={id}
-                initialLiked={favourite}
+                initialLiked={effectiveIsLiked}
                 size="medium"
                 className="flex items-center gap-2 hover:text-blue-600 transition-colors group text-gray-600"
-                onLike={(liked) =>
-                  setLikeCount(liked ? likeCount + 1 : likeCount - 1)
-                }
+                onLike={(liked, count) => setLikeCount(count)}
               >
                 <span className="text-sm font-medium text-gray-600">
                   {likeCount > 0 ? likeCount : "Like"}
