@@ -135,4 +135,45 @@ export const recipeController = {
     const result = await recipeService.update(req.params.id, data);
     return res.ok(result);
   },
+  async createComment(req, res) {
+    const { content, parentId } = req.body;
+    if (!content) return res.badRequest("Comment content is required");
+    const result = await recipeService.createComment(
+      req.user.userId,
+      req.params.id,
+      content,
+      parentId,
+    );
+    return res.ok(result);
+  },
+  async getComments(req, res) {
+    const result = await recipeService.getComments(req.params.id);
+    return res.ok(result);
+  },
+  async deleteComment(req, res) {
+    try {
+      await recipeService.deleteComment(req.params.commentId, req.user.userId);
+      return res.ok({ message: "Comment deleted successfully" });
+    } catch (error) {
+      if (error.message === "Unauthorized")
+        return res.forbidden("You can only delete your own comments");
+      return res.badRequest(error.message);
+    }
+  },
+  async updateComment(req, res) {
+    const { content } = req.body;
+    if (!content) return res.badRequest("Comment content is required");
+    try {
+      const result = await recipeService.updateComment(
+        req.params.commentId,
+        req.user.userId,
+        content,
+      );
+      return res.ok(result);
+    } catch (error) {
+      if (error.message === "Unauthorized")
+        return res.forbidden("You can only update your own comments");
+      return res.badRequest(error.message);
+    }
+  },
 };

@@ -1,14 +1,189 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import api from "../../api/api";
 import LikeButton from "../../components/ui/LikeButton";
 import Bookmark from "../../components/ui/Bookmark";
 import MoreOptions from "../../components/ui/MoreOptions";
 import Dialog from "../../components/ui/Dialog";
 
+const defaultAvatar = "/avatars/sampleAvatar.jpg";
+
+const buildCommentTree = (comments) => {
+  const commentMap = {};
+  const roots = [];
+
+  comments.forEach((c) => {
+    commentMap[c.id] = { ...c, replies: [] };
+  });
+
+  comments.forEach((c) => {
+    if (c.parentId && commentMap[c.parentId]) {
+      commentMap[c.parentId].replies.push(commentMap[c.id]);
+    } else {
+      roots.push(commentMap[c.id]);
+    }
+  });
+
+  roots.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  return roots;
+};
+
+const CommentItem = ({ comment, currentUser, onReply, onEdit, onDelete }) => {
+  const [isReplying, setIsReplying] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [replyContent, setReplyContent] = useState("");
+  const [editContent, setEditContent] = useState(comment.content);
+
+  const handleReplySubmit = () => {
+    if (!replyContent.trim()) return;
+    onReply(comment.id, replyContent);
+    setIsReplying(false);
+    setReplyContent("");
+  };
+
+  const handleEditSubmit = () => {
+    if (!editContent.trim()) return;
+    onEdit(comment.id, editContent);
+    setIsEditing(false);
+  };
+
+  const isOwner =
+    currentUser &&
+    (currentUser.id === comment.user.id ||
+      String(currentUser.id) === String(comment.user.id));
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-3 p-4 bg-gray-50 rounded-lg group">
+        <div className="flex-shrink-0">
+          <img
+            src={comment.user?.avatarUrl || defaultAvatar}
+            alt={comment.user?.fullName || comment.user?.username}
+            className="w-10 h-10 rounded-full object-cover border border-gray-200"
+          />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-900">
+                {comment.user?.fullName || comment.user?.username}
+              </span>
+              <span className="text-xs text-gray-500">
+                {new Date(comment.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            {isOwner && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="text-xs text-gray-500 hover:text-blue-600"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => onDelete(comment.id)}
+                  className="text-xs text-gray-500 hover:text-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+
+          {isEditing ? (
+            <div className="mt-2">
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
+                rows="2"
+              />
+              <div className="flex justify-end gap-2 mt-1">
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="text-xs text-gray-500 px-2 py-1"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleEditSubmit}
+                  className="text-xs bg-primary text-white px-3 py-1 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-700">{comment.content}</p>
+          )}
+
+          <div className="mt-2">
+            <button
+              onClick={() => setIsReplying(!isReplying)}
+              className="text-xs font-medium text-gray-500 hover:text-olive"
+            >
+              Reply
+            </button>
+          </div>
+
+          {isReplying && (
+            <div className="mt-2 pl-2 border-l-2 border-gray-200">
+              <textarea
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder="Write a reply..."
+                className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
+                rows="2"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleReplySubmit();
+                  }
+                }}
+              />
+              <div className="flex justify-end gap-2 mt-1">
+                <button
+                  onClick={() => setIsReplying(false)}
+                  className="text-xs text-gray-500 px-2 py-1"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleReplySubmit}
+                  className="text-xs bg-primary text-white px-3 py-1 rounded"
+                >
+                  Reply
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Nested Replies */}
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="pl-12 space-y-4 mt-1">
+          {comment.replies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              currentUser={currentUser}
+              onReply={onReply}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,9 +192,10 @@ function RecipeDetail() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const defaultAvatar = "/avatars/sampleAvatar.jpg";
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
+
+  const commentTree = useMemo(() => buildCommentTree(comments), [comments]);
 
   const handleEditClick = () => {
     navigate(`/edit/${id}`);
@@ -65,25 +241,51 @@ function RecipeDetail() {
     setShowShareDialog(false);
   };
 
-  const handlePostComment = async () => {
-    if (!newComment.trim()) return;
+  const handlePostComment = async (content = newComment, parentId = null) => {
+    if (!content.trim()) return;
+    if (!user) {
+      navigate("/signin");
+      return;
+    }
     try {
-      // TODO: Implement comment API
-      // const res = await api.post(`/recipes/${id}/comments`, { content: newComment });
-      setComments([
-        ...comments,
-        {
-          id: Date.now(),
-          content: newComment,
-          user: { fullName: "You" },
-          createdAt: new Date(),
-        },
-      ]);
-      setNewComment("");
+      const res = await api.post(`/recipes/${id}/comments`, {
+        content: content,
+        parentId: parentId,
+      });
+
+      setComments((prev) => [res.data.data, ...prev]);
+      if (!parentId) setNewComment("");
     } catch (error) {
       console.error("Error posting comment:", error);
     }
   };
+
+  const handleReply = (commentId, content) => {
+    handlePostComment(content, commentId);
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Delete this comment?")) return;
+    try {
+      await api.delete(`/recipes/comments/${commentId}`);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+    } catch (error) {
+      console.error("Error deleting comment", error);
+      alert(error.response?.data?.message || "Error deleting comment");
+    }
+  };
+
+  const handleUpdateComment = async (commentId, content) => {
+    try {
+      setComments((prev) =>
+        prev.map((c) => (c.id === commentId ? { ...c, content } : c)),
+      );
+      await api.put(`/recipes/comments/${commentId}`, { content });
+    } catch (error) {
+      console.error("Error updating comment", error);
+    }
+  };
+
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
@@ -91,7 +293,6 @@ function RecipeDetail() {
         const recipeData = res.data.data;
         setRecipe(recipeData);
 
-        // Fetch follow status if user is logged in and not the owner
         if (user && recipeData.userId && user.id !== recipeData.userId) {
           try {
             const followRes = await api.get(
@@ -101,6 +302,13 @@ function RecipeDetail() {
           } catch (followError) {
             console.error("Error checking follow status:", followError);
           }
+        }
+
+        try {
+          const commentsRes = await api.get(`/recipes/${id}/comments`);
+          setComments(commentsRes.data.data);
+        } catch (commentError) {
+          console.error("Error fetching comments:", commentError);
         }
 
         setLoading(false);
@@ -115,8 +323,17 @@ function RecipeDetail() {
       }
     };
     fetchRecipe();
-  }, [id, user]);
+  }, [id, user?.id]);
 
+  useEffect(() => {
+    if (location.state?.scrollToComments && !loading) {
+      setTimeout(() => {
+        document
+          .getElementById("comments-section")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [location.state, loading]);
   const renderSpiciness = (level) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i} className={i < level ? "text-red-500" : "text-gray-300"}>
@@ -425,13 +642,19 @@ function RecipeDetail() {
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handlePostComment();
+                }
+              }}
               placeholder="Share your thoughts or ask a question..."
               className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               rows="3"
             />
             <div className="flex justify-end mt-2">
               <button
-                onClick={handlePostComment}
+                onClick={() => handlePostComment()}
                 disabled={!newComment.trim()}
                 className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
               >
@@ -442,31 +665,16 @@ function RecipeDetail() {
 
           {/* Comments List */}
           <div className="space-y-4">
-            {comments.length > 0 ? (
-              comments.map((comment) => (
-                <div
+            {commentTree.length > 0 ? (
+              commentTree.map((comment) => (
+                <CommentItem
                   key={comment.id}
-                  className="flex gap-3 p-4 bg-gray-50 rounded-lg"
-                >
-                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 flex-shrink-0">
-                    <img
-                      src={comment.user?.avatarUrl || defaultAvatar}
-                      alt={comment.user?.fullName}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-sm">
-                        {comment.user?.fullName || "User"}
-                      </span>
-                      <span className="text-gray-400 text-xs">
-                        {new Date(comment.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-gray-700">{comment.content}</p>
-                  </div>
-                </div>
+                  comment={comment}
+                  currentUser={user}
+                  onReply={handleReply}
+                  onEdit={handleUpdateComment}
+                  onDelete={handleDeleteComment}
+                />
               ))
             ) : (
               <div className="text-center py-8">

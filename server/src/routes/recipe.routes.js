@@ -12,7 +12,7 @@ router.post(
   "/create",
   authMiddleware,
   upload.single("image"),
-  recipeController.create
+  recipeController.create,
 );
 router.patch("/:id/favourite", authMiddleware, recipeController.favourite);
 router.patch("/:id/unfavourite", authMiddleware, recipeController.unfavourite);
@@ -20,7 +20,19 @@ router.put(
   "/:id",
   authMiddleware,
   upload.single("image"),
-  recipeController.update
+  recipeController.update,
 );
 router.delete("/:id", authMiddleware, recipeController.delete);
+router.post("/:id/comments", authMiddleware, recipeController.createComment);
+router.get("/:id/comments", apiKeyAuth, recipeController.getComments);
+router.delete(
+  "/comments/:commentId",
+  authMiddleware,
+  recipeController.deleteComment,
+);
+router.put(
+  "/comments/:commentId",
+  authMiddleware,
+  recipeController.updateComment,
+);
 export default router;

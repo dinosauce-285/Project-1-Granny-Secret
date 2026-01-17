@@ -186,4 +186,81 @@ export const recipeService = {
 
     return recipe;
   },
+  async createComment(userId, recipeId, content, parentId = null) {
+    return await prisma.comment.create({
+      data: {
+        userId: Number(userId),
+        recipeId: Number(recipeId),
+        content,
+        parentId: parentId ? Number(parentId) : null,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    });
+  },
+  async getComments(recipeId) {
+    return await prisma.comment.findMany({
+      where: {
+        recipeId: Number(recipeId),
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
+        replies: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                fullName: true,
+                avatarUrl: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  },
+  async deleteComment(commentId, userId) {
+    const comment = await prisma.comment.findUnique({
+      where: { id: Number(commentId) },
+    });
+    if (!comment) throw new Error("Comment not found");
+    if (comment.userId !== Number(userId)) {
+      throw new Error("Unauthorized");
+    }
+    return await prisma.comment.delete({
+      where: { id: Number(commentId) },
+    });
+  },
+  async updateComment(commentId, userId, content) {
+    const comment = await prisma.comment.findUnique({
+      where: { id: Number(commentId) },
+    });
+    if (!comment) throw new Error("Comment not found");
+    if (comment.userId !== Number(userId)) {
+      throw new Error("Unauthorized");
+    }
+    return await prisma.comment.update({
+      where: { id: Number(commentId) },
+      data: { content },
+    });
+  },
 };

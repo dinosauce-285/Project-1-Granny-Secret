@@ -95,7 +95,7 @@ function RecipeCard({
   const handleCommentClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO: Implement comment functionality
+    navigate(`/recipe/${id}`, { state: { scrollToComments: true } });
   };
 
   const handleShareClick = (e) => {
