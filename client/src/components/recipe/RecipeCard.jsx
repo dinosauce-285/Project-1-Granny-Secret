@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Bookmark from "../ui/Bookmark";
 import MoreOptions from "../ui/MoreOptions";
 import Dialog from "../ui/Dialog";
@@ -119,8 +119,11 @@ function RecipeCard({
       <div className="w-full bg-white rounded-2xl overflow-hidden shadow-md my-4 sm:my-6 hover:shadow-xl transition-all duration-300">
         {/* Header - User Info */}
         <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200">
+          <Link
+            to={`/profile/${user?.id}`}
+            className="flex items-center gap-3 rounded-lg p-1 -ml-1 transition-colors group/user"
+          >
+            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 group-hover/user:border-primary transition-colors">
               <img
                 src={user?.avatarUrl || defaultAvatar}
                 alt={user?.fullName || user?.username || "User"}
@@ -128,14 +131,14 @@ function RecipeCard({
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold text-gray-900 text-sm">
+              <span className="font-semibold text-gray-900 text-sm group-hover/user:text-primary transition-colors">
                 {user?.fullName || user?.username || "Anonymous"}
               </span>
               <span className="text-xs text-gray-500">
                 {getTimeAgo(createdAt)}
               </span>
             </div>
-          </div>
+          </Link>
           {isOwner && (
             <MoreOptions
               onEdit={handleEditClick}

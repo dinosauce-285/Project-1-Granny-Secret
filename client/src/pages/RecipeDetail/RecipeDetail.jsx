@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../../api/api";
 import Heart from "../../components/ui/Heart";
 import Bookmark from "../../components/ui/Bookmark";
@@ -95,7 +95,7 @@ function RecipeDetail() {
         if (user && recipeData.userId && user.id !== recipeData.userId) {
           try {
             const followRes = await api.get(
-              `/users/${recipeData.userId}/is-following`
+              `/users/${recipeData.userId}/is-following`,
             );
             setIsFollowing(followRes.data.data.isFollowing);
           } catch (followError) {
@@ -106,7 +106,9 @@ function RecipeDetail() {
         setLoading(false);
       } catch (err) {
         setError(
-          err.response?.data?.message || err.message || "Error fetching recipes"
+          err.response?.data?.message ||
+            err.message ||
+            "Error fetching recipes",
         );
       } finally {
         setLoading(false);
@@ -338,9 +340,12 @@ function RecipeDetail() {
         {/* Author Section */}
         <div className="bg-white rounded-2xl p-6 shadow-md mt-8">
           <h3 className="text-lg font-semibold mb-4">Recipe by</h3>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
+          <Link
+            to={`/profile/${recipe.user?.id}`}
+            className="flex items-center justify-between hover:bg-gray-50"
+          >
+            <div className="flex items-center gap-4  p-2 rounded-lg transition-colors group">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 group-hover:border-primary transition-colors">
                 <img
                   src={recipe.user?.avatarUrl || defaultAvatar}
                   alt={recipe.user?.fullName || recipe.user?.username}
@@ -348,7 +353,7 @@ function RecipeDetail() {
                 />
               </div>
               <div>
-                <h4 className="font-semibold text-lg">
+                <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">
                   {recipe.user?.fullName ||
                     recipe.user?.username ||
                     "Anonymous"}
@@ -368,7 +373,7 @@ function RecipeDetail() {
             >
               {isFollowing ? "Following" : "Follow"}
             </button>
-          </div>
+          </Link>
         </div>
 
         {/* Comments Section */}
