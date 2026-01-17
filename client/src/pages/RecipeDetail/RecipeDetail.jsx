@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../../api/api";
-import Heart from "../../components/ui/Heart";
+import LikeButton from "../../components/ui/LikeButton";
 import Bookmark from "../../components/ui/Bookmark";
 import MoreOptions from "../../components/ui/MoreOptions";
 import Dialog from "../../components/ui/Dialog";
@@ -161,68 +161,18 @@ function RecipeDetail() {
         onConfirm={handleConfirmDelete}
       />
       <div className="w-[95%] max-w-4xl mx-auto pb-8 pt-4">
-        <div className="relative max-h-[600px] rounded-2xl overflow-hidden shadow-2xl mb-8 flex items-center justify-center bg-black mt-4">
-          <img
-            src={recipe.imageUrl}
-            alt={recipe.title}
-            className="w-full h-auto object-cover mx-auto"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            <Heart
-              recipeId={recipe.id}
-              initialFavourite={recipe.favourite}
-              size="large"
-              className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110"
-            />
-            <Bookmark
-              recipeId={recipe.id}
-              initialBookmark={recipe.bookmarked}
-              size="large"
-              className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110"
-            />
-            <button
-              onClick={handleShare}
-              className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110 transition-all"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="white"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
-                />
-              </svg>
-            </button>
-            {user &&
-              recipe.user &&
-              (user.id === recipe.user.id ||
-                String(user.id) === String(recipe.user.id)) && (
-                <MoreOptions
-                  onEdit={handleEditClick}
-                  onDelete={handleDeleteClick}
-                  size="large"
-                  className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 hover:scale-110 text-white"
-                />
-              )}
-          </div>
+        {/* Toolbar */}
+        <div className="relative max-h-[600px] rounded-tr-2xl rounded-tl-2xl overflow-hidden shadow-md flex items-center justify-center bg-black">
           <button
             onClick={() => window.history.back()}
-            className="absolute top-4 left-4 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/40 transition-all"
+            className="absolute top-4 left-4 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 text-white transition-all z-10"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="2"
-              stroke="white"
+              stroke="currentColor"
               className="w-6 h-6"
             >
               <path
@@ -232,6 +182,12 @@ function RecipeDetail() {
               />
             </svg>
           </button>
+          <img
+            src={recipe.imageUrl}
+            alt={recipe.title}
+            className="w-full h-auto object-cover mx-auto"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
           <div className="absolute bottom-6 left-6 right-6">
             <div className="flex items-center gap-3 mb-2">
@@ -242,6 +198,85 @@ function RecipeDetail() {
             <h1 className="text-4xl md:text-5xl font-bold text-white font-inter">
               {recipe.title}
             </h1>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-br-2xl rounded-bl-2xl p-4 shadow-md mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <LikeButton
+              recipeId={recipe.id}
+              initialLiked={recipe.favourite}
+              size="medium"
+              className="flex items-center gap-2 hover:text-blue-600 transition-colors group text-gray-600 font-medium"
+              children={<span className="text-sm">Like</span>}
+            />
+
+            <button
+              onClick={() =>
+                document
+                  .getElementById("comments-section")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="flex items-center gap-2 hover:text-blue-600 transition-colors group text-gray-600 font-medium"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 group-hover:scale-110 transition-transform"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
+                />
+              </svg>
+              <span className="text-sm">Comment</span>
+            </button>
+
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-2 hover:text-green-600 transition-colors group text-gray-600 font-medium"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 group-hover:scale-110 transition-transform"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                />
+              </svg>
+              <span className="text-sm">Share</span>
+            </button>
+
+            {user &&
+              recipe.user &&
+              (user.id === recipe.user.id ||
+                String(user.id) === String(recipe.user.id)) && (
+                <MoreOptions
+                  onEdit={handleEditClick}
+                  onDelete={handleDeleteClick}
+                  size="medium"
+                  className="flex items-center gap-2 hover:text-gray-900 transition-colors group text-gray-600"
+                />
+              )}
+          </div>
+
+          <div className="border-l pl-6 border-gray-200">
+            <Bookmark
+              recipeId={recipe.id}
+              initialBookmark={recipe.bookmarked}
+              size="medium"
+              className="hover:scale-110 transition-transform text-gray-600"
+            />
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
@@ -377,7 +412,10 @@ function RecipeDetail() {
         </div>
 
         {/* Comments Section */}
-        <div className="bg-white rounded-2xl p-6 shadow-md mt-8">
+        <div
+          id="comments-section"
+          className="bg-white rounded-2xl p-6 shadow-md mt-8"
+        >
           <h3 className="text-xl font-semibold mb-4">
             Comments ({comments.length})
           </h3>
