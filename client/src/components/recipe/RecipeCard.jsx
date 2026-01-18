@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   LuClock,
@@ -44,6 +44,39 @@ function RecipeCard({
     currentUser &&
     user &&
     (currentUser.id === user.id || String(currentUser.id) === String(user.id));
+
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    const checkFollowStatus = async () => {
+      if (currentUser && user && !isOwner) {
+        try {
+          const res = await api.get(`/users/${user.id}/is-following`);
+          setIsFollowing(res.data.data.isFollowing);
+        } catch (error) {
+          console.error("Error checking follow status:", error);
+        }
+      }
+    };
+    checkFollowStatus();
+  }, [user?.id, currentUser?.id, isOwner]);
+
+  const handleFollowToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!currentUser) {
+      navigate("/signin");
+      return;
+    }
+
+    try {
+      const res = await api.post(`/users/${user.id}/follow`);
+      setIsFollowing(res.data.data.isFollowing);
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+    }
+  };
 
   const getTimeAgo = (dateString) => {
     const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
@@ -159,11 +192,24 @@ function RecipeCard({
               </span>
             </div>
           </Link>
-          {isOwner && (
+          {isOwner ? (
             <MoreOptions
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />
+          ) : (
+            user && (
+              <button
+                onClick={handleFollowToggle}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all border ${
+                  isFollowing
+                    ? "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
+                    : "bg-white text-olive border-olive hover:bg-olive hover:text-white"
+                }`}
+              >
+                {isFollowing ? "Following" : "Follow"}
+              </button>
+            )
           )}
         </div>
 

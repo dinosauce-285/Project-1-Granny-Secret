@@ -588,11 +588,11 @@ function RecipeDetail() {
         {/* Author Section */}
         <div className="bg-white rounded-2xl p-6 shadow-md mt-8">
           <h3 className="text-lg font-semibold mb-4">Recipe by</h3>
-          <Link
-            to={`/profile/${recipe.user?.id}`}
+          <div
+            
             className="flex items-center justify-between"
           >
-            <div className="flex items-center gap-4  p-2 rounded-lg transition-colors group">
+            <Link to={`/profile/${recipe.user?.id}`} className="flex items-center gap-4  p-2 rounded-lg transition-colors group">
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 group-hover:border-primary transition-colors">
                 <img
                   src={recipe.user?.avatarUrl || defaultAvatar}
@@ -610,7 +610,7 @@ function RecipeDetail() {
                   @{recipe.user?.username || "user"}
                 </p>
               </div>
-            </div>
+            </Link>
             <button
               onClick={handleFollowToggle}
               className={`px-6 py-2 rounded-lg font-medium transition-all ${
@@ -621,7 +621,7 @@ function RecipeDetail() {
             >
               {isFollowing ? "Following" : "Follow"}
             </button>
-          </Link>
+          </div>
         </div>
 
         {/* Comments Section */}

@@ -33,16 +33,18 @@ function UserProfile() {
         setUser(userRes.data.data);
         setStats(userRes.data.data.stats);
 
-        // Fetch user recipes
         const recipesRes = await api.get(`/users/${id}/recipes`);
         console.log("User Recipes Response:", recipesRes.data.data);
         setRecipes(recipesRes.data.data);
 
-        // TODO: Check follow status if not own profile
-        // if (!isOwnProfile) {
-        //   const followStatus = await api.get(`/users/${id}/follow-status`);
-        //   setIsFollowing(followStatus.data.data.isFollowing);
-        // }
+        if (!isOwnProfile && currentUser) {
+          try {
+            const followStatus = await api.get(`/users/${id}/is-following`);
+            setIsFollowing(followStatus.data.data.isFollowing);
+          } catch (error) {
+            console.error("Error checking follow status:", error);
+          }
+        }
       } catch (error) {
         console.error("Error fetching user profile:", error);
       } finally {
@@ -54,15 +56,20 @@ function UserProfile() {
   }, [id]);
 
   const handleFollowToggle = async () => {
+    if (!currentUser) {
+      navigate("/signin");
+      return;
+    }
     try {
-      // TODO: Implement follow/unfollow API
-      // await api.post(`/users/${id}/follow`);
-      setIsFollowing(!isFollowing);
+      const res = await api.post(`/users/${id}/follow`);
+      const newIsFollowing = res.data.data.isFollowing;
+
+      setIsFollowing(newIsFollowing);
       setStats((prev) => ({
         ...prev,
-        followersCount: isFollowing
-          ? prev.followersCount - 1
-          : prev.followersCount + 1,
+        followersCount: newIsFollowing
+          ? prev.followersCount + 1
+          : prev.followersCount - 1,
       }));
     } catch (error) {
       console.error("Error toggling follow:", error);
