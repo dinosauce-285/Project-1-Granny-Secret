@@ -1,6 +1,8 @@
 import "dotenv/config";
 
 import { app } from "./src/app.js";
-app.listen(process.env.PORT, () =>
-  console.log(`Secure API running on port ${process.env.PORT}`)
-);
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
