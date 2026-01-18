@@ -10,6 +10,7 @@ import {
 import Bookmark from "../ui/Bookmark";
 import LikeButton from "../ui/LikeButton";
 import MoreOptions from "../ui/MoreOptions";
+import ShareDialog from "../ui/ShareDialog";
 import Dialog from "../ui/Dialog";
 import api from "../../api/api";
 
@@ -34,6 +35,7 @@ function RecipeCard({
 }) {
   const navigate = useNavigate();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [likeCount, setLikeCount] = useState(initialLikeCount || 0);
 
   const userStr = localStorage.getItem("user");
@@ -99,10 +101,24 @@ function RecipeCard({
     navigate(`/recipe/${id}`, { state: { scrollToComments: true } });
   };
 
-  const handleShareClick = (e) => {
+  const handleShareClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO: Implement share functionality
+
+    const shareUrl = `${window.location.origin}/recipe/${id}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: title,
+          text: `Check out this amazing recipe: ${title}`,
+          url: shareUrl,
+        });
+        return;
+      } catch (err) {
+        console.log("Error sharing:", err);
+      }
+    }
+    setShowShareDialog(true);
   };
 
   const effectiveIsLiked = isLiked !== undefined ? isLiked : favourite;
@@ -226,7 +242,7 @@ function RecipeCard({
               {/* Share Button */}
               <button
                 onClick={handleShareClick}
-                className="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors group"
+                className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors group"
               >
                 <LuShare2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 <span className="text-sm font-medium">Share</span>
@@ -245,6 +261,14 @@ function RecipeCard({
           </div>
         </div>
       </div>
+
+      {/* Share Dialog */}
+      <ShareDialog
+        isOpen={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        url={`${window.location.origin}/recipe/${id}`}
+        title={title}
+      />
     </>
   );
 }

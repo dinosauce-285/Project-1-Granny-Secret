@@ -11,6 +11,7 @@ import LikeButton from "../../components/ui/LikeButton";
 import Bookmark from "../../components/ui/Bookmark";
 import MoreOptions from "../../components/ui/MoreOptions";
 import Dialog from "../../components/ui/Dialog";
+import ShareDialog from "../../components/ui/ShareDialog";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
@@ -194,6 +195,8 @@ function RecipeDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showDeleteCommentDialog, setShowDeleteCommentDialog] = useState(false);
+  const [commentToDeleteId, setCommentToDeleteId] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [comments, setComments] = useState([]);
@@ -237,14 +240,20 @@ function RecipeDetail() {
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: recipe.title,
+          text: `Check out this amazing recipe: ${recipe.title}`,
+          url: window.location.href,
+        });
+        return;
+      } catch (err) {
+        console.log("Error sharing:", err);
+      }
+    }
     setShowShareDialog(true);
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert("Link copied to clipboard!");
-    setShowShareDialog(false);
   };
 
   const handlePostComment = async (content = newComment, parentId = null) => {
@@ -270,11 +279,18 @@ function RecipeDetail() {
     handlePostComment(content, commentId);
   };
 
-  const handleDeleteComment = async (commentId) => {
-    if (!window.confirm("Delete this comment?")) return;
+  const handleDeleteComment = (commentId) => {
+    setCommentToDeleteId(commentId);
+    setShowDeleteCommentDialog(true);
+  };
+
+  const handleConfirmDeleteComment = async () => {
+    if (!commentToDeleteId) return;
     try {
-      await api.delete(`/recipes/comments/${commentId}`);
-      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      await api.delete(`/recipes/comments/${commentToDeleteId}`);
+      setComments((prev) => prev.filter((c) => c.id !== commentToDeleteId));
+      setShowDeleteCommentDialog(false);
+      setCommentToDeleteId(null);
     } catch (error) {
       console.error("Error deleting comment", error);
       alert(error.response?.data?.message || "Error deleting comment");
@@ -373,6 +389,19 @@ function RecipeDetail() {
         confirmStyle="danger"
         onConfirm={handleConfirmDelete}
       />
+      <Dialog
+        isOpen={showDeleteCommentDialog}
+        onClose={() => {
+          setShowDeleteCommentDialog(false);
+          setCommentToDeleteId(null);
+        }}
+        title="Delete Comment"
+        message="Are you sure you want to delete this comment?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmStyle="danger"
+        onConfirm={handleConfirmDeleteComment}
+      />
       <div className="w-[95%] max-w-4xl mx-auto pb-8 pt-4">
         {/* Toolbar */}
         <div className="relative max-h-[600px] rounded-tr-2xl rounded-tl-2xl overflow-hidden shadow-md flex items-center justify-center bg-black">
@@ -435,7 +464,7 @@ function RecipeDetail() {
 
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 hover:text-green-600 transition-colors group text-gray-600 font-medium"
+              className="flex items-center gap-2 hover:text-blue-500 transition-colors group text-gray-600 font-medium"
             >
               <LuShare2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span className="text-sm">Share</span>
@@ -657,14 +686,12 @@ function RecipeDetail() {
       </div>
 
       {/* Share Dialog */}
-      <Dialog
+      {/* Share Dialog */}
+      <ShareDialog
         isOpen={showShareDialog}
         onClose={() => setShowShareDialog(false)}
-        title="Share Recipe"
-        message="Share this recipe with your friends!"
-        confirmText="Copy Link"
-        cancelText="Close"
-        onConfirm={handleCopyLink}
+        url={window.location.href}
+        title={recipe.title}
       />
     </>
   );
