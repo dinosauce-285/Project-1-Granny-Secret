@@ -1,8 +1,9 @@
 import { prisma } from "../prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { emailService } from "./email.services.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "granny-secret-key-2026";
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = "7d";
 
 export const authService = {
@@ -42,6 +43,8 @@ export const authService = {
       },
     });
 
+    emailService.sendWelcomeEmail(email, username);
+
     return user;
   },
 
@@ -62,7 +65,7 @@ export const authService = {
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN },
     );
 
     return {
