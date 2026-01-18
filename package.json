@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "cd client && npm install && npm run build",
-    "start": "cd server && npm install && npm start"
+    "build": "cd client && npm install && npm run build && cd ../server && npm install && npx prisma generate",
+    "start": "cd server && npm start"
   }
 }
