@@ -124,11 +124,7 @@ function Dashboard() {
               </p>
             </div>
           ) : (
-            recipes.map((r) => (
-              <Link to={`/recipe/${r.id}`} key={r.id}>
-                <RecipeCard {...r} />
-              </Link>
-            ))
+            recipes.map((r) => <RecipeCard key={r.id} {...r} />)
           )}
         </div>
       </div>

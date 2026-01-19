@@ -1,7 +1,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Input from "../../components/ui/Input";
 import api from "../../api/api";
@@ -13,6 +13,7 @@ const logoFacebook = "/auth/logoFacebook.png";
 
 function SignUp() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -55,7 +56,9 @@ function SignUp() {
         password: formData.password,
       });
 
-      navigate("/profile-setup", { state: { userId: response.data.data.id } });
+      navigate("/profile-setup", {
+        state: { userId: response.data.data.id, from: location.state?.from },
+      });
     } catch (error) {
       const message =
         error.response?.data?.message ||
@@ -196,6 +199,7 @@ function SignUp() {
           <Link
             className="text-blue-700 underline underline-offset-2"
             to="/signin"
+            state={{ from: location.state?.from }}
           >
             Sign In
           </Link>

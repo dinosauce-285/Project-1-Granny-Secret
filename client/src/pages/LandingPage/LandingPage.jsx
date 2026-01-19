@@ -1,7 +1,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Logo from "../../components/ui/Logo";
 import Tag from "../../components/ui/Tag";
@@ -11,6 +11,7 @@ const ShowPic3 = "/landingPage/showPic3.webp";
 const ShowPic4 = "/landingPage/showPic4.webp";
 
 function LandingPage() {
+  const location = useLocation();
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -30,12 +31,12 @@ function LandingPage() {
           </div>
         </Logo>
         <div className="accountButton flex flex-row justify-center items-center space-x-4">
-          <Link to="/signin">
+          <Link to="/signin" state={{ from: location.state?.from }}>
             <ButtonPrimary className="w-20 sm:w-24 md:w-28 px-3 py-2 text-sm sm:text-base transition-all duration-300 hover:scale-105 hover:shadow-lg border border-black hover:bg-black hover:text-white">
               Login
             </ButtonPrimary>
           </Link>
-          <Link to="/signup">
+          <Link to="/signup" state={{ from: location.state?.from }}>
             <ButtonPrimary className="w-20 sm:w-24 md:w-28 px-3 py-2 text-sm sm:text-base transition-all duration-300 hover:scale-105 hover:shadow-lg border border-black hover:bg-black hover:text-white">
               Sign up
             </ButtonPrimary>

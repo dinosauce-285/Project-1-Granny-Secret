@@ -1,7 +1,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Input from "../../components/ui/Input";
 import api from "../../api/api";
@@ -18,6 +18,7 @@ const LoginSchema = z.object({
 
 function SignIn() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -62,7 +63,8 @@ function SignIn() {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      navigate("/");
+      const from = location.state?.from?.pathname || "/";
+      navigate(from, { replace: true });
     } catch (error) {
       const message =
         error.response?.data?.message || "Login failed. Please try again.";

@@ -51,7 +51,7 @@ function ProfileSetup() {
         avatarUrl: selectedAvatar,
       });
 
-      navigate("/signin");
+      navigate("/signin", { state: { from: location.state?.from } });
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update profile");
     } finally {
@@ -60,7 +60,7 @@ function ProfileSetup() {
   };
 
   const handleSkip = () => {
-    navigate("/signin");
+    navigate("/signin", { state: { from: location.state?.from } });
   };
 
   return (

@@ -215,7 +215,10 @@ function RecipeCard({
         </div>
 
         {/* Recipe Image */}
-        <div className="relative w-full aspect-[16/10] bg-gray-100">
+        <Link
+          to={`/recipe/${id}`}
+          className="block relative w-full aspect-[16/10] bg-gray-100 group/image"
+        >
           <img
             className="w-full h-full object-cover"
             src={imageUrl}
@@ -224,19 +227,21 @@ function RecipeCard({
           {category && (
             <div
               style={{ backgroundColor: color || "#8B7355" }}
-              className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-white text-xs font-medium shadow-lg backdrop-blur-sm bg-opacity-90"
+              className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-white text-xs font-medium shadow-lg backdrop-blur-sm bg-opacity-90 z-10"
             >
               {category.name}
             </div>
           )}
-        </div>
+        </Link>
 
         {/* Content */}
         <div className="px-4 py-3">
           {/* Title */}
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 font-inter">
-            {title}
-          </h3>
+          <Link to={`/recipe/${id}`}>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 font-inter hover:text-primary transition-colors">
+              {title}
+            </h3>
+          </Link>
 
           {/* Recipe Info */}
           <div className="flex flex-wrap gap-4 mb-3 text-sm text-gray-600">

@@ -30,7 +30,9 @@ function LikeButton({
     }
 
     try {
-      const res = await api.patch(`/recipes/${recipeId}/${previousLiked ? "unfavourite" : "favourite"}`);
+      const res = await api.patch(
+        `/recipes/${recipeId}/${previousLiked ? "unfavourite" : "favourite"}`,
+      );
       const { isLiked: apiLiked, likeCount: apiCount } = res.data.data;
       setIsLiked(apiLiked);
       if (onLike) onLike(apiLiked, apiCount);
@@ -55,27 +57,21 @@ function LikeButton({
     >
       <div
         className={`relative origin-center ${
-          isAnimating 
-            ? "animate-[jump-pop_0.5s_cubic-bezier(0.175,0.885,0.32,1.275)_forwards]" 
+          isAnimating
+            ? "animate-[jump-pop_0.5s_cubic-bezier(0.175,0.885,0.32,1.275)_forwards]"
             : ""
         }`}
       >
         {isLiked ? (
           <RiThumbUpFill className={`${iconSize} text-blue-600`} />
         ) : (
-          <RiThumbUpLine className={`${iconSize} text-gray-500 hover:text-blue-500 transition-colors duration-200`} />
+          <RiThumbUpLine
+            className={`${iconSize} text-gray-500 hover:text-blue-500 transition-colors duration-200`}
+          />
         )}
       </div>
 
       {children}
-
-      <style jsx>{`
-        @keyframes jump-pop {
-          0% { transform: scale(1) translateY(0) rotate(0deg); }
-          50% { transform: scale(1.4) translateY(-15px) rotate(-15deg);}
-          100% { transform: scale(1) translateY(0) rotate(0deg); }
-        }
-      `}</style>
     </button>
   );
 }

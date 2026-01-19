@@ -64,3 +64,9 @@
 *::-webkit-scrollbar-thumb:hover {
   background: rgba(107, 114, 128, 0.7);
 }
+
+@keyframes jump-pop {
+  0% { transform: scale(1) translateY(0) rotate(0deg); }
+  50% { transform: scale(1.4) translateY(-15px) rotate(-15deg);}
+  100% { transform: scale(1) translateY(0) rotate(0deg); }
+}
