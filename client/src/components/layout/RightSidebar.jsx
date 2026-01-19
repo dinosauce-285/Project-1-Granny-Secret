@@ -1,25 +1,23 @@
 import { useState, useEffect } from "react";
 import { LuUsers, LuLightbulb } from "react-icons/lu";
 import api from "../../api/api";
+import LikedPostsWidget from "./LikedPostsWidget";
+import SavedPostsWidget from "./SavedPostsWidget";
 
 function RightSidebar() {
   const [followedUsers, setFollowedUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFollowedUsers = async () => {
       const userStr = localStorage.getItem("user");
       if (!userStr) {
-        setLoading(false);
         return;
       }
       try {
         const res = await api.get("/users/me/following");
         setFollowedUsers(res.data.data || []);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching followed users:", error);
-        setLoading(false);
       }
     };
     fetchFollowedUsers();
@@ -70,6 +68,9 @@ function RightSidebar() {
           )}
         </div>
       </div>
+
+      <LikedPostsWidget />
+      <SavedPostsWidget />
 
       {/* Cooking Tips */}
       <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-sm p-4 border border-amber-100">

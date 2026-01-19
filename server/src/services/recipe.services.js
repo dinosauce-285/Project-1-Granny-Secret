@@ -18,6 +18,14 @@ export const recipeService = {
         },
       };
     }
+
+    if ((filters.saved === true || filters.saved === "true") && currentUserId) {
+      where.bookmarks = {
+        some: {
+          userId: Number(currentUserId),
+        },
+      };
+    }
     if (filters.userId) {
       where.userId = Number(filters.userId);
     }

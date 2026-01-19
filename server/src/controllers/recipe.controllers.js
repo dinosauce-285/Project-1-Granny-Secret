@@ -6,6 +6,7 @@ export const recipeController = {
     const filters = {
       categoryId: req.query.category,
       favourite: req.query.favourite,
+      saved: req.query.saved,
       search: req.query.search,
     };
     const result = await recipeService.getRecipes(filters, req.user?.userId);
@@ -135,7 +136,6 @@ export const recipeController = {
         content: step,
       })),
     };
-
 
     if (imageUrl) {
       data.imageUrl = imageUrl;
