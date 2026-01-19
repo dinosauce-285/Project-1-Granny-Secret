@@ -61,12 +61,21 @@ export const recipeService = {
         },
       },
       _count: {
-        select: { likes: true },
+        select: {
+          likes: true,
+          bookmarks: true,
+        },
       },
     };
 
     if (currentUserId) {
       include.likes = {
+        where: {
+          userId: Number(currentUserId),
+        },
+        take: 1,
+      };
+      include.bookmarks = {
         where: {
           userId: Number(currentUserId),
         },
@@ -84,11 +93,15 @@ export const recipeService = {
 
     return recipes.map((recipe) => {
       const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
-      const { likes, ...rest } = recipe;
+      const isSaved =
+        currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
+      const { likes, bookmarks, ...rest } = recipe;
       return {
         ...rest,
         isLiked: !!isLiked,
+        isSaved: !!isSaved,
         likeCount: recipe._count.likes,
+        bookmarkCount: recipe._count.bookmarks,
       };
     });
   },
@@ -98,11 +111,20 @@ export const recipeService = {
       steps: true,
       category: true,
       user: true,
-      _count: { select: { likes: true } },
+      _count: {
+        select: {
+          likes: true,
+          bookmarks: true,
+        },
+      },
     };
 
     if (currentUserId) {
       include.likes = {
+        where: { userId: Number(currentUserId) },
+        take: 1,
+      };
+      include.bookmarks = {
         where: { userId: Number(currentUserId) },
         take: 1,
       };
@@ -118,12 +140,16 @@ export const recipeService = {
     if (!recipe) return null;
 
     const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
-    const { likes, ...rest } = recipe;
+    const isSaved =
+      currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
+    const { likes, bookmarks, ...rest } = recipe;
 
     return {
       ...rest,
       isLiked: !!isLiked,
+      isSaved: !!isSaved,
       likeCount: recipe._count.likes,
+      bookmarkCount: recipe._count.bookmarks,
     };
   },
   async create(data) {
@@ -206,6 +232,37 @@ export const recipeService = {
         where: { recipeId: Number(recipeId) },
       });
       return { isLiked: true, likeCount: count };
+    }
+  },
+  async toggleBookmark(userId, recipeId) {
+    const existing = await prisma.bookmark.findUnique({
+      where: {
+        userId_recipeId: {
+          userId: Number(userId),
+          recipeId: Number(recipeId),
+        },
+      },
+    });
+
+    if (existing) {
+      await prisma.bookmark.delete({
+        where: { id: existing.id },
+      });
+      const count = await prisma.bookmark.count({
+        where: { recipeId: Number(recipeId) },
+      });
+      return { isSaved: false, bookmarkCount: count };
+    } else {
+      await prisma.bookmark.create({
+        data: {
+          userId: Number(userId),
+          recipeId: Number(recipeId),
+        },
+      });
+      const count = await prisma.bookmark.count({
+        where: { recipeId: Number(recipeId) },
+      });
+      return { isSaved: true, bookmarkCount: count };
     }
   },
   async delete(id) {

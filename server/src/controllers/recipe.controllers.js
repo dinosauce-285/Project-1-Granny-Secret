@@ -91,6 +91,20 @@ export const recipeController = {
     );
     return res.ok(result);
   },
+  async bookmark(req, res) {
+    const result = await recipeService.toggleBookmark(
+      req.user.userId,
+      req.params.id,
+    );
+    return res.ok(result);
+  },
+  async unbookmark(req, res) {
+    const result = await recipeService.toggleBookmark(
+      req.user.userId,
+      req.params.id,
+    );
+    return res.ok(result);
+  },
   async delete(req, res) {
     await recipeService.delete(req.params.id);
     return res.ok({ message: "Recipe deleted successfully" });

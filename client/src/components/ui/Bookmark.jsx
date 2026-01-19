@@ -1,28 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LuBookmark } from "react-icons/lu";
 import api from "../../api/api";
 
 function Bookmark({
   recipeId,
-  initialFavourite,
+  initialSaved,
   size = "default",
   className = "",
 }) {
-  const [isFavourite, setIsFavourite] = useState(initialFavourite);
+  const [isSaved, setIsSaved] = useState(initialSaved);
+
+  useEffect(() => {
+    setIsSaved(initialSaved);
+  }, [initialSaved]);
 
   const handleToggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
+    const previousSaved = isSaved;
+    setIsSaved(!previousSaved);
+
     try {
-      if (isFavourite) {
-        await api.patch(`/recipes/${recipeId}/unfavourite`);
+      if (previousSaved) {
+        await api.patch(`/recipes/${recipeId}/unbookmark`);
       } else {
-        await api.patch(`/recipes/${recipeId}/favourite`);
+        await api.patch(`/recipes/${recipeId}/bookmark`);
       }
-      setIsFavourite(!isFavourite);
     } catch (error) {
-      console.error("Error toggling favourite:", error);
+      console.error("Error toggling save:", error);
+      setIsSaved(previousSaved);
     }
   };
 
@@ -37,14 +44,14 @@ function Bookmark({
     <button
       onClick={handleToggle}
       className={`transition-all duration-300 ${className}`}
-      title={isFavourite ? "Remove from saved" : "Save recipe"}
+      title={isSaved ? "Remove from saved" : "Save recipe"}
     >
       <LuBookmark
         className={`${sizeClasses[size] || sizeClasses.default} ${
-          isFavourite ? "text-amber-500" : "text-gray-600"
+          isSaved ? "text-amber-500" : "text-gray-600"
         }`}
-        fill={isFavourite ? "#F59E0B" : "none"}
-        stroke={isFavourite ? "#F59E0B" : "currentColor"}
+        fill={isSaved ? "#F59E0B" : "none"}
+        stroke={isSaved ? "#F59E0B" : "currentColor"}
       />
     </button>
   );

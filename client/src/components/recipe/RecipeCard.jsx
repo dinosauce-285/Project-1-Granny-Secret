@@ -30,6 +30,7 @@ function RecipeCard({
   note,
   favourite,
   isLiked,
+  isSaved,
   likeCount: initialLikeCount,
   user,
 }) {
@@ -59,7 +60,7 @@ function RecipeCard({
       }
     };
     checkFollowStatus();
-  }, [user?.id, currentUser?.id, isOwner]);
+  }, [user?.id, currentUser?.id, isOwner, user, currentUser]);
 
   const handleFollowToggle = async (e) => {
     e.preventDefault();
@@ -301,7 +302,7 @@ function RecipeCard({
                 size="medium"
                 className="hover:scale-110 transition-transform"
                 recipeId={id}
-                initialFavourite={favourite}
+                initialSaved={isSaved}
               />
             </div>
           </div>

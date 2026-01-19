@@ -486,7 +486,7 @@ function RecipeDetail() {
           <div className="border-l pl-6 border-gray-200">
             <Bookmark
               recipeId={recipe.id}
-              initialBookmark={recipe.bookmarked}
+              initialSaved={recipe.isSaved}
               size="medium"
               className="hover:scale-110 transition-transform text-gray-600"
             />
@@ -588,11 +588,11 @@ function RecipeDetail() {
         {/* Author Section */}
         <div className="bg-white rounded-2xl p-6 shadow-md mt-8">
           <h3 className="text-lg font-semibold mb-4">Recipe by</h3>
-          <div
-            
-            className="flex items-center justify-between"
-          >
-            <Link to={`/profile/${recipe.user?.id}`} className="flex items-center gap-4  p-2 rounded-lg transition-colors group">
+          <div className="flex items-center justify-between">
+            <Link
+              to={`/profile/${recipe.user?.id}`}
+              className="flex items-center gap-4  p-2 rounded-lg transition-colors group"
+            >
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200 group-hover:border-primary transition-colors">
                 <img
                   src={recipe.user?.avatarUrl || defaultAvatar}

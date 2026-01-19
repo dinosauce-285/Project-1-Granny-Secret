@@ -16,6 +16,8 @@ router.post(
 );
 router.patch("/:id/favourite", authMiddleware, recipeController.favourite);
 router.patch("/:id/unfavourite", authMiddleware, recipeController.unfavourite);
+router.patch("/:id/bookmark", authMiddleware, recipeController.bookmark);
+router.patch("/:id/unbookmark", authMiddleware, recipeController.unbookmark);
 router.put(
   "/:id",
   authMiddleware,
