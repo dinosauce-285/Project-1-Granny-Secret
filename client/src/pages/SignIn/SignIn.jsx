@@ -6,6 +6,7 @@ import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Input from "../../components/ui/Input";
 import api from "../../api/api";
 import { z } from "zod";
+import { supabase } from "../../supabaseClient";
 
 const accountPic = "/auth/accountPic.jpg";
 const logoGoogle = "/auth/logoGoogle.png";
@@ -31,7 +32,63 @@ function SignIn() {
       duration: 1000,
       once: true,
     });
+
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        handleBackendExchange(session.access_token);
+      }
+    };
+
+    checkSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        handleBackendExchange(session.access_token);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const handleBackendExchange = async (accessToken) => {
+    try {
+      setLoading(true);
+      const response = await api.post("/auth/google-login", {
+        token: accessToken,
+      });
+      const { user, token } = response.data.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      const from = location.state?.from?.pathname || "/";
+      navigate(from, { replace: true });
+    } catch (error) {
+      console.error("Google login error:", error);
+      setErrors({ general: "Failed to authenticate with Google." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/signin`,
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      setErrors({ general: error.message });
+    }
+  };
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -167,7 +224,10 @@ function SignIn() {
         </div>
 
         <div className="methods mt-6 sm:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <ButtonPrimary className=" flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">
+          <ButtonPrimary
+            onClick={handleGoogleLogin}
+            className=" flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none"
+          >
             <img
               className="h-5 w-5 object-contain mr-2"
               src={logoGoogle}

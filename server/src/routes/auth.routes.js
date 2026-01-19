@@ -7,5 +7,6 @@ const router = Router();
 router.post("/register", apiKeyAuth, authController.register);
 router.post("/login", apiKeyAuth, authController.login);
 router.put("/profile", apiKeyAuth, authController.updateProfile);
+router.post("/google-login", apiKeyAuth, authController.googleLogin);
 
 export default router;

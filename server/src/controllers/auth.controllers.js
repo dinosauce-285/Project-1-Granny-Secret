@@ -71,4 +71,24 @@ export const authController = {
       return res.error("Failed to update profile", [], 500);
     }
   },
+
+  async googleLogin(req, res) {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        return res.error("Token is required", [], 400);
+      }
+
+      const data = await authService.loginWithGoogle(token);
+
+      return res.ok(data, "Google login successful");
+    } catch (error) {
+      console.error("Google login error:", error);
+      if (error.message === "Invalid Google token") {
+        return res.error("Invalid Google token", [], 401);
+      }
+      return res.error(error.message || "Google login failed", [], 500);
+    }
+  },
 };

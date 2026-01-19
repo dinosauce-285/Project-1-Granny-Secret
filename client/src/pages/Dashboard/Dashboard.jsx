@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { LuInbox } from "react-icons/lu";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import RecipeCard from "../../components/recipe/RecipeCard";
 import LeftSidebar from "../../components/layout/LeftSidebar";
 import RightSidebar from "../../components/layout/RightSidebar";

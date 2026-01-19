@@ -2,6 +2,7 @@ import { prisma } from "../prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { emailService } from "./email.services.js";
+import { supabase } from "../config/supabase.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = "7d";
@@ -98,5 +99,81 @@ export const authService = {
       },
     });
     return user;
+  },
+
+  async loginWithGoogle(token) {
+    const {
+      data: { user: supabaseUser },
+      error,
+    } = await supabase.auth.getUser(token);
+
+    if (error || !supabaseUser) {
+      throw new Error("Invalid Google token");
+    }
+
+    const { email, user_metadata } = supabaseUser;
+    const { full_name, avatar_url, name } = user_metadata || {};
+
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [{ googleId: supabaseUser.id }, { email: email }],
+      },
+    });
+
+    if (user) {
+      if (!user.googleId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { googleId: supabaseUser.id },
+        });
+      }
+    } else {
+     let username =
+        name?.replace(/\s+/g, "").toLowerCase() || email.split("@")[0];
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      username = `${username}${randomSuffix}`;
+
+      const existingUsername = await prisma.user.findUnique({
+        where: { username },
+      });
+      if (existingUsername) {
+        username = `${username}${Math.floor(Date.now() / 1000)}`;
+      }
+
+      user = await prisma.user.create({
+        data: {
+          email,
+          username,
+          googleId: supabaseUser.id,
+          fullName: full_name || name,
+          avatarUrl: avatar_url,
+          role: "USER",
+        },
+      });
+
+      emailService.sendWelcomeEmail(email, username);
+    }
+
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const appToken = jwt.sign(tokenPayload, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        fullName: user.fullName,
+        avatarUrl: user.avatarUrl,
+        role: user.role,
+      },
+      token: appToken,
+    };
   },
 };

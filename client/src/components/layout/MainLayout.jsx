@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { LuCirclePlus, LuBell } from "react-icons/lu";
 import { Link, Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import SearchBar from "../ui/SearchBar";
+import { supabase } from "../../supabaseClient";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
@@ -103,7 +104,8 @@ function MainLayout() {
                   Settings
                 </Link>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
+                    await supabase.auth.signOut();
                     localStorage.removeItem("token");
                     localStorage.removeItem("user");
                     navigate("/signin");
