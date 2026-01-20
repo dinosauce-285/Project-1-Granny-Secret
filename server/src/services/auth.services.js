@@ -114,21 +114,35 @@ export const authService = {
     const { email, user_metadata } = supabaseUser;
     const { full_name, avatar_url, name } = user_metadata || {};
 
+    const provider = user_metadata?.provider || "google";
+    const providerId = supabaseUser.id;
+
     let user = await prisma.user.findFirst({
       where: {
-        OR: [{ googleId: supabaseUser.id }, { email: email }],
+        OR: [
+          { googleId: providerId },
+          { facebookId: providerId },
+          { email: email },
+        ],
       },
     });
 
     if (user) {
-      if (!user.googleId) {
+      const needsUpdate =
+        (provider === "google" && !user.googleId) ||
+        (provider === "facebook" && !user.facebookId);
+
+      if (needsUpdate) {
         user = await prisma.user.update({
           where: { id: user.id },
-          data: { googleId: supabaseUser.id },
+          data:
+            provider === "google"
+              ? { googleId: providerId }
+              : { facebookId: providerId },
         });
       }
     } else {
-     let username =
+      let username =
         name?.replace(/\s+/g, "").toLowerCase() || email.split("@")[0];
       const randomSuffix = Math.floor(1000 + Math.random() * 9000);
       username = `${username}${randomSuffix}`;
@@ -144,7 +158,8 @@ export const authService = {
         data: {
           email,
           username,
-          googleId: supabaseUser.id,
+          googleId: provider === "google" ? providerId : null,
+          facebookId: provider === "facebook" ? providerId : null,
           fullName: full_name || name,
           avatarUrl: avatar_url,
           role: "USER",

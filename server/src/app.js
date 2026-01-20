@@ -47,5 +47,6 @@ app.get(/(.*)/, (req, res, next) => {
   res.sendFile(path.join(clientBuildPath, "index.html"));
 });
 
+
 app.use(notFoundHandler);
 app.use(errorHandler);
