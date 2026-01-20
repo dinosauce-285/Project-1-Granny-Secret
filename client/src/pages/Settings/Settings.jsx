@@ -8,7 +8,6 @@ function Settings() {
   const [activeTab, setActiveTab] = useState("general");
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const tabs = [
     { id: "general", label: "General", icon: <LuUser size={20} /> },
@@ -23,7 +22,6 @@ function Settings() {
         setCurrentUser(response.data.data);
       } catch (error) {
         console.error("Error fetching user:", error);
-        setError(error);
       } finally {
         setLoading(false);
       }

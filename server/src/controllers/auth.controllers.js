@@ -1,5 +1,6 @@
 import { authService } from "../services/auth.services.js";
 import { registerSchema, loginSchema } from "../schemas/auth.schema.js";
+import cloudinary from "../config/cloudinary.config.js";
 
 export const authController = {
   async register(req, res) {
@@ -62,12 +63,24 @@ export const authController = {
         return res.error("User ID is required", [], 400);
       }
 
+      let finalAvatarUrl = avatarUrl;
+
+      if (req.file) {
+        const b64 = Buffer.from(req.file.buffer).toString("base64");
+        const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataURI, {
+          folder: "avatars",
+        });
+        finalAvatarUrl = uploadResult.secure_url;
+      }
+
       const user = await authService.updateProfile(userId, {
         fullName,
-        avatarUrl,
+        avatarUrl: finalAvatarUrl,
       });
       return res.ok(user, "Profile updated successfully");
     } catch (error) {
+      console.error("Update profile error:", error);
       return res.error("Failed to update profile", [], 500);
     }
   },

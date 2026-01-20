@@ -30,13 +30,13 @@ function EditRecipe() {
         setLoading(false);
       } catch (err) {
         setError(
-          err.response?.data?.message || err.message || "Error fetching recipe"
+          err.response?.data?.message || err.message || "Error fetching recipe",
         );
         setLoading(false);
       }
     };
     fetchRecipe();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleUpdate = async (formData) => {
     try {
