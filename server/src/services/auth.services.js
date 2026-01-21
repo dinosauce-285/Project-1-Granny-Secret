@@ -108,7 +108,16 @@ export const authService = {
     } = await supabase.auth.getUser(token);
 
     if (error || !supabaseUser) {
-      throw new Error("Invalid Google token");
+      console.error("Supabase getUser error:", {
+        error: error,
+        errorMessage: error?.message,
+        errorStatus: error?.status,
+        hasUser: !!supabaseUser,
+        tokenProvided: !!token,
+      });
+      throw new Error(
+        error?.message || "Invalid Google token - unable to verify user",
+      );
     }
 
     const { email, user_metadata } = supabaseUser;
