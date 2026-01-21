@@ -175,11 +175,7 @@ function UserProfile() {
         </h2>
 
         {recipes.length > 0 ? (
-          recipes.map((recipe) => (
-            <Link to={`/recipe/${recipe.id}`} key={recipe.id}>
-              <RecipeCard {...recipe} />
-            </Link>
-          ))
+          recipes.map((recipe) => <RecipeCard key={recipe.id} {...recipe} />)
         ) : (
           <div className="bg-white rounded-2xl shadow-md p-12 text-center">
             <LuChefHat className="w-24 h-24 mx-auto text-gray-300 mb-4" />
