@@ -116,8 +116,11 @@ export const authController = {
         name: error.name,
       });
 
-      // Return more specific error messages for debugging
-      if (error.message?.includes("Invalid Google token")) {
+      if (
+        error.message?.includes("Invalid Google token") ||
+        error.message?.includes("Invalid token") ||
+        error.name === "AuthApiError"
+      ) {
         return res.error(
           "Failed to verify Google authentication. Please try again.",
           [],
