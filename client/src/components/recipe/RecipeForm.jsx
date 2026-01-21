@@ -8,6 +8,7 @@ import ButtonPrimary from "../ui/ButtonPrimary";
 
 function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [ingredients, setIngredients] = useState([
     { name: "", amount: "", unit: "" },
@@ -158,14 +159,20 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
         }
       });
 
-      await onSubmit(submitData);
+      setIsSubmitting(true);
+      try {
+        await onSubmit(submitData);
+      } finally {
+        setIsSubmitting(false);
+      }
     } catch (error) {
       console.error("Error submitting recipe:", error);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="pt-4">
+    <div className="my-8">
       <div className="w-[95%] max-w-4xl shadow-2xl font-inter mx-auto bg-white rounded-2xl py-4 px-4 flex flex-col space-y-10 justify-between items-start border border-dashed border-gray-300">
         <div className="title font-bold text-4xl">
           {isEdit ? "Edit Recipe" : "Create New Recipe"}
@@ -548,13 +555,20 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             ></textarea>
           </div>
 
-          <div className="button">
+          <div className="button mb-6">
             <ButtonPrimary
               type="button"
               onClick={handleSubmit}
-              className="w-40 sm:w-44 md:w-48 px-3 py-5 text-md sm:text-lg text-white font-semibold bg-primary transition-all duration-300 hover:bg-primary-hover hover:scale-105 hover:shadow-lg border border-none"
+              disabled={isSubmitting}
+              className="w-full flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-medium transition-all duration-300 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
             >
-              {isEdit ? "Update Recipe" : "Create Recipe"}
+              {isSubmitting
+                ? isEdit
+                  ? "Updating..."
+                  : "Creating..."
+                : isEdit
+                  ? "Update Recipe"
+                  : "Create Recipe"}
             </ButtonPrimary>
           </div>
         </div>

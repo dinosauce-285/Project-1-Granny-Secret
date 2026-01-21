@@ -83,20 +83,6 @@ function SearchBar({ initialValue = "", onSearch }) {
     navigate(`/user/${userId}`);
   };
 
-  const handleCategoryClick = (categoryId) => {
-    setShowDropdown(false);
-    setValue("");
-    navigate(`/dashboard?category=${categoryId}`);
-  };
-
-  const handleIngredientClick = (ingredientName) => {
-    setShowDropdown(false);
-    setValue(ingredientName);
-    if (onSearch) {
-      onSearch(ingredientName);
-    }
-  };
-
   const clearSearch = () => {
     setValue("");
     setResults(null);

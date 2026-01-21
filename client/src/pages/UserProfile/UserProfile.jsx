@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { LuChefHat } from "react-icons/lu";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import RecipeCard from "../../components/recipe/RecipeCard";
 
@@ -27,7 +27,6 @@ function UserProfile() {
       try {
         setLoading(true);
 
-        // Fetch user profile
         const userRes = await api.get(`/users/${id}`);
         console.log("User Profile Response:", userRes.data);
         setUser(userRes.data.data);
@@ -53,6 +52,7 @@ function UserProfile() {
     };
 
     fetchUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isOwnProfile]);
 
   const handleFollowToggle = async () => {

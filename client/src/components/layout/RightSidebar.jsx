@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LuUsers, LuLightbulb } from "react-icons/lu";
+import { LuLightbulb } from "react-icons/lu";
 import api from "../../api/api";
 import LikedPostsWidget from "./LikedPostsWidget";
 import SavedPostsWidget from "./SavedPostsWidget";
