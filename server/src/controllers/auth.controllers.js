@@ -93,15 +93,51 @@ export const authController = {
         return res.error("Token is required", [], 400);
       }
 
+      // Check if Supabase is properly configured
+      if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+        console.error("Supabase configuration missing:", {
+          hasUrl: !!process.env.SUPABASE_URL,
+          hasKey: !!process.env.SUPABASE_KEY,
+        });
+        return res.error(
+          "Authentication service not configured. Please contact support.",
+          [],
+          500,
+        );
+      }
+
       const data = await authService.loginWithGoogle(token);
 
       return res.ok(data, "Google login successful");
     } catch (error) {
-      console.error("Google login error:", error);
-      if (error.message === "Invalid Google token") {
-        return res.error("Invalid Google token", [], 401);
+      console.error("Google login error:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
+
+      // Return more specific error messages for debugging
+      if (error.message?.includes("Invalid Google token")) {
+        return res.error(
+          "Failed to verify Google authentication. Please try again.",
+          [],
+          401,
+        );
       }
-      return res.error(error.message || "Google login failed", [], 500);
+
+      if (error.message?.includes("Supabase not configured")) {
+        return res.error(
+          "Authentication service configuration error. Please contact support.",
+          [],
+          500,
+        );
+      }
+
+      return res.error(
+        error.message || "Google login failed. Please try again.",
+        [],
+        500,
+      );
     }
   },
 };
