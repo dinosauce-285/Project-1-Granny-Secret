@@ -33,6 +33,16 @@ function Dashboard() {
     try {
       setLoading(true);
 
+      if (filter.search) {
+        const res = await api.get(
+          `/search?q=${encodeURIComponent(filter.search)}`,
+        );
+        setRecipes(res.data.data.recipes || []);
+        setLoading(false);
+        return;
+      }
+
+
       let url = "/recipes/";
       const params = [];
 
@@ -42,10 +52,6 @@ function Dashboard() {
         params.push(`favourite=true`);
       } else if (filter.type === "my-recipes") {
         url = "/recipes/my-recipes";
-      }
-
-      if (filter.search) {
-        params.push(`search=${filter.search}`);
       }
 
       if (params.length > 0) {

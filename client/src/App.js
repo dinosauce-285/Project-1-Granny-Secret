@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import SignIn from "./pages/SignIn/SignIn";
@@ -11,6 +10,7 @@ import EditRecipe from "./pages/EditRecipe/EditRecipe";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import Settings from "./pages/Settings/Settings";
 import UserProfile from "./pages/UserProfile/UserProfile";
+import SearchResults from "./pages/SearchResults/SearchResults";
 import MainLayout from "./components/layout/MainLayout";
 import ProtectedRoute from "./components/route/ProtectedRoute";
 
@@ -31,6 +31,7 @@ function App() {
             <Route path="/recipe/:id" element={<RecipeDetail />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile/:id" element={<UserProfile />} />
+            <Route path="/search" element={<SearchResults />} />
           </Route>
         </Route>
       </Routes>

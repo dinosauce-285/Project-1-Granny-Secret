@@ -14,6 +14,7 @@ import categoryRoutes from "./routes/category.routes.js";
 import recipeRoutes from "./routes/recipe.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import searchRoutes from "./routes/search.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +37,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/recipes", recipeRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/search", searchRoutes);
 
 const clientBuildPath = path.join(__dirname, "../../client/build");
 app.use(express.static(clientBuildPath));
@@ -46,7 +48,6 @@ app.get(/(.*)/, (req, res, next) => {
   }
   res.sendFile(path.join(clientBuildPath, "index.html"));
 });
-
 
 app.use(notFoundHandler);
 app.use(errorHandler);

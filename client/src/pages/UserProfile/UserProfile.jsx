@@ -53,7 +53,7 @@ function UserProfile() {
     };
 
     fetchUserProfile();
-  }, [id, currentUser, isOwnProfile]);
+  }, [id, isOwnProfile]);
 
   const handleFollowToggle = async () => {
     if (!currentUser) {
