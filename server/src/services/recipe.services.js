@@ -63,6 +63,71 @@ export const recipeService = {
       };
     }
 
+    const isGeneralFeed = 
+      !filters.categoryId && 
+      !filters.favourite && 
+      !filters.saved && 
+      !filters.userId && 
+      currentUserId;
+
+    if (isGeneralFeed) {
+      const followingUsers = await prisma.follow.findMany({
+        where: {
+          followerId: Number(currentUserId),
+        },
+        select: {
+          followingId: true,
+        },
+      });
+
+      const followingIds = followingUsers.map((f) => f.followingId);
+
+      if (followingIds.length > 0) {
+        const followedRecipes = await prisma.recipe.findMany({
+          where: {
+            ...where,
+            userId: {
+              in: followingIds,
+            },
+          },
+          include,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        const otherRecipes = await prisma.recipe.findMany({
+          where: {
+            ...where,
+            userId: {
+              notIn: [...followingIds, Number(currentUserId)],
+            },
+          },
+          include,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+
+        const allRecipes = [...followedRecipes, ...otherRecipes];
+
+        return allRecipes.map((recipe) => {
+          const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
+          const isSaved =
+            currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
+          const { likes, bookmarks, ...rest } = recipe;
+          return {
+            ...rest,
+            isLiked: !!isLiked,
+            isSaved: !!isSaved,
+            likeCount: recipe._count.likes,
+            bookmarkCount: recipe._count.bookmarks,
+          };
+        });
+      }
+    }
+
     const recipes = await prisma.recipe.findMany({
       where,
       include,
