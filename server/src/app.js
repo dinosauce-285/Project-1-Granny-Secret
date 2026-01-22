@@ -15,6 +15,7 @@ import recipeRoutes from "./routes/recipe.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import searchRoutes from "./routes/search.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +39,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/recipes", recipeRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 const clientBuildPath = path.join(__dirname, "../../client/build");
 app.use(express.static(clientBuildPath));

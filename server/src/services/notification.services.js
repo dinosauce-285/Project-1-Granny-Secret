@@ -1,0 +1,71 @@
+import { prisma } from "../prisma.js";
+
+export const notificationService = {
+  async createNotification({ recipientId, senderId, type, recipeId }) {
+    if (Number(recipientId) === Number(senderId)) {
+      return null; 
+    }
+
+    return await prisma.notification.create({
+      data: {
+        recipientId: Number(recipientId),
+        senderId: Number(senderId),
+        type,
+        recipeId: recipeId ? Number(recipeId) : null,
+      },
+    });
+  },
+
+  async getUserNotifications(userId) {
+    return await prisma.notification.findMany({
+      where: {
+        recipientId: Number(userId),
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
+        recipe: {
+          select: {
+            id: true,
+            title: true,
+            imageUrl: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  },
+
+  async markAsRead(notificationId, userId) {
+    const notification = await prisma.notification.findUnique({
+      where: { id: Number(notificationId) },
+    });
+
+    if (!notification || notification.recipientId !== Number(userId)) {
+      throw new Error("Notification not found or unauthorized");
+    }
+
+    return await prisma.notification.update({
+      where: { id: Number(notificationId) },
+      data: { read: true },
+    });
+  },
+
+  async markAllAsRead(userId) {
+    return await prisma.notification.updateMany({
+      where: {
+        recipientId: Number(userId),
+        read: false,
+      },
+      data: { read: true },
+    });
+  },
+};

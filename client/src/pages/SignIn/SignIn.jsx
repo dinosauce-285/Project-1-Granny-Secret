@@ -114,7 +114,8 @@ function SignIn() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
     const result = LoginSchema.safeParse(formData);
 
     if (!result.success) {
@@ -170,69 +171,71 @@ function SignIn() {
           </div>
         )}
 
-        <div className="inputField mt-8 sm:mt-12 lg:mt-16  mx-auto w-full lg:mx-0">
-          <label
-            htmlFor="email"
-            className="font-poppins font-medium text-sm sm:text-base md:text-lg"
-          >
-            Email address
-          </label>
-          <Input
-            id="email"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={(e) => handleChange("email", e.target.value)}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>
-          )}
-
-          <div className="flex items-center justify-between mt-6 sm:mt-8">
+        <form onSubmit={handleSubmit}>
+          <div className="inputField mt-8 sm:mt-12 lg:mt-16  mx-auto w-full lg:mx-0">
             <label
-              htmlFor="password"
-              className="block font-poppins font-medium text-sm sm:text-base md:text-lg"
+              htmlFor="email"
+              className="font-poppins font-medium text-sm sm:text-base md:text-lg"
             >
-              Password
+              Email address
             </label>
-            <Link to="/forgot-password">
-              <div className="font-poppins text-sm sm:text-base text-blue-600 hover:text-blue-800">
-                Forgot password?
-              </div>
-            </Link>
-          </div>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={(e) => handleChange("password", e.target.value)}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>
-          )}
-
-          <div className="flex items-center mt-6">
-            <input
-              type="checkbox"
-              id="remember"
-              className="w-4 h-4 cursor-pointer"
+            <Input
+              id="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
             />
-            <label
-              htmlFor="remember"
-              className="ml-2 font-poppins text-sm sm:text-base cursor-pointer"
-            >
-              Remember password
-            </label>
-          </div>
-        </div>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>
+            )}
 
-        <ButtonPrimary
-          onClick={handleSubmit}
-          disabled={loading}
-          className="hover:bg-primary-hover text-white py-2.5 sm:py-3 bg-primary mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none disabled:opacity-50"
-        >
-          {loading ? "Signing in..." : "Sign In"}
-        </ButtonPrimary>
+            <div className="flex items-center justify-between mt-6 sm:mt-8">
+              <label
+                htmlFor="password"
+                className="block font-poppins font-medium text-sm sm:text-base md:text-lg"
+              >
+                Password
+              </label>
+              <Link to="/forgot-password">
+                <div className="font-poppins text-sm sm:text-base text-blue-600 hover:text-blue-800">
+                  Forgot password?
+                </div>
+              </Link>
+            </div>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={(e) => handleChange("password", e.target.value)}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>
+            )}
+
+            <div className="flex items-center mt-6">
+              <input
+                type="checkbox"
+                id="remember"
+                className="w-4 h-4 cursor-pointer"
+              />
+              <label
+                htmlFor="remember"
+                className="ml-2 font-poppins text-sm sm:text-base cursor-pointer"
+              >
+                Remember password
+              </label>
+            </div>
+          </div>
+
+          <ButtonPrimary
+            type="submit"
+            disabled={loading}
+            className="hover:bg-primary-hover text-white py-2.5 sm:py-3 bg-primary mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none disabled:opacity-50"
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </ButtonPrimary>
+        </form>
 
         <div className="divider flex items-center mt-6 sm:mt-8 md:mt-12">
           <div className="flex-grow border-t border-gray-300"></div>

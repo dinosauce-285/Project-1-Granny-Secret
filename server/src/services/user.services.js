@@ -135,6 +135,15 @@ export const userService = {
           followingId: Number(followingId),
         },
       });
+
+      await prisma.notification.create({
+        data: {
+          recipientId: Number(followingId),
+          senderId: Number(followerId),
+          type: "FOLLOW",
+        },
+      });
+
       return { isFollowing: true };
     }
   },

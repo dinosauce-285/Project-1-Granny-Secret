@@ -94,7 +94,8 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
     setSteps(list);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
     try {
       const formDataRaw = {
         title: formData.title,
@@ -173,7 +174,10 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
 
   return (
     <div className="my-8">
-      <div className="w-[95%] max-w-4xl shadow-2xl font-inter mx-auto bg-white rounded-2xl py-4 px-4 flex flex-col space-y-10 justify-between items-start border border-dashed border-gray-300">
+      <form
+        onSubmit={handleSubmit}
+        className="w-[95%] max-w-4xl shadow-2xl font-inter mx-auto bg-white rounded-2xl py-4 px-4 flex flex-col space-y-10 justify-between items-start border border-dashed border-gray-300"
+      >
         <div className="title font-bold text-4xl">
           {isEdit ? "Edit Recipe" : "Create New Recipe"}
         </div>
@@ -557,8 +561,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
 
           <div className="button mb-6">
             <ButtonPrimary
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={isSubmitting}
               className="w-full flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-medium transition-all duration-300 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
             >
@@ -572,7 +575,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             </ButtonPrimary>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

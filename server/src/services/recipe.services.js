@@ -208,6 +208,21 @@ export const recipeService = {
           recipeId: Number(recipeId),
         },
       });
+
+      const recipe = await prisma.recipe.findUnique({
+        where: { id: Number(recipeId) },
+      });
+      if (recipe && recipe.userId !== Number(userId)) {
+        await prisma.notification.create({
+          data: {
+            recipientId: recipe.userId,
+            senderId: Number(userId),
+            type: "LIKE",
+            recipeId: Number(recipeId),
+          },
+        });
+      }
+
       const count = await prisma.like.count({
         where: { recipeId: Number(recipeId) },
       });
@@ -305,6 +320,20 @@ export const recipeService = {
     return recipe;
   },
   async createComment(userId, recipeId, content, parentId = null) {
+    const recipe = await prisma.recipe.findUnique({
+      where: { id: Number(recipeId) },
+    });
+    if (recipe && recipe.userId !== Number(userId)) {
+      await prisma.notification.create({
+        data: {
+          recipientId: recipe.userId,
+          senderId: Number(userId),
+          type: "COMMENT",
+          recipeId: Number(recipeId),
+        },
+      });
+    }
+
     return await prisma.comment.create({
       data: {
         userId: Number(userId),

@@ -20,25 +20,54 @@ enum Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String   @unique
   password   String?
   googleId   String?  @unique
   facebookId String?  @unique
-  fullName  String?
-  avatarUrl String?
-  role      Role     @default(USER)
-  recipes   Recipe[] 
-  
+  fullName   String?
+  avatarUrl  String?
+  role       Role     @default(USER)
+  recipes    Recipe[]
+
   // Social features
-  followers    Follow[] @relation("UserFollowers") 
-  following    Follow[] @relation("UserFollowing") 
-  comments     Comment[] 
-  bookmarks    Bookmark[] 
-  likes        Like[]
-  
+  followers Follow[]   @relation("UserFollowers")
+  following Follow[]   @relation("UserFollowing")
+  comments  Comment[]
+  bookmarks Bookmark[]
+  likes     Like[]
+
   createdAt DateTime @default(now())
+
+  // Notifications
+  notifications     Notification[] @relation("ReceivedNotifications")
+  sentNotifications Notification[] @relation("SentNotifications")
+}
+
+enum NotificationType {
+  FOLLOW
+  LIKE
+  COMMENT
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  recipientId Int
+  senderId    Int
+  type        NotificationType
+  read        Boolean          @default(false)
+  recipeId    Int?
+
+  recipient User    @relation("ReceivedNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  sender    User    @relation("SentNotifications", fields: [senderId], references: [id], onDelete: Cascade)
+  recipe    Recipe? @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([recipientId])
+  @@index([senderId])
+  @@index([recipeId])
 }
 
 model Recipe {
@@ -61,14 +90,15 @@ model Recipe {
 
   ingredients Ingredient[] // Quan hệ 1-nhiều với nguyên liệu
   steps       Step[] // Quan hệ 1-nhiều với các bước
-  
-  // Social features
-  comments    Comment[] // Comments on this recipe
-  bookmarks   Bookmark[] // Bookmarks on this recipe
-  likes       Like[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Social features
+  comments  Comment[] // Comments on this recipe
+  bookmarks Bookmark[] // Bookmarks on this recipe
+  likes     Like[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  notifications Notification[]
 }
 
 model Ingredient {
@@ -97,67 +127,66 @@ model Category {
 // Social Media Features
 
 model Follow {
-  id          Int      @id @default(autoincrement())
-  followerId  Int      // User đang follow
-  followingId Int      // User được follow
-  
-  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-  
+  id          Int @id @default(autoincrement())
+  followerId  Int // User đang follow
+  followingId Int // User được follow
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@unique([followerId, followingId]) // Một user chỉ follow một user khác một lần
   @@index([followerId])
   @@index([followingId])
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  userId    Int
-  recipeId  Int
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  
+  id       Int    @id @default(autoincrement())
+  content  String
+  userId   Int
+  recipeId Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  parentId  Int?
-  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   Comment[] @relation("CommentReplies")
-  
+  parentId Int?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+
   @@index([recipeId])
   @@index([userId])
 }
 
 model Bookmark {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  recipeId  Int
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  
+  id       Int @id @default(autoincrement())
+  userId   Int
+  recipeId Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
-  
+
   @@unique([userId, recipeId]) // Một user chỉ bookmark một recipe một lần
   @@index([userId])
   @@index([recipeId])
 }
 
 model Like {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  recipeId  Int
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  
+  id       Int @id @default(autoincrement())
+  userId   Int
+  recipeId Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
-  
+
   @@unique([userId, recipeId])
   @@index([userId])
   @@index([recipeId])
 }
-

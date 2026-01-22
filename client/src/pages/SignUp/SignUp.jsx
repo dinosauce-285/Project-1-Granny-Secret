@@ -37,7 +37,8 @@ function SignUp() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
     const result = RegisterSchema.safeParse(formData);
 
     if (!result.success) {
@@ -91,83 +92,85 @@ function SignUp() {
           </div>
         )}
 
-        <div className="inputField mt-8 sm:mt-12 lg:mt-16 mx-auto w-full lg:mx-0">
-          <label
-            htmlFor="email"
-            className="font-poppins font-medium text-sm sm:text-base md:text-lg"
-          >
-            Email address
-          </label>
-          <Input
-            id="email"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={(e) => handleChange("email", e.target.value)}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>
-          )}
+        <form onSubmit={handleSubmit}>
+          <div className="inputField mt-8 sm:mt-12 lg:mt-16 mx-auto w-full lg:mx-0">
+            <label
+              htmlFor="email"
+              className="font-poppins font-medium text-sm sm:text-base md:text-lg"
+            >
+              Email address
+            </label>
+            <Input
+              id="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>
+            )}
 
-          <label
-            htmlFor="name"
-            className="mt-6 sm:mt-8 block font-poppins font-medium text-sm sm:text-base md:text-lg"
-          >
-            Username
-          </label>
-          <Input
-            id="name"
-            placeholder="Enter your username"
-            value={formData.username}
-            onChange={(e) => handleChange("username", e.target.value)}
-          />
-          {errors.username && (
-            <p className="text-red-500 text-sm mt-1">{errors.username[0]}</p>
-          )}
+            <label
+              htmlFor="name"
+              className="mt-6 sm:mt-8 block font-poppins font-medium text-sm sm:text-base md:text-lg"
+            >
+              Username
+            </label>
+            <Input
+              id="name"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChange={(e) => handleChange("username", e.target.value)}
+            />
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">{errors.username[0]}</p>
+            )}
 
-          <label
-            htmlFor="password"
-            className="mt-6 sm:mt-8 block font-poppins font-medium text-sm sm:text-base md:text-lg"
-          >
-            Password
-          </label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={(e) => handleChange("password", e.target.value)}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>
-          )}
+            <label
+              htmlFor="password"
+              className="mt-6 sm:mt-8 block font-poppins font-medium text-sm sm:text-base md:text-lg"
+            >
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={(e) => handleChange("password", e.target.value)}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>
+            )}
 
-          <label
-            htmlFor="repass"
-            className="mt-6 sm:mt-8 block font-poppins font-medium text-sm sm:text-base md:text-lg"
-          >
-            Confirm Password
-          </label>
-          <Input
-            id="repass"
-            type="password"
-            placeholder="Re-enter your password"
-            value={formData.confirmPassword}
-            onChange={(e) => handleChange("confirmPassword", e.target.value)}
-          />
-          {errors.confirmPassword && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.confirmPassword[0]}
-            </p>
-          )}
-        </div>
+            <label
+              htmlFor="repass"
+              className="mt-6 sm:mt-8 block font-poppins font-medium text-sm sm:text-base md:text-lg"
+            >
+              Confirm Password
+            </label>
+            <Input
+              id="repass"
+              type="password"
+              placeholder="Re-enter your password"
+              value={formData.confirmPassword}
+              onChange={(e) => handleChange("confirmPassword", e.target.value)}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword[0]}
+              </p>
+            )}
+          </div>
 
-        <ButtonPrimary
-          onClick={handleSubmit}
-          disabled={loading}
-          className="hover:bg-primary-hover text-white py-2.5 sm:py-3 bg-primary mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "Signing up..." : "Sign Up"}
-        </ButtonPrimary>
+          <ButtonPrimary
+            type="submit"
+            disabled={loading}
+            className="hover:bg-primary-hover text-white py-2.5 sm:py-3 bg-primary mt-4 sm:mt-6 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? "Signing up..." : "Sign Up"}
+          </ButtonPrimary>
+        </form>
 
         <div className="divider flex items-center mt-6 sm:mt-8 md:mt-12">
           <div className="flex-grow border-t border-gray-300"></div>

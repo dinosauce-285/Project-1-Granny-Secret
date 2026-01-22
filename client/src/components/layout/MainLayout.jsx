@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { LuCirclePlus, LuBell } from "react-icons/lu";
+import { LuCirclePlus } from "react-icons/lu";
 import { Link, Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import SearchBar from "../ui/SearchBar";
 import { supabase } from "../../supabaseClient";
+import NotificationDropdown from "../notification/NotificationDropdown";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
@@ -63,9 +64,7 @@ function MainLayout() {
             <LuCirclePlus className="w-5 h-5" />
             Create Recipe
           </Link>
-          <div className="w-9 h-9 sm:w-10 sm:h-10 cursor-pointer flex rounded-lg items-center justify-center hover:bg-gray-100 transition-all duration-300">
-            <LuBell className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
+          <NotificationDropdown />
 
           <div className="relative" ref={dropdownRef}>
             <div
