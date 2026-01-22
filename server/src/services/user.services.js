@@ -63,33 +63,68 @@ export const userService = {
     };
   },
 
-  async getUserRecipes(userId) {
+  async getUserRecipes(userId, currentUserId = null) {
+    const include = {
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          username: true,
+          fullName: true,
+          avatarUrl: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+          bookmarks: true,
+        },
+      },
+    };
+
+    if (currentUserId) {
+      include.likes = {
+        where: {
+          userId: Number(currentUserId),
+        },
+        take: 1,
+      };
+      include.bookmarks = {
+        where: {
+          userId: Number(currentUserId),
+        },
+        take: 1,
+      };
+    }
+
     const recipes = await prisma.recipe.findMany({
       where: {
         userId: Number(userId),
       },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            username: true,
-            fullName: true,
-            avatarUrl: true,
-          },
-        },
-      },
+      include,
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return recipes;
+    return recipes.map((recipe) => {
+      const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
+      const isSaved =
+        currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
+      const { likes, bookmarks, ...rest } = recipe;
+      return {
+        ...rest,
+        isLiked: !!isLiked,
+        isSaved: !!isSaved,
+        likeCount: recipe._count.likes,
+        bookmarkCount: recipe._count.bookmarks,
+      };
+    });
   },
 
   async checkIsFollowing(followerId, followingId) {
