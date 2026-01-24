@@ -1,21 +1,18 @@
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+console.log("SendGrid Config:", {
+  apiKeyProvided: !!process.env.SENDGRID_API_KEY,
+  senderEmail: process.env.SENDGRID_SENDER_EMAIL,
 });
 
 export const emailService = {
   async sendWelcomeEmail(to, username) {
     try {
-      const info = await transporter.sendMail({
-        from: `"Grany's Secret" <${process.env.EMAIL_USER}>`,
+      const msg = {
         to: to,
+        from: process.env.SENDGRID_SENDER_EMAIL,
         subject: "Welcome to Grany's Secret!",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -40,12 +37,16 @@ export const emailService = {
             </div>
           </div>
         `,
-      });
+      };
 
-      console.log("Message sent: %s", info.messageId);
-      return info;
+      const response = await sgMail.send(msg);
+      console.log("Message sent:", response[0].statusCode);
+      return response;
     } catch (error) {
       console.error("Error sending welcome email:", error);
+      if (error.response) {
+        console.error("SendGrid Error Body:", error.response.body);
+      }
       return null;
     }
   },
