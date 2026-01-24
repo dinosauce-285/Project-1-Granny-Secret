@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { LuChefHat } from "react-icons/lu";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../../api/api";
+import {
+  getUserProfile,
+  getUserRecipes,
+  checkFollowStatus,
+  toggleFollow,
+} from "../../api/user.api";
 import RecipeCard from "../../components/recipe/RecipeCard";
 
 function UserProfile() {
@@ -27,19 +32,19 @@ function UserProfile() {
       try {
         setLoading(true);
 
-        const userRes = await api.get(`/users/${id}`);
-        console.log("User Profile Response:", userRes.data);
-        setUser(userRes.data.data);
-        setStats(userRes.data.data.stats);
+        const userRes = await getUserProfile(id);
+        console.log("User Profile Response:", userRes);
+        setUser(userRes.data);
+        setStats(userRes.data.stats);
 
-        const recipesRes = await api.get(`/users/${id}/recipes`);
-        console.log("User Recipes Response:", recipesRes.data.data);
-        setRecipes(recipesRes.data.data);
+        const recipesRes = await getUserRecipes(id);
+        console.log("User Recipes Response:", recipesRes.data);
+        setRecipes(recipesRes.data);
 
         if (!isOwnProfile && currentUser) {
           try {
-            const followStatus = await api.get(`/users/${id}/is-following`);
-            setIsFollowing(followStatus.data.data.isFollowing);
+            const followStatus = await checkFollowStatus(id);
+            setIsFollowing(followStatus.data.isFollowing);
           } catch (error) {
             console.error("Error checking follow status:", error);
           }
@@ -61,8 +66,8 @@ function UserProfile() {
       return;
     }
     try {
-      const res = await api.post(`/users/${id}/follow`);
-      const newIsFollowing = res.data.data.isFollowing;
+      const res = await toggleFollow(id);
+      const newIsFollowing = res.data.isFollowing;
 
       setIsFollowing(newIsFollowing);
       setStats((prev) => ({

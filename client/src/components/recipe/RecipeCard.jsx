@@ -12,7 +12,8 @@ import LikeButton from "../ui/LikeButton";
 import MoreOptions from "../ui/MoreOptions";
 import ShareDialog from "../ui/ShareDialog";
 import Dialog from "../ui/Dialog";
-import api from "../../api/api";
+import { checkFollowStatus, toggleFollow } from "../../api/user.api";
+import { deleteRecipe } from "../../api/recipe.api";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
@@ -49,17 +50,17 @@ function RecipeCard({
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
-    const checkFollowStatus = async () => {
+    const fetchFollowStatus = async () => {
       if (currentUser && user && !isOwner) {
         try {
-          const res = await api.get(`/users/${user.id}/is-following`);
-          setIsFollowing(res.data.data.isFollowing);
+          const res = await checkFollowStatus(user.id);
+          setIsFollowing(res.data.isFollowing);
         } catch (error) {
           console.error("Error checking follow status:", error);
         }
       }
     };
-    checkFollowStatus();
+    fetchFollowStatus();
   }, [user?.id, currentUser?.id, isOwner, user, currentUser]);
 
   const handleFollowToggle = async (e) => {
@@ -72,8 +73,8 @@ function RecipeCard({
     }
 
     try {
-      const res = await api.post(`/users/${user.id}/follow`);
-      setIsFollowing(res.data.data.isFollowing);
+      const res = await toggleFollow(user.id);
+      setIsFollowing(res.data.isFollowing);
     } catch (error) {
       console.error("Error toggling follow:", error);
     }
@@ -122,7 +123,7 @@ function RecipeCard({
       e.stopPropagation();
     }
     try {
-      await api.delete(`/recipes/${id}`);
+      await deleteRecipe(id);
       window.location.reload();
     } catch (error) {
       console.error("Error deleting recipe:", error);

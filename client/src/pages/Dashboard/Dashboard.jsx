@@ -5,7 +5,7 @@ import RecipeCard from "../../components/recipe/RecipeCard";
 import LeftSidebar from "../../components/layout/LeftSidebar";
 import RightSidebar from "../../components/layout/RightSidebar";
 import FilterSection from "../../components/filters/FilterSection";
-import api from "../../api/api.js";
+import { getRecipes, getMyRecipes, searchRecipes } from "../../api/recipe.api";
 
 function Dashboard() {
   const [recipes, setRecipes] = useState([]);
@@ -34,32 +34,25 @@ function Dashboard() {
       setLoading(true);
 
       if (filter.search) {
-        const res = await api.get(
-          `/search?q=${encodeURIComponent(filter.search)}`,
-        );
-        setRecipes(res.data.data.recipes || []);
+        const res = await searchRecipes(filter.search);
+        setRecipes(res.data.recipes || []);
         setLoading(false);
         return;
       }
 
-
-      let url = "/recipes/";
-      const params = [];
-
-      if (filter.type === "category" && filter.categoryId) {
-        params.push(`category=${filter.categoryId}`);
-      } else if (filter.type === "favourite") {
-        params.push(`favourite=true`);
-      } else if (filter.type === "my-recipes") {
-        url = "/recipes/my-recipes";
+      if (filter.type === "my-recipes") {
+        const res = await getMyRecipes();
+        setRecipes(res.data || []);
+      } else {
+        const params = {};
+        if (filter.type === "category" && filter.categoryId) {
+          params.category = filter.categoryId;
+        } else if (filter.type === "favourite") {
+          params.favourite = true;
+        }
+        const res = await getRecipes(params);
+        setRecipes(res.data || []);
       }
-
-      if (params.length > 0) {
-        url += "?" + params.join("&");
-      }
-
-      const res = await api.get(url);
-      setRecipes(res.data.data || []);
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Error fetching recipes",

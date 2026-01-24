@@ -6,12 +6,19 @@ import {
   LuShare2,
   LuFlame,
 } from "react-icons/lu";
-import api from "../../api/api";
 import LikeButton from "../../components/ui/LikeButton";
 import Bookmark from "../../components/ui/Bookmark";
 import MoreOptions from "../../components/ui/MoreOptions";
 import Dialog from "../../components/ui/Dialog";
 import ShareDialog from "../../components/ui/ShareDialog";
+import { checkFollowStatus, toggleFollow } from "../../api/user.api";
+import { getRecipe, deleteRecipe } from "../../api/recipe.api";
+import {
+  getComments,
+  postComment,
+  updateComment,
+  deleteComment,
+} from "../../api/comment.api";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
@@ -216,7 +223,7 @@ function RecipeDetail() {
 
   const handleConfirmDelete = async () => {
     try {
-      await api.delete(`/recipes/${id}`);
+      await deleteRecipe(id);
       navigate("/");
     } catch (error) {
       console.error("Error deleting recipe:", error);
@@ -233,8 +240,8 @@ function RecipeDetail() {
     }
 
     try {
-      const res = await api.post(`/users/${recipe.user.id}/follow`);
-      setIsFollowing(res.data.data.isFollowing);
+      const res = await toggleFollow(recipe.user.id);
+      setIsFollowing(res.data.isFollowing);
     } catch (error) {
       console.error("Error toggling follow:", error);
     }
@@ -263,12 +270,8 @@ function RecipeDetail() {
       return;
     }
     try {
-      const res = await api.post(`/recipes/${id}/comments`, {
-        content: content,
-        parentId: parentId,
-      });
-
-      setComments((prev) => [res.data.data, ...prev]);
+      const res = await postComment(id, content, parentId);
+      setComments((prev) => [res.data, ...prev]);
       if (!parentId) setNewComment("");
     } catch (error) {
       console.error("Error posting comment:", error);
@@ -287,7 +290,7 @@ function RecipeDetail() {
   const handleConfirmDeleteComment = async () => {
     if (!commentToDeleteId) return;
     try {
-      await api.delete(`/recipes/comments/${commentToDeleteId}`);
+      await deleteComment(commentToDeleteId);
       setComments((prev) => prev.filter((c) => c.id !== commentToDeleteId));
       setShowDeleteCommentDialog(false);
       setCommentToDeleteId(null);
@@ -302,7 +305,7 @@ function RecipeDetail() {
       setComments((prev) =>
         prev.map((c) => (c.id === commentId ? { ...c, content } : c)),
       );
-      await api.put(`/recipes/comments/${commentId}`, { content });
+      await updateComment(commentId, content);
     } catch (error) {
       console.error("Error updating comment", error);
     }
@@ -311,24 +314,22 @@ function RecipeDetail() {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const res = await api.get(`/recipes/${id}`);
-        const recipeData = res.data.data;
+        const res = await getRecipe(id);
+        const recipeData = res.data;
         setRecipe(recipeData);
 
         if (user && recipeData.userId && user.id !== recipeData.userId) {
           try {
-            const followRes = await api.get(
-              `/users/${recipeData.userId}/is-following`,
-            );
-            setIsFollowing(followRes.data.data.isFollowing);
+            const followRes = await checkFollowStatus(recipeData.userId);
+            setIsFollowing(followRes.data.isFollowing);
           } catch (followError) {
             console.error("Error checking follow status:", followError);
           }
         }
 
         try {
-          const commentsRes = await api.get(`/recipes/${id}/comments`);
-          setComments(commentsRes.data.data);
+          const commentsRes = await getComments(id);
+          setComments(commentsRes.data);
         } catch (commentError) {
           console.error("Error fetching comments:", commentError);
         }
@@ -357,6 +358,7 @@ function RecipeDetail() {
       }, 100);
     }
   }, [location.state, loading]);
+
   const renderSpiciness = (level) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i} className={i < level ? "text-red-500" : "text-gray-300"}>

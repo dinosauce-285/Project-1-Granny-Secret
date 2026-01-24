@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { RiThumbUpLine, RiThumbUpFill } from "react-icons/ri";
-import api from "../../api/api";
+import { toggleLike } from "../../api/recipe.api";
 
 function LikeButton({
   recipeId,
@@ -30,10 +30,8 @@ function LikeButton({
     }
 
     try {
-      const res = await api.patch(
-        `/recipes/${recipeId}/${previousLiked ? "unfavourite" : "favourite"}`,
-      );
-      const { isLiked: apiLiked, likeCount: apiCount } = res.data.data;
+      const result = await toggleLike(recipeId, previousLiked);
+      const { isLiked: apiLiked, likeCount: apiCount } = result.data;
       setIsLiked(apiLiked);
       if (onLike) onLike(apiLiked, apiCount);
     } catch (error) {

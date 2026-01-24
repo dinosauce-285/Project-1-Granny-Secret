@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { LuBookmark } from "react-icons/lu";
-import api from "../../api/api";
+import { toggleBookmark } from "../../api/recipe.api";
 
 function Bookmark({
   recipeId,
@@ -22,11 +22,7 @@ function Bookmark({
     setIsSaved(!previousSaved);
 
     try {
-      if (previousSaved) {
-        await api.patch(`/recipes/${recipeId}/unbookmark`);
-      } else {
-        await api.patch(`/recipes/${recipeId}/bookmark`);
-      }
+      await toggleBookmark(recipeId, previousSaved);
     } catch (error) {
       console.error("Error toggling save:", error);
       setIsSaved(previousSaved);
