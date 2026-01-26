@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Input from "../../components/ui/Input";
+import Toast from "../../components/ui/Toast";
 import api from "../../api/api";
 import { z } from "zod";
 import { supabase } from "../../supabaseClient";
@@ -26,6 +27,9 @@ function SignIn() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("error");
 
   const handleBackendExchange = useCallback(
     async (accessToken) => {
@@ -43,7 +47,12 @@ function SignIn() {
         navigate(from, { replace: true });
       } catch (error) {
         console.error("Google login error:", error);
-        setErrors({ general: "Failed to authenticate with Google." });
+        setToastMessage(
+          error.response?.data?.message ||
+            "Failed to authenticate with Google.",
+        );
+        setToastType("error");
+        setShowToast(true);
       } finally {
         setLoading(false);
       }
@@ -286,6 +295,13 @@ function SignIn() {
           alt=""
         />
       </div>
+
+      <Toast
+        isOpen={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }

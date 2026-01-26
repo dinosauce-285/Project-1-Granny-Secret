@@ -8,6 +8,7 @@ import {
   toggleFollow,
 } from "../../api/user.api";
 import RecipeCard from "../../components/recipe/RecipeCard";
+import Toast from "../../components/ui/Toast";
 
 function UserProfile() {
   const { id } = useParams();
@@ -21,6 +22,9 @@ function UserProfile() {
     followersCount: 0,
     followingCount: 0,
   });
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("error");
 
   const currentUserStr = localStorage.getItem("user");
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -51,6 +55,9 @@ function UserProfile() {
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
+        setToastMessage("Failed to load user profile.");
+        setToastType("error");
+        setShowToast(true);
       } finally {
         setLoading(false);
       }
@@ -78,6 +85,9 @@ function UserProfile() {
       }));
     } catch (error) {
       console.error("Error toggling follow:", error);
+      setToastMessage("Failed to update follow status.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -200,6 +210,13 @@ function UserProfile() {
           </div>
         )}
       </div>
+
+      <Toast
+        isOpen={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }

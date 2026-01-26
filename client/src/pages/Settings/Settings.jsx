@@ -11,7 +11,6 @@ import {
   LuLock,
   LuBell,
   LuShield,
-  LuLoader,
   LuEye,
   LuEyeOff,
 } from "react-icons/lu";
@@ -42,6 +41,7 @@ function Settings() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("error");
 
   const currentUserStr = localStorage.getItem("user");
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -70,7 +70,7 @@ function Settings() {
     };
 
     fetchUserData();
-  }, [currentUser, navigate]);
+  }, [navigate]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -115,10 +115,20 @@ function Settings() {
 
       const newUserState = { ...currentUser, ...updatedUser };
       localStorage.setItem("user", JSON.stringify(newUserState));
-
-      window.location.reload();
+      setToastMessage("Profile updated successfully!");
+      setToastType("success");
+      setShowToast(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Error updating profile:", error);
+      setToastMessage(
+        error.response?.data?.message ||
+          "Failed to update profile. Please try again.",
+      );
+      setToastType("error");
+      setShowToast(true);
     } finally {
       setProfileSaving(false);
     }
@@ -152,6 +162,7 @@ function Settings() {
       });
 
       setToastMessage("Password changed successfully!");
+      setToastType("success");
       setShowToast(true);
     } catch (error) {
       console.error("Error changing password:", error);
@@ -502,6 +513,7 @@ function Settings() {
       <Toast
         isOpen={showToast}
         message={toastMessage}
+        type={toastType}
         onClose={() => setShowToast(false)}
       />
     </div>

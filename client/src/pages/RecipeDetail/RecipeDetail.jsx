@@ -11,6 +11,7 @@ import Bookmark from "../../components/ui/Bookmark";
 import MoreOptions from "../../components/ui/MoreOptions";
 import Dialog from "../../components/ui/Dialog";
 import ShareDialog from "../../components/ui/ShareDialog";
+import Toast from "../../components/ui/Toast";
 import { checkFollowStatus, toggleFollow } from "../../api/user.api";
 import { getRecipe, deleteRecipe } from "../../api/recipe.api";
 import {
@@ -208,6 +209,9 @@ function RecipeDetail() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
 
@@ -224,9 +228,17 @@ function RecipeDetail() {
   const handleConfirmDelete = async () => {
     try {
       await deleteRecipe(id);
-      navigate("/");
+      setToastMessage("Recipe deleted successfully!");
+      setToastType("success");
+      setShowToast(true);
+      setTimeout(() => navigate("/"), 1000);
     } catch (error) {
       console.error("Error deleting recipe:", error);
+      setToastMessage(
+        error.response?.data?.message || "Failed to delete recipe.",
+      );
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -244,6 +256,9 @@ function RecipeDetail() {
       setIsFollowing(res.data.isFollowing);
     } catch (error) {
       console.error("Error toggling follow:", error);
+      setToastMessage("Failed to update follow status.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -275,6 +290,9 @@ function RecipeDetail() {
       if (!parentId) setNewComment("");
     } catch (error) {
       console.error("Error posting comment:", error);
+      setToastMessage("Failed to post comment. Please try again.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -294,8 +312,16 @@ function RecipeDetail() {
       setComments((prev) => prev.filter((c) => c.id !== commentToDeleteId));
       setShowDeleteCommentDialog(false);
       setCommentToDeleteId(null);
+      setToastMessage("Comment deleted successfully!");
+      setToastType("success");
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting comment", error);
+      setToastMessage(
+        error.response?.data?.message || "Failed to delete comment.",
+      );
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -307,6 +333,9 @@ function RecipeDetail() {
       await updateComment(commentId, content);
     } catch (error) {
       console.error("Error updating comment", error);
+      setToastMessage("Failed to update comment.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -693,6 +722,13 @@ function RecipeDetail() {
         onClose={() => setShowShareDialog(false)}
         url={window.location.href}
         title={recipe.title}
+      />
+
+      <Toast
+        isOpen={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
       />
     </>
   );
