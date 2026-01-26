@@ -19,9 +19,10 @@ export const userService = {
     return user;
   },
 
-  async updateProfile(userId, { fullName, avatarUrl }) {
+  async updateProfile(userId, { fullName, username, avatarUrl }) {
     const data = {};
     if (fullName !== undefined) data.fullName = fullName;
+    if (username !== undefined) data.username = username;
     if (avatarUrl !== undefined) data.avatarUrl = avatarUrl;
 
     const user = await prisma.user.update({

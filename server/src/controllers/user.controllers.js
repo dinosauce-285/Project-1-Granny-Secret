@@ -23,6 +23,7 @@ export const userController = {
 
     const updatedUser = await userService.updateProfile(userId, {
       fullName: req.body.fullName,
+      username: req.body.username,
       avatarUrl,
     });
 
