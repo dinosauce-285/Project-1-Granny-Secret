@@ -1,4 +1,12 @@
-function Input({ placeholder, className, type = "text", value, onChange, id }) {
+function Input({
+  placeholder,
+  className,
+  type = "text",
+  value,
+  onChange,
+  id,
+  ...props
+}) {
   return (
     <input
       id={id}
@@ -11,6 +19,7 @@ function Input({ placeholder, className, type = "text", value, onChange, id }) {
                   transition-all ease-in duration-100 
                   hover:scale-[1.01] focus:scale-[1.01]
                   appear-animation bg-input-bg ${className}`}
+      {...props}
     />
   );
 }

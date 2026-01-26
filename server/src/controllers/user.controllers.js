@@ -30,6 +30,25 @@ export const userController = {
     return res.ok(updatedUser);
   },
 
+  async changePassword(req, res) {
+    const userId = req.user.userId;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.error("Current and new password are required");
+    }
+
+    try {
+      const result = await userService.changePassword(userId, {
+        currentPassword,
+        newPassword,
+      });
+      return res.ok(result);
+    } catch (error) {
+      return res.error(error.message);
+    }
+  },
+
   async getUserProfile(req, res) {
     const { id } = req.params;
     const userProfile = await userService.getUserProfile(id);

@@ -1,5 +1,11 @@
 import api from "./api";
 
+// Get current user (me)
+export const getMe = async () => {
+  const response = await api.get("/users/me");
+  return response.data;
+};
+
 // Get user profile
 export const getUserProfile = async (userId) => {
   const response = await api.get(`/users/${userId}`);
@@ -27,5 +33,11 @@ export const toggleFollow = async (userId) => {
 // Update user profile
 export const updateUserProfile = async (data) => {
   const response = await api.put("/users/me", data);
+  return response.data;
+};
+
+// Change password
+export const changePassword = async (data) => {
+  const response = await api.put("/users/me/change-password", data);
   return response.data;
 };

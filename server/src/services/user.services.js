@@ -1,4 +1,5 @@
 import { prisma } from "../prisma.js";
+import bcrypt from "bcryptjs";
 
 export const userService = {
   async getUserById(id) {
@@ -37,6 +38,40 @@ export const userService = {
       },
     });
     return user;
+  },
+
+  async changePassword(userId, { currentPassword, newPassword }) {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(userId) },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (!user.password) {
+      throw new Error(
+        "This account is managed via social login (Google/Facebook). You cannot set a password here.",
+      );
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new Error("Incorrect current password");
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await prisma.user.update({
+      where: { id: Number(userId) },
+      data: { password: hashedPassword },
+    });
+
+    return { message: "Password updated successfully" };
   },
 
   async getUserProfile(userId) {

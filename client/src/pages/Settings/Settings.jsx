@@ -1,22 +1,43 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserProfile, updateUserProfile } from "../../api/user.api";
-import { LuCamera } from "react-icons/lu";
+import { getMe, updateUserProfile, changePassword } from "../../api/user.api";
+import Input from "../../components/ui/Input";
+import ButtonPrimary from "../../components/ui/ButtonPrimary";
+import {
+  LuCamera,
+  LuUser,
+  LuLock,
+  LuBell,
+  LuShield,
+  LuLoader,
+  LuEye,
+  LuEyeOff,
+} from "react-icons/lu";
 
 function Settings() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
+  const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [profileData, setProfileData] = useState({
     fullName: "",
     username: "",
   });
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [profileSaving, setProfileSaving] = useState(false);
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [showCurrentType, setShowCurrentType] = useState(false);
+  const [showNewType, setShowNewType] = useState(false);
+  const [passwordSaving, setPasswordSaving] = useState(false);
 
   const currentUserStr = localStorage.getItem("user");
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -29,10 +50,10 @@ function Settings() {
 
     const fetchUserData = async () => {
       try {
-        const res = await getUserProfile(currentUser.id);
+        const res = await getMe();
         const data = res.data;
         setUser(data);
-        setFormData({
+        setProfileData({
           fullName: data.fullName || "",
           username: data.username || "",
         });
@@ -45,11 +66,11 @@ function Settings() {
     };
 
     fetchUserData();
-  }, [currentUser?.id, navigate]);
+  }, [currentUser, navigate]);
 
-  const handleInputChange = (e) => {
+  const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageClick = () => {
@@ -65,21 +86,28 @@ function Settings() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
-
+    setProfileSaving(true);
     try {
       const data = new FormData();
-      data.append("fullName", formData.fullName);
-      data.append("username", formData.username);
+      data.append("fullName", profileData.fullName);
+      data.append("username", profileData.username);
 
       if (selectedFile) {
         data.append("image", selectedFile);
       }
 
       const res = await updateUserProfile(data);
-      const updatedUser = res.data;
+
+      let updatedUser = res;
+      if (
+        res &&
+        res.data &&
+        (res.success || Object.keys(res).includes("data"))
+      ) {
+        updatedUser = res.data;
+      }
 
       const newUserState = { ...currentUser, ...updatedUser };
       localStorage.setItem("user", JSON.stringify(newUserState));
@@ -89,112 +117,387 @@ function Settings() {
       console.error("Error updating profile:", error);
       alert("Failed to update profile. Please try again.");
     } finally {
-      setSaving(false);
+      setProfileSaving(false);
     }
   };
 
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert("New passwords do not match!");
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      alert("Password must be at least 6 characters long.");
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      await changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      alert("Password changed successfully! Please log in again.");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert(
+        error.response?.data?.message ||
+          "Failed to change password. check your current password.",
+      );
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-olive border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: "profile", label: "Edit Profile", icon: LuUser },
+    { id: "account", label: "Account", icon: LuLock },
+    { id: "notifications", label: "Notifications", icon: LuBell },
+    { id: "security", label: "Privacy & Security", icon: LuShield },
+  ];
+
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-8">
+    <div className="w-full max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 sm:p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Edit Profile
-          </h2>
+      <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="w-full md:w-64 flex-shrink-0">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <nav className="flex flex-col p-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-5 h-5 ${isActive ? "text-primary" : "text-gray-400"}`}
+                    />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Avatar Section */}
-            <div className="flex flex-col items-center sm:flex-row sm:items-start gap-6">
-              <div
-                className="relative group cursor-pointer"
-                onClick={handleImageClick}
-              >
-                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gray-100 group-hover:border-primary/20 transition-all">
-                  <img
-                    src={avatarPreview || "/avatars/sampleAvatar.jpg"}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <LuCamera className="w-8 h-8 text-white" />
-                </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-              </div>
+        <div className="flex-1 w-full">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 sm:p-8">
+              {activeTab === "profile" && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                    Edit Profile
+                  </h2>
+                  <form onSubmit={handleProfileSubmit} className="space-y-8">
+                    <div className="flex flex-col items-center sm:flex-row sm:items-start gap-6">
+                      <div
+                        className="relative group cursor-pointer"
+                        onClick={handleImageClick}
+                      >
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gray-100 group-hover:border-primary/20 transition-all">
+                          <img
+                            src={avatarPreview || "/avatars/sampleAvatar.jpg"}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <LuCamera className="w-8 h-8 text-white" />
+                        </div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                      </div>
+                      <div className="flex-1 text-center sm:text-left">
+                        <h3 className="font-medium text-gray-900">
+                          Profile Picture
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1 mb-3">
+                          Click on the image to upload a new one. <br />
+                          JPG, GIF or PNG. Max size of 800K.
+                        </p>
+                      </div>
+                    </div>
 
-              <div className="flex-1 text-center sm:text-left">
-                <h3 className="font-medium text-gray-900">Profile Picture</h3>
-                <p className="text-sm text-gray-500 mt-1 mb-3">
-                  Click on the image to upload a new one. <br />
-                  JPG, GIF or PNG. Max size of 800K.
-                </p>
-              </div>
-            </div>
+                    <div className="grid gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email
+                        </label>
+                        <p className="py-2 text-gray-900 font-medium sm:text-sm">
+                          {user?.email || ""}
+                        </p>
+                      </div>
 
-            {/* Form Fields */}
-            <div className="grid gap-6">
-              <div>
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Username
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500">@</span>
+                      <div>
+                        <label
+                          htmlFor="username"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Username
+                        </label>
+                        <Input
+                          type="text"
+                          id="username"
+                          name="username"
+                          value={profileData.username}
+                          onChange={handleProfileChange}
+                        />
+                        <p className="mt-1 text-xs text-gray-500">
+                          Unique username for your profile URL.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="fullName"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Full Name
+                        </label>
+                        <Input
+                          type="text"
+                          id="fullName"
+                          name="fullName"
+                          value={profileData.fullName}
+                          onChange={handleProfileChange}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end pt-4 border-t border-gray-100">
+                      <ButtonPrimary
+                        type="submit"
+                        disabled={profileSaving}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all font-medium"
+                      >
+                        {profileSaving ? <>Saving...</> : <>Save Changes</>}
+                      </ButtonPrimary>
+                    </div>
+                  </form>
+                </>
+              )}
+
+              {activeTab === "account" && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                    Change Password
+                  </h2>
+                  <form
+                    onSubmit={handlePasswordSubmit}
+                    className="space-y-6 max-w-md"
+                  >
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Current Password
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type={showCurrentType ? "text" : "password"}
+                          name="currentPassword"
+                          value={passwordData.currentPassword}
+                          onChange={handlePasswordChange}
+                          required
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-[65%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          onClick={() => setShowCurrentType(!showCurrentType)}
+                        >
+                          {showCurrentType ? <LuEyeOff /> : <LuEye />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        New Password
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type={showNewType ? "text" : "password"}
+                          name="newPassword"
+                          value={passwordData.newPassword}
+                          onChange={handlePasswordChange}
+                          required
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-[65%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          onClick={() => setShowNewType(!showNewType)}
+                        >
+                          {showNewType ? <LuEyeOff /> : <LuEye />}
+                        </button>
+                      </div>
+                      <p className="mt-1 text-xs text-gray-500">
+                        Minimum 6 characters.
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Confirm New Password
+                      </label>
+                      <Input
+                        type="password"
+                        name="confirmPassword"
+                        value={passwordData.confirmPassword}
+                        onChange={handlePasswordChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="flex justify-start pt-2">
+                      <ButtonPrimary
+                        type="submit"
+                        disabled={passwordSaving}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all font-medium"
+                      >
+                        {passwordSaving ? <>Saving...</> : <>Change Password</>}
+                      </ButtonPrimary>
+                    </div>
+                  </form>
+                </>
+              )}
+
+              {activeTab === "notifications" && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                    Notification Preferences
+                  </h2>
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          Email Notifications
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Receive emails about your account activity.
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          defaultChecked
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          Push Notifications
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Receive push notifications on your device.
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          defaultChecked
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2">
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          New Follower Alerts
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Get notified when someone follows you.
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          defaultChecked
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
                   </div>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary sm:text-sm"
-                  />
-                </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  Unique username for your profile URL.
-                </p>
-              </div>
+                </>
+              )}
 
-              <div>
-                <label
-                  htmlFor="fullName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary sm:text-sm transition-colors"
-                  placeholder="Enter your full name"
-                />
-              </div>
-            </div>
+              {activeTab === "security" && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                    Privacy & Security
+                  </h2>
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          Private Profile
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Only your followers can see your recipes.
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end pt-4 border-t border-gray-100">
-              <button
-                type="submit"
-                disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all font-medium"
-              >
-                {saving ? <>Saving...</> : <>Save Changes</>}
-              </button>
+                    <div>
+                      <h3 className="font-medium text-gray-900 mb-4">
+                        Data Management
+                      </h3>
+                      <button className="text-sm font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors">
+                        Delete Account
+                      </button>
+                      <p className="mt-2 text-xs text-gray-500">
+                        Permanently remove your account and all of your content.
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
