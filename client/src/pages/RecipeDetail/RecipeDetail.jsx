@@ -296,7 +296,6 @@ function RecipeDetail() {
       setCommentToDeleteId(null);
     } catch (error) {
       console.error("Error deleting comment", error);
-      alert(error.response?.data?.message || "Error deleting comment");
     }
   };
 

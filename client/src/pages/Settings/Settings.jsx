@@ -4,6 +4,7 @@ import { getMe, updateUserProfile, changePassword } from "../../api/user.api";
 import Input from "../../components/ui/Input";
 import Loader from "../../components/ui/Loader";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
+import Toast from "../../components/ui/Toast";
 import {
   LuCamera,
   LuUser,
@@ -39,6 +40,8 @@ function Settings() {
   const [showCurrentType, setShowCurrentType] = useState(false);
   const [showNewType, setShowNewType] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const currentUserStr = localStorage.getItem("user");
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -116,7 +119,6 @@ function Settings() {
       window.location.reload();
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
     } finally {
       setProfileSaving(false);
     }
@@ -130,11 +132,9 @@ function Settings() {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("New passwords do not match!");
       return;
     }
     if (passwordData.newPassword.length < 6) {
-      alert("Password must be at least 6 characters long.");
       return;
     }
 
@@ -144,18 +144,17 @@ function Settings() {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
-      alert("Password changed successfully! Please log in again.");
+
       setPasswordData({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
+
+      setToastMessage("Password changed successfully!");
+      setShowToast(true);
     } catch (error) {
       console.error("Error changing password:", error);
-      alert(
-        error.response?.data?.message ||
-          "Failed to change password. check your current password.",
-      );
     } finally {
       setPasswordSaving(false);
     }
@@ -499,6 +498,12 @@ function Settings() {
           </div>
         </div>
       </div>
+
+      <Toast
+        isOpen={showToast}
+        message={toastMessage}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }
