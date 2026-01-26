@@ -19,6 +19,25 @@ export const userService = {
     return user;
   },
 
+  async updateProfile(userId, { fullName, avatarUrl }) {
+    const data = {};
+    if (fullName !== undefined) data.fullName = fullName;
+    if (avatarUrl !== undefined) data.avatarUrl = avatarUrl;
+
+    const user = await prisma.user.update({
+      where: { id: Number(userId) },
+      data,
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        fullName: true,
+        avatarUrl: true,
+      },
+    });
+    return user;
+  },
+
   async getUserProfile(userId) {
     const user = await prisma.user.findUnique({
       where: {

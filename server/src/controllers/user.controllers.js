@@ -1,10 +1,32 @@
 import { userService } from "../services/user.services.js";
+import cloudinary from "../config/cloudinary.config.js";
 
 export const userController = {
   async getMe(req, res) {
     const userId = req.user.userId;
     const isUser = await userService.getUserById(userId);
     return res.ok(isUser);
+  },
+
+  async updateProfile(req, res) {
+    const userId = req.user.userId;
+    let avatarUrl;
+
+    if (req.file) {
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+      const uploadResult = await cloudinary.uploader.upload(dataURI, {
+        folder: "avatars",
+      });
+      avatarUrl = uploadResult.secure_url;
+    }
+
+    const updatedUser = await userService.updateProfile(userId, {
+      fullName: req.body.fullName,
+      avatarUrl,
+    });
+
+    return res.ok(updatedUser);
   },
 
   async getUserProfile(req, res) {
@@ -30,7 +52,7 @@ export const userController = {
 
     const isFollowing = await userService.checkIsFollowing(
       followerId,
-      followingId
+      followingId,
     );
     return res.ok({ isFollowing });
   },

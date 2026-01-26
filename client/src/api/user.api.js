@@ -23,3 +23,9 @@ export const toggleFollow = async (userId) => {
   const response = await api.post(`/users/${userId}/follow`);
   return response.data;
 };
+
+// Update user profile
+export const updateUserProfile = async (data) => {
+  const response = await api.put("/users/me", data);
+  return response.data;
+};
