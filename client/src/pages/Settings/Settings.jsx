@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMe, updateUserProfile, changePassword } from "../../api/user.api";
 import Input from "../../components/ui/Input";
+import Loader from "../../components/ui/Loader";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import {
   LuCamera,
@@ -163,9 +164,7 @@ function Settings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 border-4 border-olive border-t-transparent rounded-full animate-spin"></div>
-        </div>
+        <Loader />
       </div>
     );
   }

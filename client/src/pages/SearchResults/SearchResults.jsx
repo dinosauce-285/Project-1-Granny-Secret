@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { LuInbox, LuSearch } from "react-icons/lu";
 import RecipeCard from "../../components/recipe/RecipeCard";
+import Loader from "../../components/ui/Loader";
 import api from "../../api/api.js";
 
 function SearchResults() {
@@ -43,10 +44,7 @@ function SearchResults() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 border-4 border-olive border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-500">Searching...</p>
-        </div>
+        <Loader />
       </div>
     );
   }

@@ -5,6 +5,7 @@ import RecipeCard from "../../components/recipe/RecipeCard";
 import LeftSidebar from "../../components/layout/LeftSidebar";
 import RightSidebar from "../../components/layout/RightSidebar";
 import FilterSection from "../../components/filters/FilterSection";
+import Loader from "../../components/ui/Loader";
 import { getRecipes, getMyRecipes, searchRecipes } from "../../api/recipe.api";
 
 function Dashboard() {
@@ -109,10 +110,7 @@ function Dashboard() {
         <div className="max-w-2xl mx-auto px-2 sm:px-4">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 border-4 border-olive border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-gray-500">Loading recipes...</p>
-              </div>
+              <Loader />
             </div>
           ) : recipes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
