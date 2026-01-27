@@ -104,25 +104,25 @@ const NotificationDropdown = () => {
 
   const getTimeAgo = (date) => {
     const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-    
+
     let interval = seconds / 31536000;
     if (interval > 1) return Math.floor(interval) + " years ago";
-    
+
     interval = seconds / 2592000;
     if (interval > 1) return Math.floor(interval) + " months ago";
-    
+
     interval = seconds / 604800;
     if (interval > 1) return Math.floor(interval) + " weeks ago";
-    
+
     interval = seconds / 86400;
     if (interval > 1) return Math.floor(interval) + " days ago";
-    
+
     interval = seconds / 3600;
     if (interval > 1) return Math.floor(interval) + " hours ago";
-    
+
     interval = seconds / 60;
     if (interval > 1) return Math.floor(interval) + " minutes ago";
-    
+
     return "just now";
   };
 
@@ -178,16 +178,25 @@ const NotificationDropdown = () => {
                     <IoNotificationsOutline className="text-3xl text-blue-500 dark:text-blue-400" />
                   </div>
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center shadow-lg animate-pulse">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg
+                      className="w-3 h-3 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                 </div>
                 <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">
-                  You're all caught up! 
+                  You're all caught up!
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 text-center max-w-xs leading-relaxed">
-                  Check back later for new notifications about your recipes and followers
+                  Check back later for new notifications about your recipes and
+                  followers
                 </p>
               </div>
             ) : (
@@ -204,14 +213,16 @@ const NotificationDropdown = () => {
                     }}
                     className={`group flex items-start gap-3 px-4 py-3 transition-all duration-200 ${
                       !notification.read
-                        ? "bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 hover:from-blue-100 hover:via-indigo-100 hover:to-purple-100 dark:hover:from-blue-900/20 dark:hover:via-indigo-900/20 dark:hover:to-purple-900/20"
+                        ? "bg-blue-50/60 dark:bg-blue-900/10 hover:bg-blue-100/60 dark:hover:bg-blue-900/20"
                         : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
                     }`}
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="relative flex-shrink-0">
                       <img
-                        src={notification.sender.avatarUrl || "/auth/sampleAva.jpg"}
+                        src={
+                          notification.sender.avatarUrl || "/auth/sampleAva.jpg"
+                        }
                         alt={notification.sender.username}
                         className="w-10 h-10 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-2 transition-all duration-200"
                       />
@@ -219,11 +230,12 @@ const NotificationDropdown = () => {
                         <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-white dark:border-gray-900"></div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <p className="text-sm leading-snug">
                         <span className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
-                          {notification.sender.fullName || notification.sender.username}
+                          {notification.sender.fullName ||
+                            notification.sender.username}
                         </span>
                         <span className="text-gray-600 dark:text-gray-300 ml-1">
                           {getNotificationText(notification)}
