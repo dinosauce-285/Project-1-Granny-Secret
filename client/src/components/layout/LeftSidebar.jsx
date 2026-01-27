@@ -2,6 +2,7 @@ import FilterButton from "../filters/FilterButton";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/api";
+import { LuGlobe, LuUser, LuChefHat, LuBookmark } from "react-icons/lu";
 
 function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
   const [categories, setCategories] = useState([]);
@@ -47,7 +48,11 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
       <div className="rounded-xl shadow-sm p-4 mb-4">
         <h3 className="font-semibold text-gray-900 mb-3 text-sm">Profile</h3>
         <Link to={`/profile/${user?.id}`}>
-          <FilterButton isActive={false} className="w-full justify-start">
+          <FilterButton
+            isActive={false}
+            className="w-full justify-start"
+            icon={<LuUser className="w-4 h-4" />}
+          >
             My Profile
           </FilterButton>
         </Link>
@@ -60,6 +65,7 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
             isActive={activeFilter === "all"}
             onClick={() => handleFilterClick("all")}
             className="w-full justify-start"
+            icon={<LuGlobe className="w-4 h-4" />}
           >
             All Recipes
           </FilterButton>
@@ -68,6 +74,7 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
             isActive={activeFilter === "my-recipes"}
             onClick={() => handleFilterClick("my-recipes")}
             className="w-full justify-start"
+            icon={<LuChefHat className="w-4 h-4" />}
           >
             My Recipes
           </FilterButton>
@@ -76,6 +83,7 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
             isActive={activeFilter === "favourites"}
             onClick={() => handleFilterClick("favourites")}
             className="w-full justify-start"
+            icon={<LuBookmark className="w-4 h-4" />}
           >
             Saved
           </FilterButton>
@@ -83,7 +91,9 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
       </div>
 
       <div className="rounded-xl shadow-sm p-4">
-        <h3 className="font-semibold text-gray-900 mb-3 text-sm">Categories</h3>
+        <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center gap-2">
+          Categories
+        </h3>
         <div className="flex flex-col gap-2">
           {categories.map((cat) => (
             <FilterButton

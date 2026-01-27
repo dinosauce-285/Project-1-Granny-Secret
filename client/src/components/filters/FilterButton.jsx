@@ -1,4 +1,10 @@
-function FilterButton({ children, isActive = false, onClick, className = "" }) {
+function FilterButton({
+  children,
+  isActive = false,
+  onClick,
+  icon,
+  className = "",
+}) {
   return (
     <button
       onClick={onClick}
@@ -7,6 +13,7 @@ function FilterButton({ children, isActive = false, onClick, className = "" }) {
         rounded-lg
         transition-all duration-200 ease-out
         text-left w-full
+        flex items-center gap-2
         ${
           isActive
             ? "bg-primary text-white shadow-sm"
@@ -15,6 +22,7 @@ function FilterButton({ children, isActive = false, onClick, className = "" }) {
         ${className}
       `}
     >
+      {icon && <span className="flex-shrink-0">{icon}</span>}
       {children}
     </button>
   );
