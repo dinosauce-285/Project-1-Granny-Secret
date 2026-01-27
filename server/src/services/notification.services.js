@@ -6,6 +6,16 @@ export const notificationService = {
       return null; 
     }
 
+    const preferences = await prisma.userPreferences.findUnique({
+      where: { userId: Number(recipientId) },
+    });
+
+    if (preferences) {
+      if (type === "LIKE" && !preferences.notifyOnLike) return null;
+      if (type === "FOLLOW" && !preferences.notifyOnFollow) return null;
+      if (type === "COMMENT" && !preferences.notifyOnComment) return null;
+    }
+
     return await prisma.notification.create({
       data: {
         recipientId: Number(recipientId),

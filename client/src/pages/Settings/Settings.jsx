@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMe, updateUserProfile, changePassword } from "../../api/user.api";
+import { getPreferences, updatePreferences } from "../../api/preference.api";
 import Input from "../../components/ui/Input";
 import Loader from "../../components/ui/Loader";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
@@ -39,6 +40,13 @@ function Settings() {
   const [showCurrentType, setShowCurrentType] = useState(false);
   const [showNewType, setShowNewType] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
+
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    notifyOnLike: true,
+    notifyOnFollow: true,
+    notifyOnComment: true,
+  });
+
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("error");
@@ -71,6 +79,32 @@ function Settings() {
 
     fetchUserData();
   }, [navigate]);
+
+  useEffect(() => {
+    console.log("notificationPreferences updated:", notificationPreferences);
+  }, [notificationPreferences]);
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      if (activeTab === "notifications") {
+        try {
+          const prefsRes = await getPreferences();
+          console.log("Fetched preferences on tab switch:", prefsRes);
+          if (prefsRes) {
+            setNotificationPreferences({
+              notifyOnLike: prefsRes.notifyOnLike ?? true,
+              notifyOnFollow: prefsRes.notifyOnFollow ?? true,
+              notifyOnComment: prefsRes.notifyOnComment ?? true,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching preferences:", error);
+        }
+      }
+    };
+
+    fetchPreferences();
+  }, [activeTab]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -168,6 +202,47 @@ function Settings() {
       console.error("Error changing password:", error);
     } finally {
       setPasswordSaving(false);
+    }
+  };
+
+  const handlePreferenceToggle = async (preference) => {
+    const newValue = !notificationPreferences[preference];
+
+    setNotificationPreferences((prev) => ({
+      ...prev,
+      [preference]: newValue,
+    }));
+    try {
+      await updatePreferences({
+        ...notificationPreferences,
+        [preference]: newValue,
+      });
+
+      // Load preferences
+      const prefsRes = await getPreferences();
+      console.log("API Response from getPreferences():", prefsRes);
+      if (prefsRes) {
+        setNotificationPreferences({
+          notifyOnLike: prefsRes.notifyOnLike ?? true,
+          notifyOnFollow: prefsRes.notifyOnFollow ?? true,
+          notifyOnComment: prefsRes.notifyOnComment ?? true,
+        });
+      }
+      setToastMessage("Preference updated successfully!");
+      setToastType("success");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Error updating preferences:", error);
+      setNotificationPreferences((prev) => ({
+        ...prev,
+        [preference]: !newValue,
+      }));
+      setToastMessage(
+        error.response?.data?.message ||
+          "Failed to update preference. Please try again.",
+      );
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -413,17 +488,20 @@ function Settings() {
                     <div className="flex items-center justify-between py-2 border-b border-gray-50">
                       <div>
                         <h3 className="font-medium text-gray-900">
-                          Email Notifications
+                          Like Notifications
                         </h3>
                         <p className="text-sm text-gray-500">
-                          Receive emails about your account activity.
+                          Get notified when someone likes your recipe.
                         </p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
                           type="checkbox"
                           className="sr-only peer"
-                          defaultChecked
+                          checked={notificationPreferences.notifyOnLike}
+                          onChange={() =>
+                            handlePreferenceToggle("notifyOnLike")
+                          }
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                       </label>
@@ -432,26 +510,7 @@ function Settings() {
                     <div className="flex items-center justify-between py-2 border-b border-gray-50">
                       <div>
                         <h3 className="font-medium text-gray-900">
-                          Push Notifications
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Receive push notifications on your device.
-                        </p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          defaultChecked
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                      </label>
-                    </div>
-
-                    <div className="flex items-center justify-between py-2">
-                      <div>
-                        <h3 className="font-medium text-gray-900">
-                          New Follower Alerts
+                          Follow Notifications
                         </h3>
                         <p className="text-sm text-gray-500">
                           Get notified when someone follows you.
@@ -461,7 +520,32 @@ function Settings() {
                         <input
                           type="checkbox"
                           className="sr-only peer"
-                          defaultChecked
+                          checked={notificationPreferences.notifyOnFollow}
+                          onChange={() =>
+                            handlePreferenceToggle("notifyOnFollow")
+                          }
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          Comment Notifications
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Get notified when someone comments on your recipe.
+                        </p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={notificationPreferences.notifyOnComment}
+                          onChange={() =>
+                            handlePreferenceToggle("notifyOnComment")
+                          }
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                       </label>
