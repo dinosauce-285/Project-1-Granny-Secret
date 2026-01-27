@@ -143,4 +143,76 @@ export const authController = {
       );
     }
   },
+
+  async requestPasswordReset(req, res) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.error("Email is required", [], 400);
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.error("Invalid email format", [], 400);
+      }
+
+      await authService.requestPasswordReset(email);
+
+      return res.ok(
+        { message: "Password reset email sent successfully" },
+        "If the email exists, a password reset link has been sent",
+      );
+    } catch (error) {
+      console.error("Request password reset error:", error);
+
+      // Don't reveal if email exists or not for security
+      return res.ok(
+        { message: "Password reset email sent successfully" },
+        "If the email exists, a password reset link has been sent",
+      );
+    }
+  },
+
+  async resetPassword(req, res) {
+    try {
+      const { token } = req.params;
+      const { newPassword } = req.body;
+
+      if (!token) {
+        return res.error("Reset token is required", [], 400);
+      }
+
+      if (!newPassword) {
+        return res.error("New password is required", [], 400);
+      }
+
+      if (newPassword.length < 6) {
+        return res.error(
+          "Password must be at least 6 characters long",
+          [],
+          400,
+        );
+      }
+
+      await authService.resetPassword(token, newPassword);
+
+      return res.ok(
+        { message: "Password reset successfully" },
+        "Your password has been reset. You can now login with your new password.",
+      );
+    } catch (error) {
+      console.error("Reset password error:", error);
+
+      if (error.message === "Invalid or expired token") {
+        return res.error(
+          "Invalid or expired reset token. Please request a new password reset.",
+          [],
+          400,
+        );
+      }
+
+      return res.error("Failed to reset password. Please try again.", [], 500);
+    }
+  },
 };

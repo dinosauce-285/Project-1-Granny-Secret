@@ -14,5 +14,11 @@ router.put(
   authController.updateProfile,
 );
 router.post("/google-login", apiKeyAuth, authController.googleLogin);
+router.post(
+  "/forgot-password",
+  apiKeyAuth,
+  authController.requestPasswordReset,
+);
+router.post("/reset-password/:token", apiKeyAuth, authController.resetPassword);
 
 export default router;

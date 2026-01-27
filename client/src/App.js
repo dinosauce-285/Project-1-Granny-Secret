@@ -4,6 +4,7 @@ import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
 import ProfileSetup from "./pages/SignUp/ProfileSetup";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
 import EditRecipe from "./pages/EditRecipe/EditRecipe";
@@ -23,6 +24,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile-setup" element={<ProfileSetup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Dashboard />} />

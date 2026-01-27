@@ -78,6 +78,7 @@ function Settings() {
     };
 
     fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   useEffect(() => {
@@ -400,10 +401,7 @@ function Settings() {
                   <h2 className="text-xl font-semibold text-gray-900 mb-6">
                     Change Password
                   </h2>
-                  <form
-                    onSubmit={handlePasswordSubmit}
-                    className="space-y-6 max-w-md"
-                  >
+                  <form onSubmit={handlePasswordSubmit} className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Current Password
@@ -415,11 +413,11 @@ function Settings() {
                           value={passwordData.currentPassword}
                           onChange={handlePasswordChange}
                           required
-                          className="pr-10"
+                          className="pr-10 !mt-0"
                         />
                         <button
                           type="button"
-                          className="absolute right-3 top-[65%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                           onClick={() => setShowCurrentType(!showCurrentType)}
                         >
                           {showCurrentType ? <LuEyeOff /> : <LuEye />}
@@ -431,7 +429,7 @@ function Settings() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         New Password
                       </label>
-                      <div className="relative">
+                      <div className="relative flex items-center">
                         <Input
                           type={showNewType ? "text" : "password"}
                           name="newPassword"
@@ -442,7 +440,7 @@ function Settings() {
                         />
                         <button
                           type="button"
-                          className="absolute right-3 top-[65%] -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3 text-gray-400 hover:text-gray-600"
                           onClick={() => setShowNewType(!showNewType)}
                         >
                           {showNewType ? <LuEyeOff /> : <LuEye />}

@@ -1,6 +1,7 @@
 import { prisma } from "../prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { emailService } from "./email.services.js";
 import { supabase } from "../config/supabase.js";
 
@@ -199,5 +200,67 @@ export const authService = {
       },
       token: appToken,
     };
+  },
+
+  async requestPasswordReset(email) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new Error("Email not found");
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    const resetExpires = new Date(Date.now() + 60 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: resetExpires,
+      },
+    });
+
+    await emailService.sendPasswordResetEmail(email, resetToken);
+
+    return { message: "Password reset email sent successfully" };
+  },
+
+  async resetPassword(token, newPassword) {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await prisma.user.findFirst({
+      where: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error("Invalid or expired token");
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      },
+    });
+
+    return { message: "Password reset successfully" };
   },
 };

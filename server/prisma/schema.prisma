@@ -46,6 +46,10 @@ model User {
   
   // Preferences
   preferences       UserPreferences?
+  
+  // Password reset
+  resetPasswordToken   String?   @unique
+  resetPasswordExpires DateTime?
 }
 
 enum NotificationType {

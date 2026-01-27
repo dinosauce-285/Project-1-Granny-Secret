@@ -6,6 +6,7 @@ import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Input from "../../components/ui/Input";
 import api from "../../api/api";
 import { RegisterSchema } from "../../schemas/auth.schema";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 
 const accountPic = "/auth/accountPic.jpg";
 const logoGoogle = "/auth/logoGoogle.png";
@@ -22,6 +23,8 @@ function SignUp() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     AOS.init({
@@ -132,13 +135,23 @@ function SignUp() {
             >
               Password
             </label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) => handleChange("password", e.target.value)}
+                className="pr-10 !mt-0"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <LuEyeOff /> : <LuEye />}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>
             )}
@@ -149,13 +162,25 @@ function SignUp() {
             >
               Confirm Password
             </label>
-            <Input
-              id="repass"
-              type="password"
-              placeholder="Re-enter your password"
-              value={formData.confirmPassword}
-              onChange={(e) => handleChange("confirmPassword", e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                id="repass"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Re-enter your password"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  handleChange("confirmPassword", e.target.value)
+                }
+                className="pr-10 !mt-0"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <LuEyeOff /> : <LuEye />}
+              </button>
+            </div>
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.confirmPassword[0]}
