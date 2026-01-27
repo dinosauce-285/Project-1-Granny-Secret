@@ -30,7 +30,7 @@ export const emailService = {
               </ul>
               <p>Get started by exploring our latest recipes or creating your first one!</p>
               <br/>
-              <a href="${process.env.CLIENT_URL || "http://localhost:3000"}" style="display: inline-block; padding: 10px 20px; background-color: #006400; color: white; text-decoration: none; border-radius: 5px;">Explore Now</a>
+              <a href="${process.env.REACT_APP_URL || "http://localhost:3000"}" style="display: inline-block; padding: 10px 20px; background-color: #006400; color: white; text-decoration: none; border-radius: 5px;">Explore Now</a>
             </div>
             <div style="background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #718096;">
               <p>&copy; ${new Date().getFullYear()} Grany's Secret. All rights reserved.</p>
@@ -53,7 +53,7 @@ export const emailService = {
 
   async sendPasswordResetEmail(to, resetToken) {
     try {
-      const resetUrl = `${process.env.CLIENT_URL || "http://localhost:3000"}/reset-password/${resetToken}`;
+      const resetUrl = `${process.env.REACT_APP_URL || "http://localhost:3000"}/reset-password/${resetToken}`;
 
       const msg = {
         to: to,

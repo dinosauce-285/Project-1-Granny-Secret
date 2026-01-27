@@ -173,17 +173,20 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
   };
 
   return (
-    <div className="my-8">
+    <div className="my-8 px-2 sm:px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-[95%] max-w-4xl shadow-2xl font-inter mx-auto bg-white rounded-2xl py-4 px-4 flex flex-col space-y-10 justify-between items-start border border-dashed border-gray-300"
+        className="w-full max-w-4xl shadow-2xl font-inter mx-auto bg-white rounded-2xl py-6 sm:py-8 px-4 sm:px-6 lg:px-8 flex flex-col space-y-6 sm:space-y-8 lg:space-y-10 justify-between items-start border border-dashed border-gray-300"
       >
-        <div className="title font-bold text-4xl">
+        <div className="title font-bold text-2xl sm:text-3xl lg:text-4xl">
           {isEdit ? "Edit Recipe" : "Create New Recipe"}
         </div>
 
         <div className="recipeName w-full space-y-2">
-          <label htmlFor="title" className="font-medium text-2xl">
+          <label
+            htmlFor="title"
+            className="font-medium text-lg sm:text-xl lg:text-2xl"
+          >
             Recipe Title
           </label>
           <input
@@ -202,7 +205,10 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
           )}
 
           <div className="image w-full space-y-2">
-            <label htmlFor="image" className="font-medium text-2xl">
+            <label
+              htmlFor="image"
+              className="font-medium text-lg sm:text-xl lg:text-2xl"
+            >
               Recipe Image
             </label>
             <div className="py-2">
@@ -251,9 +257,12 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             )}
           </div>
 
-          <div className="options flex flex-row justify-between w-full">
-            <div className="flex flex-col space-y-2 w-[24%]">
-              <label htmlFor="prepTime" className="font-medium text-2xl">
+          <div className="options grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="prepTime"
+                className="font-medium text-lg sm:text-xl lg:text-2xl"
+              >
                 Prep Time (mins)
               </label>
               <input
@@ -271,8 +280,11 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
                 <p className="text-red-500 text-sm">{errors.prepTime[0]}</p>
               )}
             </div>
-            <div className="flex flex-col space-y-2 w-[24%]">
-              <label htmlFor="cookTime" className="font-medium text-2xl">
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="cookTime"
+                className="font-medium text-lg sm:text-xl lg:text-2xl"
+              >
                 Cook Time (mins)
               </label>
               <input
@@ -290,8 +302,11 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
                 <p className="text-red-500 text-sm">{errors.cookTime[0]}</p>
               )}
             </div>
-            <div className="flex flex-col space-y-2 w-[24%]">
-              <label htmlFor="servings" className="font-medium text-2xl">
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="servings"
+                className="font-medium text-lg sm:text-xl lg:text-2xl"
+              >
                 Serving
               </label>
               <input
@@ -309,8 +324,11 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
                 <p className="text-red-500 text-sm">{errors.servings[0]}</p>
               )}
             </div>
-            <div className="flex flex-col space-y-2 w-[24%]">
-              <label htmlFor="spiciness" className="font-medium text-2xl">
+            <div className="flex flex-col space-y-2">
+              <label
+                htmlFor="spiciness"
+                className="font-medium text-lg sm:text-xl lg:text-2xl"
+              >
                 Spiciness (0-5)
               </label>
               <input
@@ -331,9 +349,12 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             </div>
           </div>
 
-          <div className="flex flex-row w-full gap-6">
-            <div className="w-1/2">
-              <label className="font-medium text-2xl" htmlFor="difficulty">
+          <div className="flex flex-col sm:flex-row w-full gap-4 sm:gap-6">
+            <div className="w-full sm:w-1/2">
+              <label
+                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                htmlFor="difficulty"
+              >
                 Difficulty
               </label>
               <select
@@ -357,8 +378,11 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
               )}
             </div>
 
-            <div className="w-1/2">
-              <label className="font-medium text-2xl" htmlFor="category">
+            <div className="w-full sm:w-1/2">
+              <label
+                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                htmlFor="category"
+              >
                 Category / Tag
               </label>
               <select
@@ -391,12 +415,12 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
 
           <div className="ingredients w-full">
             <div className="flex items-center justify-between">
-              <div className="font-medium text-2xl flex items-center gap-3">
+              <div className="font-medium text-lg sm:text-xl lg:text-2xl flex items-center gap-3">
                 <span>Ingredients</span>
                 <button
                   type="button"
                   onClick={handleAddIngredient}
-                  className="text-green-700 ml-2"
+                  className="text-green-700 ml-2 text-2xl"
                 >
                   +
                 </button>
@@ -405,10 +429,10 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             <div className="mt-3 space-y-3">
               {ingredients.map((ingredient, index) => (
                 <div key={index} className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-1/2">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                    <div className="w-full sm:w-1/2">
                       <input
-                        placeholder="Name"
+                        placeholder="Name (e.g., Tomatoes)"
                         value={ingredient.name}
                         onChange={(e) =>
                           handleIngredientChange(index, "name", e.target.value)
@@ -425,55 +449,61 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
                         </p>
                       )}
                     </div>
-                    <div className="w-1/4">
-                      <input
-                        placeholder="Amount"
-                        value={ingredient.amount}
-                        onChange={(e) =>
-                          handleIngredientChange(
-                            index,
-                            "amount",
-                            e.target.value,
-                          )
-                        }
-                        className={`border ${
-                          errors[`ingredients.${index}.amount`]
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md py-2 px-2 w-full`}
-                      />
-                      {errors[`ingredients.${index}.amount`] && (
-                        <p className="text-red-500 text-sm">
-                          {errors[`ingredients.${index}.amount`][0]}
-                        </p>
-                      )}
+                    <div className="flex gap-2 sm:gap-3 w-full sm:w-1/2">
+                      <div className="w-1/2 sm:w-auto sm:flex-1">
+                        <input
+                          placeholder="Amount"
+                          value={ingredient.amount}
+                          onChange={(e) =>
+                            handleIngredientChange(
+                              index,
+                              "amount",
+                              e.target.value,
+                            )
+                          }
+                          className={`border ${
+                            errors[`ingredients.${index}.amount`]
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md py-2 px-2 w-full`}
+                        />
+                        {errors[`ingredients.${index}.amount`] && (
+                          <p className="text-red-500 text-sm">
+                            {errors[`ingredients.${index}.amount`][0]}
+                          </p>
+                        )}
+                      </div>
+                      <div className="w-1/2 sm:w-auto sm:flex-1">
+                        <input
+                          placeholder="Unit"
+                          value={ingredient.unit}
+                          onChange={(e) =>
+                            handleIngredientChange(
+                              index,
+                              "unit",
+                              e.target.value,
+                            )
+                          }
+                          className={`border ${
+                            errors[`ingredients.${index}.unit`]
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-md py-2 px-2 w-full`}
+                        />
+                        {errors[`ingredients.${index}.unit`] && (
+                          <p className="text-red-500 text-sm">
+                            {errors[`ingredients.${index}.unit`][0]}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveIngredient(index)}
+                        className="text-red-600 bg-red-50 hover:bg-red-100 rounded-full w-8 h-8 sm:w-8 sm:h-8 flex items-center justify-center flex-shrink-0"
+                      >
+                        −
+                      </button>
                     </div>
-                    <div className="w-1/4">
-                      <input
-                        placeholder="Unit"
-                        value={ingredient.unit}
-                        onChange={(e) =>
-                          handleIngredientChange(index, "unit", e.target.value)
-                        }
-                        className={`border ${
-                          errors[`ingredients.${index}.unit`]
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        } rounded-md py-2 px-2 w-full`}
-                      />
-                      {errors[`ingredients.${index}.unit`] && (
-                        <p className="text-red-500 text-sm">
-                          {errors[`ingredients.${index}.unit`][0]}
-                        </p>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveIngredient(index)}
-                      className="text-red-600 bg-red-50 hover:bg-red-100 rounded-full w-8 h-8 flex items-center justify-center"
-                    >
-                      −
-                    </button>
                   </div>
                 </div>
               ))}
@@ -490,12 +520,12 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
 
           <div className="steps w-full">
             <div className="flex items-center justify-between">
-              <div className="font-medium text-2xl flex items-center gap-3">
+              <div className="font-medium text-lg sm:text-xl lg:text-2xl flex items-center gap-3">
                 <span>Steps</span>
                 <button
                   type="button"
                   onClick={handleAddStep}
-                  className="text-green-700 ml-2"
+                  className="text-green-700 ml-2 text-2xl"
                 >
                   +
                 </button>
@@ -528,7 +558,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
                     <button
                       type="button"
                       onClick={() => handleRemoveStep(index)}
-                      className="text-red-600 bg-red-50 hover:bg-red-100 rounded-full w-8 h-8 flex items-center justify-center"
+                      className="text-red-600 bg-red-50 hover:bg-red-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0"
                     >
                       −
                     </button>
@@ -545,7 +575,10 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
           </div>
 
           <div className="notes flex flex-col space-y-2 w-full">
-            <label className="font-medium text-2xl" htmlFor="note">
+            <label
+              className="font-medium text-lg sm:text-xl lg:text-2xl"
+              htmlFor="note"
+            >
               Additional Notes
             </label>
             <textarea

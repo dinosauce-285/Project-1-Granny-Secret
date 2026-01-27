@@ -9,8 +9,8 @@ function FilterButton({ children, isActive = false, onClick, className = "" }) {
         text-left w-full
         ${
           isActive
-            ? "bg-olive text-white shadow-sm"
-            : "bg-transparent text-gray-700 hover:bg-gray-100 hover:text-olive"
+            ? "bg-primary text-white shadow-sm"
+            : "bg-transparent text-gray-700 hover:bg-gray-100 hover:text-primary"
         }
         ${className}
       `}

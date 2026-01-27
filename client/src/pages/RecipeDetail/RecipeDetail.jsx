@@ -178,7 +178,7 @@ const CommentItem = ({ comment, currentUser, onReply, onEdit, onDelete }) => {
 
       {/* Nested Replies */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="pl-12 space-y-4 mt-1">
+        <div className="pl-6 sm:pl-12 space-y-4 mt-1">
           {comment.replies.map((reply) => (
             <CommentItem
               key={reply.id}
@@ -432,7 +432,7 @@ function RecipeDetail() {
         confirmStyle="danger"
         onConfirm={handleConfirmDeleteComment}
       />
-      <div className="w-[95%] max-w-4xl mx-auto pb-8 pt-4">
+      <div className="w-full max-w-4xl mx-auto pb-8 pt-4 px-2 sm:px-4">
         {/* Toolbar */}
         <div className="relative max-h-[600px] rounded-tr-2xl rounded-tl-2xl overflow-hidden shadow-md flex items-center justify-center bg-black">
           <button
@@ -460,8 +460,8 @@ function RecipeDetail() {
           </div>
         </div>
 
-        <div className="bg-white rounded-br-2xl rounded-bl-2xl p-4 shadow-md mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="bg-white rounded-br-2xl rounded-bl-2xl p-3 sm:p-4 shadow-md mb-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6">
             <LikeButton
               recipeId={recipe.id}
               initialLiked={recipe.isLiked ?? recipe.favourite}
@@ -513,7 +513,7 @@ function RecipeDetail() {
               )}
           </div>
 
-          <div className="border-l pl-6 border-gray-200">
+          <div className="sm:border-l sm:pl-6 border-gray-200 flex justify-center sm:justify-start">
             <Bookmark
               recipeId={recipe.id}
               initialSaved={recipe.isSaved}

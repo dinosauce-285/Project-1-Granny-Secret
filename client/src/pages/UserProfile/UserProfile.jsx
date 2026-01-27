@@ -129,7 +129,7 @@ function UserProfile() {
 
           {/* User Info */}
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
               {user.fullName || user.username}
             </h1>
             <p className="text-gray-600 mb-3">@{user.username}</p>

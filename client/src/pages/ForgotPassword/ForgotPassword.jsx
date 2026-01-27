@@ -158,7 +158,7 @@ function ForgotPassword() {
                 setEmailSent(false);
                 setEmail("");
               }}
-              className="text-white py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 mt-4 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none"
+              className="text-white py-2.5 sm:py-3 bg-primary hover:bg-gray-700 mt-4 text-sm sm:text-base w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none"
             >
               Try Another Email
             </ButtonPrimary>

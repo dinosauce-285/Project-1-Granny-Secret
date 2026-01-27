@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/api";
 
-function LeftSidebar({ onFilterChange, activeFilter }) {
+function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
   const [categories, setCategories] = useState([]);
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
@@ -37,7 +37,13 @@ function LeftSidebar({ onFilterChange, activeFilter }) {
   };
 
   return (
-    <div className="hidden lg:block w-64 xl:w-72 h-full overflow-y-auto sticky top-0 pb-6 ">
+    <div
+      className={
+        isMobile
+          ? "w-full"
+          : "hidden lg:block w-64 xl:w-72 h-full overflow-y-auto sticky top-0 pb-6"
+      }
+    >
       <div className="rounded-xl shadow-sm p-4 mb-4">
         <h3 className="font-semibold text-gray-900 mb-3 text-sm">Profile</h3>
         <Link to={`/profile/${user?.id}`}>

@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { LuInbox } from "react-icons/lu";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useOutletContext } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { LuPlus } from "react-icons/lu";
 import RecipeCard from "../../components/recipe/RecipeCard";
 import LeftSidebar from "../../components/layout/LeftSidebar";
 import RightSidebar from "../../components/layout/RightSidebar";
 import FilterSection from "../../components/filters/FilterSection";
 import Loader from "../../components/ui/Loader";
+import MobileDrawer from "../../components/ui/MobileDrawer";
 import { getRecipes, getMyRecipes, searchRecipes } from "../../api/recipe.api";
 
 function Dashboard() {
@@ -13,6 +16,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchParams] = useSearchParams();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useOutletContext();
 
   const [filter, setFilter] = useState({
     type: "all",
@@ -93,7 +97,33 @@ function Dashboard() {
 
   return (
     <div className="w-full h-full flex gap-4">
-      {/* Left Sidebar - Filters */}
+      {/* Mobile Drawer for Filters */}
+      <MobileDrawer
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        title="Menu"
+      >
+        {/* Create Recipe Button - Mobile only */}
+        <Link
+          to="/create"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="flex items-center justify-center gap-2 w-full px-4 py-3 mb-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-sm"
+        >
+          <LuPlus className="w-5 h-5" />
+          Create Recipe
+        </Link>
+
+        <LeftSidebar
+          onFilterChange={(filter) => {
+            handleFilterChange(filter);
+            setIsMobileMenuOpen(false);
+          }}
+          activeFilter={activeFilter}
+          isMobile={true}
+        />
+      </MobileDrawer>
+
+      {/* Left Sidebar - Filters (Desktop) */}
       <LeftSidebar
         onFilterChange={handleFilterChange}
         activeFilter={activeFilter}
@@ -101,11 +131,6 @@ function Dashboard() {
 
       {/* Main Feed */}
       <div className="flex-1 min-w-0 h-full overflow-y-auto pb-4">
-        {/* Mobile Filter Section */}
-        <div className="lg:hidden">
-          <FilterSection onFilterChange={handleFilterChange} />
-        </div>
-
         {/* Recipe Feed */}
         <div className="max-w-2xl mx-auto px-2 sm:px-4">
           {loading ? (
