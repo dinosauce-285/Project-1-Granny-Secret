@@ -62,7 +62,14 @@ export const userController = {
 
   async getUserRecipes(req, res) {
     const { id } = req.params;
-    const recipes = await userService.getUserRecipes(id);
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const recipes = await userService.getUserRecipes(
+      id,
+      req.user?.userId,
+      page,
+      limit,
+    );
     return res.ok(recipes);
   },
 
@@ -87,7 +94,13 @@ export const userController = {
 
   async getFollowedUsers(req, res) {
     const userId = req.user.userId;
-    const followedUsers = await userService.getFollowedUsers(userId);
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const followedUsers = await userService.getFollowedUsers(
+      userId,
+      page,
+      limit,
+    );
     return res.ok(followedUsers);
   },
 };

@@ -8,7 +8,14 @@ export const recipeController = {
       favourite: req.query.favourite,
       saved: req.query.saved,
     };
-    const result = await recipeService.getRecipes(filters, req.user?.userId);
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const result = await recipeService.getRecipes(
+      filters,
+      req.user?.userId,
+      page,
+      limit,
+    );
     return res.ok(result);
   },
   async getMyRecipes(req, res) {
@@ -17,7 +24,14 @@ export const recipeController = {
       categoryId: req.query.category,
       favourite: req.query.favourite,
     };
-    const result = await recipeService.getRecipes(filters, req.user?.userId);
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const result = await recipeService.getRecipes(
+      filters,
+      req.user?.userId,
+      page,
+      limit,
+    );
     return res.ok(result);
   },
   async getRecipeById(req, res) {
@@ -168,7 +182,9 @@ export const recipeController = {
     return res.ok(result);
   },
   async getComments(req, res) {
-    const result = await recipeService.getComments(req.params.id);
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const result = await recipeService.getComments(req.params.id, page, limit);
     return res.ok(result);
   },
   async deleteComment(req, res) {

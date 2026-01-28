@@ -3,7 +3,7 @@ import { prisma } from "../prisma.js";
 export const notificationService = {
   async createNotification({ recipientId, senderId, type, recipeId }) {
     if (Number(recipientId) === Number(senderId)) {
-      return null; 
+      return null;
     }
 
     const preferences = await prisma.userPreferences.findUnique({
@@ -26,7 +26,10 @@ export const notificationService = {
     });
   },
 
-  async getUserNotifications(userId) {
+  async getUserNotifications(userId, page = 1, limit = 10) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     return await prisma.notification.findMany({
       where: {
         recipientId: Number(userId),
@@ -51,6 +54,8 @@ export const notificationService = {
       orderBy: {
         createdAt: "desc",
       },
+      skip,
+      take,
     });
   },
 

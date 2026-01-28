@@ -9,8 +9,12 @@ export const getRecipes = async (params = {}) => {
 };
 
 // Get current user's recipes
-export const getMyRecipes = async () => {
-  const response = await api.get("/recipes/my-recipes");
+export const getMyRecipes = async (params = {}) => {
+  const queryString = new URLSearchParams(params).toString();
+  const url = queryString
+    ? `/recipes/my-recipes?${queryString}`
+    : "/recipes/my-recipes";
+  const response = await api.get(url);
   return response.data;
 };
 

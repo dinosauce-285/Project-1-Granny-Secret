@@ -118,7 +118,10 @@ export const userService = {
     };
   },
 
-  async getUserRecipes(userId, currentUserId = null) {
+  async getUserRecipes(userId, currentUserId = null, page = 1, limit = 10) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     const include = {
       category: {
         select: {
@@ -165,6 +168,8 @@ export const userService = {
       orderBy: {
         createdAt: "desc",
       },
+      skip,
+      take,
     });
 
     return recipes.map((recipe) => {
@@ -238,7 +243,10 @@ export const userService = {
     }
   },
 
-  async getFollowedUsers(userId) {
+  async getFollowedUsers(userId, page = 1, limit = 10) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     const follows = await prisma.follow.findMany({
       where: {
         followerId: Number(userId),
@@ -253,8 +261,13 @@ export const userService = {
           },
         },
       },
+      skip,
+      take,
     });
 
-    return follows.map((follow) => follow.following);
+    return follows.map((follow) => ({
+      ...follow.following,
+      isFollowing: true, 
+    }));
   },
 };

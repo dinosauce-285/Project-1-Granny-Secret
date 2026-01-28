@@ -6,17 +6,21 @@ import { LuPlus } from "react-icons/lu";
 import RecipeCard from "../../components/recipe/RecipeCard";
 import LeftSidebar from "../../components/layout/LeftSidebar";
 import RightSidebar from "../../components/layout/RightSidebar";
-import FilterSection from "../../components/filters/FilterSection";
 import Loader from "../../components/ui/Loader";
 import MobileDrawer from "../../components/ui/MobileDrawer";
 import { getRecipes, getMyRecipes, searchRecipes } from "../../api/recipe.api";
+import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 
 function Dashboard() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState(null);
   const [searchParams] = useSearchParams();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useOutletContext();
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const [filter, setFilter] = useState({
     type: "all",
@@ -29,6 +33,8 @@ function Dashboard() {
     const search = searchParams.get("search");
     if (search) {
       setFilter((prev) => ({ ...prev, type: "search", search }));
+      setPage(1);
+      setRecipes([]);
     } else {
       setFilter((prev) => ({ ...prev, search: "" }));
     }
@@ -36,36 +42,51 @@ function Dashboard() {
 
   const fetchRecipes = useCallback(async () => {
     try {
-      setLoading(true);
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setIsFetching(true);
+      }
+
+      let resData = [];
+      const limit = 10;
+      const params = { page, limit };
 
       if (filter.search) {
         const res = await searchRecipes(filter.search);
-        setRecipes(res.data.recipes || []);
-        setLoading(false);
-        return;
-      }
-
-      if (filter.type === "my-recipes") {
-        const res = await getMyRecipes();
-        setRecipes(res.data || []);
+        resData = res.data.recipes || [];
+        setHasMore(false);
+      } else if (filter.type === "my-recipes") {
+        const res = await getMyRecipes({ ...params });
+        resData = res.data || [];
+        setHasMore(resData.length === limit);
       } else {
-        const params = {};
         if (filter.type === "category" && filter.categoryId) {
           params.category = filter.categoryId;
         } else if (filter.type === "favourite") {
           params.favourite = true;
         }
         const res = await getRecipes(params);
-        setRecipes(res.data || []);
+        resData = res.data || [];
+        setHasMore(resData.length === limit);
       }
+
+      setRecipes((prev) => {
+        if (page === 1) return resData;
+
+        const existingIds = new Set(prev.map((r) => r.id));
+        const newRecipes = resData.filter((r) => !existingIds.has(r.id));
+        return [...prev, ...newRecipes];
+      });
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Error fetching recipes",
       );
     } finally {
       setLoading(false);
+      setIsFetching(false);
     }
-  }, [filter]);
+  }, [filter, page]);
 
   useEffect(() => {
     fetchRecipes();
@@ -73,6 +94,8 @@ function Dashboard() {
 
   const handleFilterChange = (newFilter) => {
     setFilter((prev) => ({ ...prev, ...newFilter }));
+    setPage(1);
+    setHasMore(true);
 
     if (newFilter.type === "all") {
       setActiveFilter("all");
@@ -84,6 +107,16 @@ function Dashboard() {
       setActiveFilter(newFilter.categoryId);
     }
   };
+
+  const handleLoadMore = useCallback(() => {
+    setPage((prev) => prev + 1);
+  }, []);
+
+  const lastRecipeElementRef = useInfiniteScroll(
+    isFetching,
+    hasMore,
+    handleLoadMore,
+  );
 
   if (error)
     return (
@@ -103,7 +136,6 @@ function Dashboard() {
         onClose={() => setIsMobileMenuOpen(false)}
         title="Menu"
       >
-        {/* Create Recipe Button - Mobile only */}
         <Link
           to="/create"
           onClick={() => setIsMobileMenuOpen(false)}
@@ -112,7 +144,6 @@ function Dashboard() {
           <LuPlus className="w-5 h-5" />
           Create Recipe
         </Link>
-
         <LeftSidebar
           onFilterChange={(filter) => {
             handleFilterChange(filter);
@@ -130,14 +161,13 @@ function Dashboard() {
       />
 
       {/* Main Feed */}
-      <div className="flex-1 min-w-0 h-full overflow-y-auto pb-4">
-        {/* Recipe Feed */}
+      <div className="flex-1 min-w-0 h-full overflow-y-auto pb-4 custom-scrollbar">
         <div className="max-w-2xl mx-auto px-2 sm:px-4">
-          {loading ? (
+          {page === 1 && loading ? (
             <div className="flex items-center justify-center py-20">
               <Loader />
             </div>
-          ) : recipes.length === 0 ? (
+          ) : recipes.length === 0 && !loading ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <LuInbox className="w-20 h-20 text-gray-300 mb-4" />
               <p className="text-gray-500 text-lg mb-2">No recipes found</p>
@@ -146,7 +176,27 @@ function Dashboard() {
               </p>
             </div>
           ) : (
-            recipes.map((r) => <RecipeCard key={r.id} {...r} />)
+            // List of Recipes
+            <>
+              {recipes.map((r, index) => {
+                if (recipes.length === index + 1) {
+                  return (
+                    <div ref={lastRecipeElementRef} key={r.id}>
+                      <RecipeCard {...r} />
+                    </div>
+                  );
+                } else {
+                  return <RecipeCard key={r.id} {...r} />;
+                }
+              })}
+
+              {/* Loader for next page */}
+              {isFetching && page > 1 && (
+                <div className="flex justify-center py-4">
+                  <Loader />
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

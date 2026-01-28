@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   LuClock,
@@ -12,7 +12,7 @@ import LikeButton from "../ui/LikeButton";
 import MoreOptions from "../ui/MoreOptions";
 import ShareDialog from "../ui/ShareDialog";
 import Dialog from "../ui/Dialog";
-import { checkFollowStatus, toggleFollow } from "../../api/user.api";
+import {toggleFollow } from "../../api/user.api";
 import { deleteRecipe } from "../../api/recipe.api";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
@@ -33,6 +33,7 @@ function RecipeCard({
   isLiked,
   isSaved,
   likeCount: initialLikeCount,
+  isFollowing: initialIsFollowing, 
   user,
 }) {
   const navigate = useNavigate();
@@ -47,21 +48,8 @@ function RecipeCard({
     user &&
     (currentUser.id === user.id || String(currentUser.id) === String(user.id));
 
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing || false);
 
-  useEffect(() => {
-    const fetchFollowStatus = async () => {
-      if (currentUser && user && !isOwner) {
-        try {
-          const res = await checkFollowStatus(user.id);
-          setIsFollowing(res.data.isFollowing);
-        } catch (error) {
-          console.error("Error checking follow status:", error);
-        }
-      }
-    };
-    fetchFollowStatus();
-  }, [user?.id, currentUser?.id, isOwner, user, currentUser]);
 
   const handleFollowToggle = async (e) => {
     e.preventDefault();

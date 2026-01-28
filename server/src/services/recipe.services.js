@@ -1,7 +1,10 @@
 import { prisma } from "../prisma.js";
 
 export const recipeService = {
-  async getRecipes(filters = {}, currentUserId = null) {
+  async getRecipes(filters = {}, currentUserId = null, page = 1, limit = 10) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     const where = {};
 
     if (filters.categoryId) {
@@ -63,88 +66,59 @@ export const recipeService = {
       };
     }
 
-    const isGeneralFeed = 
-      !filters.categoryId && 
-      !filters.favourite && 
-      !filters.saved && 
-      !filters.userId && 
-      currentUserId;
+    const isGeneralFeed =
+      !filters.categoryId &&
+      !filters.favourite &&
+      !filters.saved &&
+      !filters.userId;
 
-    if (isGeneralFeed) {
-      const followingUsers = await prisma.follow.findMany({
-        where: {
-          followerId: Number(currentUserId),
+    let recipes = [];
+
+    if (isGeneralFeed && currentUserId) {
+      recipes = await prisma.recipe.findMany({
+        where,
+        include,
+        orderBy: {
+          createdAt: "desc",
         },
-        select: {
-          followingId: true,
-        },
+        skip,
+        take,
       });
-
-      const followingIds = followingUsers.map((f) => f.followingId);
-
-      if (followingIds.length > 0) {
-        const followedRecipes = await prisma.recipe.findMany({
-          where: {
-            ...where,
-            userId: {
-              in: followingIds,
-            },
-          },
-          include,
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
-
-        const otherRecipes = await prisma.recipe.findMany({
-          where: {
-            ...where,
-            userId: {
-              notIn: [...followingIds, Number(currentUserId)],
-            },
-          },
-          include,
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
-
-
-        const allRecipes = [...followedRecipes, ...otherRecipes];
-
-        return allRecipes.map((recipe) => {
-          const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
-          const isSaved =
-            currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
-          const { likes, bookmarks, ...rest } = recipe;
-          return {
-            ...rest,
-            isLiked: !!isLiked,
-            isSaved: !!isSaved,
-            likeCount: recipe._count.likes,
-            bookmarkCount: recipe._count.bookmarks,
-          };
-        });
-      }
+    } else {
+      recipes = await prisma.recipe.findMany({
+        where,
+        include,
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take,
+      });
     }
 
-    const recipes = await prisma.recipe.findMany({
-      where,
-      include,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    let followedUserIds = new Set();
+    if (currentUserId && recipes.length > 0) {
+      const authorIds = [...new Set(recipes.map((r) => r.userId))];
+      const follows = await prisma.follow.findMany({
+        where: {
+          followerId: Number(currentUserId),
+          followingId: { in: authorIds },
+        },
+      });
+      followedUserIds = new Set(follows.map((f) => f.followingId));
+    }
 
     return recipes.map((recipe) => {
       const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
       const isSaved =
         currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
       const { likes, bookmarks, ...rest } = recipe;
+
       return {
         ...rest,
         isLiked: !!isLiked,
         isSaved: !!isSaved,
+        isFollowing: followedUserIds.has(recipe.userId),
         likeCount: recipe._count.likes,
         bookmarkCount: recipe._count.bookmarks,
       };
@@ -418,10 +392,14 @@ export const recipeService = {
       },
     });
   },
-  async getComments(recipeId) {
+  async getComments(recipeId, page = 1, limit = 10) {
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     return await prisma.comment.findMany({
       where: {
         recipeId: Number(recipeId),
+        parentId: null,
       },
       include: {
         user: {
@@ -443,11 +421,14 @@ export const recipeService = {
               },
             },
           },
+          orderBy: { createdAt: "asc" },
         },
       },
       orderBy: {
         createdAt: "desc",
       },
+      skip,
+      take,
     });
   },
   async deleteComment(commentId, userId) {

@@ -4,9 +4,14 @@ export const notificationController = {
   async getNotifications(req, res, next) {
     try {
       const userId = req.user.userId;
+      const page = req.query.page || 1;
+      const limit = req.query.limit || 10;
       console.log("Backend: getNotifications for user", userId);
-      const notifications =
-        await notificationService.getUserNotifications(userId);
+      const notifications = await notificationService.getUserNotifications(
+        userId,
+        page,
+        limit,
+      );
       console.log("Backend: Found notifications:", notifications.length);
       res.status(200).json({
         success: true,

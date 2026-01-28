@@ -71,24 +71,10 @@ export const searchService = {
     const recipes = await prisma.recipe.findMany({
       where: recipeWhere,
       include: recipeInclude,
-      take: 10,
+      take: 20,
       orderBy: {
         createdAt: "desc",
       },
-    });
-
-    const formattedRecipes = recipes.map((recipe) => {
-      const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
-      const isSaved =
-        currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
-      const { likes, bookmarks, ...rest } = recipe;
-      return {
-        ...rest,
-        isLiked: !!isLiked,
-        isSaved: !!isSaved,
-        likeCount: recipe._count.likes,
-        bookmarkCount: recipe._count.bookmarks,
-      };
     });
 
     const users = await prisma.user.findMany({
@@ -110,7 +96,39 @@ export const searchService = {
           },
         },
       },
-      take: 5,
+      take: 10,
+    });
+
+    let followedUserIds = new Set();
+    if (currentUserId) {
+      const recipeAuthorIds = recipes.map((r) => r.userId);
+      const foundUserIds = users.map((u) => u.id);
+      const allTargetIds = [...new Set([...recipeAuthorIds, ...foundUserIds])];
+
+      if (allTargetIds.length > 0) {
+        const follows = await prisma.follow.findMany({
+          where: {
+            followerId: Number(currentUserId),
+            followingId: { in: allTargetIds },
+          },
+        });
+        followedUserIds = new Set(follows.map((f) => f.followingId));
+      }
+    }
+
+    const formattedRecipes = recipes.map((recipe) => {
+      const isLiked = currentUserId && recipe.likes && recipe.likes.length > 0;
+      const isSaved =
+        currentUserId && recipe.bookmarks && recipe.bookmarks.length > 0;
+      const { likes, bookmarks, ...rest } = recipe;
+      return {
+        ...rest,
+        isLiked: !!isLiked,
+        isSaved: !!isSaved,
+        isFollowing: followedUserIds.has(recipe.userId),
+        likeCount: recipe._count.likes,
+        bookmarkCount: recipe._count.bookmarks,
+      };
     });
 
     const formattedUsers = users.map((user) => ({
@@ -118,6 +136,7 @@ export const searchService = {
       username: user.username,
       fullName: user.fullName,
       avatarUrl: user.avatarUrl,
+      isFollowing: followedUserIds.has(user.id),
       recipesCount: user._count.recipes,
       followersCount: user._count.followers,
     }));
