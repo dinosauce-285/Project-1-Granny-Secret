@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../../api/api";
 
-function LikedPostsWidget() {
+function LikedPostsWidget({ onViewAll }) {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +25,15 @@ function LikedPostsWidget() {
   if (loading) return null;
   return (
     <div className="rounded-xl shadow-sm p-4 mb-4">
-      <h3 className="font-semibold text-gray-900 mb-3">Liked Recipes</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-gray-900">Liked Recipes</h3>
+        <button
+          onClick={onViewAll}
+          className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+        >
+          View All
+        </button>
+      </div>
       <div className="space-y-3">
         {recipes.length > 0 ? (
           recipes.slice(0, 3).map((recipe) => (

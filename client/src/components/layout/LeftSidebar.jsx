@@ -2,7 +2,13 @@ import FilterButton from "../filters/FilterButton";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/api";
-import { LuGlobe, LuUser, LuChefHat, LuBookmark } from "react-icons/lu";
+import {
+  LuGlobe,
+  LuUser,
+  LuChefHat,
+  LuBookmark,
+  LuHeart,
+} from "react-icons/lu";
 
 function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
   const [categories, setCategories] = useState([]);
@@ -31,6 +37,8 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
         onFilterChange({ type: "favourite" });
       } else if (newFilter === "my-recipes") {
         onFilterChange({ type: "my-recipes" });
+      } else if (newFilter === "saved") {
+        onFilterChange({ type: "saved" });
       } else {
         onFilterChange({ type: "category", categoryId: newFilter });
       }
@@ -83,9 +91,18 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
             isActive={activeFilter === "favourites"}
             onClick={() => handleFilterClick("favourites")}
             className="w-full justify-start"
+            icon={<LuHeart className="w-4 h-4" />}
+          >
+            Liked Recipes
+          </FilterButton>
+
+          <FilterButton
+            isActive={activeFilter === "saved"}
+            onClick={() => handleFilterClick("saved")}
+            className="w-full justify-start"
             icon={<LuBookmark className="w-4 h-4" />}
           >
-            Saved
+            Saved Recipes
           </FilterButton>
         </div>
       </div>

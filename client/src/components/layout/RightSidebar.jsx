@@ -4,7 +4,7 @@ import api from "../../api/api";
 import LikedPostsWidget from "./LikedPostsWidget";
 import SavedPostsWidget from "./SavedPostsWidget";
 
-function RightSidebar() {
+function RightSidebar({ onFilterChange }) {
   const [followedUsers, setFollowedUsers] = useState([]);
 
   useEffect(() => {
@@ -65,8 +65,10 @@ function RightSidebar() {
         </div>
       </div>
 
-      <LikedPostsWidget />
-      <SavedPostsWidget />
+      <LikedPostsWidget
+        onViewAll={() => onFilterChange({ type: "favourite" })}
+      />
+      <SavedPostsWidget onViewAll={() => onFilterChange({ type: "saved" })} />
 
       {/* Cooking Tips */}
       <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-sm p-4 border border-amber-100">

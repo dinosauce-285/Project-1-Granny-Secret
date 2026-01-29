@@ -1,9 +1,23 @@
 {
+  "name": "granny-secret-root",
+  "version": "1.0.0",
   "scripts": {
     "build": "cd client && npm install && npm run build && cd ../server && npm install && npx prisma generate",
-    "start": "cd server && npm start"
+    "start": "cd server && npm start",
+    "client": "npm start --prefix client",
+    "server": "npm run dev --prefix server",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run server\" \"npm run client\""
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cz-conventional-changelog": "^3.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

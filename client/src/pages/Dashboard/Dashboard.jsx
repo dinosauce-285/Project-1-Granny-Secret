@@ -65,6 +65,8 @@ function Dashboard() {
           params.category = filter.categoryId;
         } else if (filter.type === "favourite") {
           params.favourite = true;
+        } else if (filter.type === "saved") {
+          params.saved = true;
         }
         const res = await getRecipes(params);
         resData = res.data || [];
@@ -101,6 +103,8 @@ function Dashboard() {
       setActiveFilter("all");
     } else if (newFilter.type === "favourite") {
       setActiveFilter("favourites");
+    } else if (newFilter.type === "saved") {
+      setActiveFilter("saved");
     } else if (newFilter.type === "my-recipes") {
       setActiveFilter("my-recipes");
     } else if (newFilter.type === "category") {
@@ -202,7 +206,7 @@ function Dashboard() {
       </div>
 
       {/* Right Sidebar - Trending/Suggestions */}
-      <RightSidebar />
+      <RightSidebar onFilterChange={handleFilterChange} />
     </div>
   );
 }
