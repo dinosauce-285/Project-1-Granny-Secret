@@ -1,4 +1,5 @@
 import { createPortal } from "react-dom";
+import { useEffect } from "react";
 
 function Dialog({
   isOpen,
@@ -10,7 +11,33 @@ function Dialog({
   onConfirm,
   onCancel,
   confirmStyle = "primary",
+  children,
 }) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isOpen) return;
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      }
+
+      if (e.key === "Enter") {
+          if (
+          document.activeElement.tagName !== "INPUT" &&
+          document.activeElement.tagName !== "TEXTAREA"
+        ) {
+          e.preventDefault();
+          if (onConfirm) onConfirm();
+          onClose();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose, onConfirm]);
+
   if (!isOpen) return null;
 
   const handleCancel = (e) => {
@@ -55,7 +82,8 @@ function Dialog({
           </h2>
         </div>
         <div className="px-6 pb-6">
-          <p className="text-gray-600">{message}</p>
+          {message && <p className="text-gray-600 mb-4">{message}</p>}
+          {children}
         </div>
         <div className="px-6 pb-6 flex justify-end gap-3">
           <button
@@ -83,7 +111,7 @@ function Dialog({
         }
       `}</style>
     </div>,
-    document.body 
+    document.body,
   );
 }
 

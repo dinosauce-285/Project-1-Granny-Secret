@@ -26,5 +26,6 @@ router.get(
   userController.checkIsFollowing,
 );
 router.post("/:id/follow", authMiddleware, userController.toggleFollow);
+router.delete("/me", authMiddleware, userController.deleteAccount);
 
 export default router;

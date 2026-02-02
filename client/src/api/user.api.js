@@ -41,3 +41,11 @@ export const changePassword = async (data) => {
   const response = await api.put("/users/me/change-password", data);
   return response.data;
 };
+
+// Delete account
+export const deleteAccount = async (password) => {
+  const response = await api.delete("/users/me", {
+    data: { password },
+  });
+  return response.data;
+};

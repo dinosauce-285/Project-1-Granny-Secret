@@ -267,7 +267,69 @@ export const userService = {
 
     return follows.map((follow) => ({
       ...follow.following,
-      isFollowing: true, 
+      isFollowing: true,
     }));
+  },
+
+  async deleteAccount(userId, password) {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(userId) },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (!user.password) {
+      throw new Error(
+        "This account is managed via social login. Please contact support to delete your account.",
+      );
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error("Incorrect password");
+    }
+
+    await prisma.comment.updateMany({
+      where: { userId: Number(userId) },
+      data: { userId: null },
+    });
+
+    await prisma.recipe.updateMany({
+      where: { userId: Number(userId) },
+      data: { userId: null },
+    });
+
+    await prisma.like.deleteMany({
+      where: { userId: Number(userId) },
+    });
+
+    await prisma.bookmark.deleteMany({
+      where: { userId: Number(userId) },
+    });
+
+    await prisma.follow.deleteMany({
+      where: { followerId: Number(userId) },
+    });
+
+    await prisma.follow.deleteMany({
+      where: { followingId: Number(userId) },
+    });
+    await prisma.notification.deleteMany({
+      where: { senderId: Number(userId) },
+    });
+    await prisma.notification.deleteMany({
+      where: { recipientId: Number(userId) },
+    });
+
+    await prisma.preference.deleteMany({
+      where: { userId: Number(userId) },
+    });
+    await prisma.user.delete({
+      where: { id: Number(userId) },
+    });
+
+    return { message: "Account deleted successfully" };
   },
 };

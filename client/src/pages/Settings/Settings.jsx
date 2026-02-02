@@ -1,11 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMe, updateUserProfile, changePassword } from "../../api/user.api";
+import {
+  getMe,
+  updateUserProfile,
+  changePassword,
+  deleteAccount,
+} from "../../api/user.api";
 import { getPreferences, updatePreferences } from "../../api/preference.api";
 import Input from "../../components/ui/Input";
 import Loader from "../../components/ui/Loader";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Toast from "../../components/ui/Toast";
+import Dialog from "../../components/ui/Dialog";
 import {
   LuCamera,
   LuUser,
@@ -50,6 +56,10 @@ function Settings() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("error");
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const currentUserStr = localStorage.getItem("user");
   const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -241,6 +251,43 @@ function Settings() {
       setToastMessage(
         error.response?.data?.message ||
           "Failed to update preference. Please try again.",
+      );
+      setToastType("error");
+      setShowToast(true);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword.trim()) {
+      setToastMessage("Please enter your password");
+      setToastType("error");
+      setShowToast(true);
+      return;
+    }
+
+    setDeleteLoading(true);
+    try {
+      await deleteAccount(deletePassword);
+
+      // Clear local storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      // Close dialog and show success
+      setShowDeleteDialog(false);
+      setToastMessage("Account deleted successfully");
+      setToastType("success");
+      setShowToast(true);
+
+      // Redirect to landing page after a short delay
+      setTimeout(() => {
+        navigate("/landing-page");
+      }, 1500);
+    } catch (error) {
+      setDeleteLoading(false);
+      setToastMessage(
+        error.response?.data?.message ||
+          "Failed to delete account. Please check your password.",
       );
       setToastType("error");
       setShowToast(true);
@@ -579,7 +626,10 @@ function Settings() {
                       <h3 className="font-medium text-gray-900 mb-4">
                         Data Management
                       </h3>
-                      <button className="text-sm font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors">
+                      <button
+                        onClick={() => setShowDeleteDialog(true)}
+                        className="text-sm font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+                      >
                         Delete Account
                       </button>
                       <p className="mt-2 text-xs text-gray-500">
@@ -593,6 +643,38 @@ function Settings() {
           </div>
         </div>
       </div>
+
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog
+        isOpen={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setDeletePassword("");
+        }}
+        title="Delete Account"
+        confirmText={deleteLoading ? "Deleting..." : "Delete Account"}
+        confirmStyle="danger"
+        onConfirm={handleDeleteAccount}
+        onCancel={() => {
+          setShowDeleteDialog(false);
+          setDeletePassword("");
+        }}
+        message="This action cannot be undone. All your recipes, comments, and data will be permanently deleted."
+      >
+        <Input
+          id="delete-password"
+          label="Enter your password to confirm"
+          type="password"
+          value={deletePassword}
+          onChange={(e) => setDeletePassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !deleteLoading) {
+              handleDeleteAccount();
+            }
+          }}
+          placeholder="Password"
+        />
+      </Dialog>
 
       <Toast
         isOpen={showToast}

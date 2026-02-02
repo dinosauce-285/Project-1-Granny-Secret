@@ -103,4 +103,20 @@ export const userController = {
     );
     return res.ok(followedUsers);
   },
+
+  async deleteAccount(req, res) {
+    const userId = req.user.userId;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.error("Password is required to delete account");
+    }
+
+    try {
+      await userService.deleteAccount(userId, password);
+      return res.ok({ message: "Account deleted successfully" });
+    } catch (error) {
+      return res.error(error.message);
+    }
+  },
 };
