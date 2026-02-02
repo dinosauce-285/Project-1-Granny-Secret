@@ -55,3 +55,50 @@ export const chatWithCookat = async (message, history = []) => {
     throw new Error("Cookat is taking a nap. Please try again later!");
   }
 };
+
+export const generateCookingTip = async () => {
+  try {
+    const topics = [
+      "vegetables",
+      "meat",
+      "baking",
+      "spices",
+      "knives",
+      "food safety",
+      "sauces",
+      "pasta",
+      "grilling",
+      "cleaning",
+      "organization",
+      "fruits",
+      "seafood",
+      "vegetarian cooking",
+    ];
+    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful chef. Generate ONE short, useful, and interesting cooking tip or kitchen hack. It should be concise (under 30 words). Do not include any intro like 'Here is a tip'. Just the tip direclty.",
+        },
+        {
+          role: "user",
+          content: `Give me a random cooking tip about ${randomTopic}.`,
+        },
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 1.0,
+      max_tokens: 100,
+    });
+
+    return (
+      chatCompletion.choices[0]?.message?.content ||
+      "Always sharpen your knives!"
+    );
+  } catch (error) {
+    console.error("Error in generateCookingTip:", error?.error || error);
+    return "Taste your food as you cook!";
+  }
+};

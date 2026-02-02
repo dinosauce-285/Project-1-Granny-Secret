@@ -16,3 +16,13 @@ export const chat = async (req, res) => {
     res.status(500).json({ message: error.message || "Internal Server Error" });
   }
 };
+
+export const getCookingTip = async (req, res) => {
+  try {
+    const tip = await aiService.generateCookingTip();
+    res.status(200).json({ tip });
+  } catch (error) {
+    console.error("Controller Error:", error);
+    res.status(500).json({ message: "Unable to fetch tip" });
+  }
+};

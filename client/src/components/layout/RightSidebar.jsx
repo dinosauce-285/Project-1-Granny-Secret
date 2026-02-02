@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { LuLightbulb } from "react-icons/lu";
 import api from "../../api/api";
+import { getCookingTip } from "../../api/ai.api";
 import LikedPostsWidget from "./LikedPostsWidget";
 import SavedPostsWidget from "./SavedPostsWidget";
 
@@ -23,10 +24,34 @@ function RightSidebar({ onFilterChange }) {
     fetchFollowedUsers();
   }, []);
 
+  const [cookingTip, setCookingTip] = useState("");
+  useEffect(() => {
+    const fetchTip = async () => {
+      try {
+        const res = await getCookingTip();
+        setCookingTip(res.data.tip);
+      } catch (error) {
+        console.error("Error fetching tip:", error);
+        setCookingTip("Cooking is love made visible!");
+      }
+    };
+    fetchTip();
+  }, []);
+
   const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
   return (
     <div className="hidden xl:block w-80 h-full overflow-y-auto sticky top-0 pb-6">
+      {/* Cooking Tips */}
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+          <LuLightbulb className="w-5 h-5 text-amber-600" />
+          Cooking Tip
+        </h3>
+        <p className="text-sm text-gray-700 leading-relaxed italic">
+          "{cookingTip || "Loading..."}"
+        </p>
+      </div>
       {/* Following */}
       <div className="rounded-xl shadow-sm p-4 mb-4">
         <h3 className="font-semibold text-gray-900 mb-3">Following</h3>
@@ -69,18 +94,6 @@ function RightSidebar({ onFilterChange }) {
         onViewAll={() => onFilterChange({ type: "favourite" })}
       />
       <SavedPostsWidget onViewAll={() => onFilterChange({ type: "saved" })} />
-
-      {/* Cooking Tips */}
-      <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl shadow-sm p-4 border border-amber-100">
-        <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-          <LuLightbulb className="w-5 h-5 text-amber-600" />
-          Cooking Tip of the Day
-        </h3>
-        <p className="text-sm text-gray-700 leading-relaxed">
-          "Always taste your food as you cook. Adjust seasonings gradually - you
-          can always add more, but you can't take it away!"
-        </p>
-      </div>
     </div>
   );
 }

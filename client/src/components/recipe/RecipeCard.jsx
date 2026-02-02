@@ -159,7 +159,7 @@ function RecipeCard({
         onConfirm={handleConfirmDelete}
       />
 
-      <div className="w-full bg-white rounded-2xl overflow-hidden shadow-md my-4 sm:my-6 hover:shadow-xl transition-all duration-300">
+      <div className="w-full bg-white rounded-2xl overflow-hidden shadow-md my-4 hover:shadow-xl transition-all duration-300">
         {/* Header - User Info */}
         <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100">
           <Link
