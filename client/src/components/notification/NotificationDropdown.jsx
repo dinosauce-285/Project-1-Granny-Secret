@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   getNotifications,
@@ -81,7 +81,7 @@ const NotificationDropdown = () => {
 
   const getNotificationLink = (notification) => {
     if (notification.type === "FOLLOW") {
-      return `/profile/${notification.sender.username}`;
+      return `/profile/${notification.sender.id}`;
     }
     if (notification.type === "LIKE" || notification.type === "COMMENT") {
       return `/recipe/${notification.recipe?.id}`;
@@ -134,27 +134,27 @@ const NotificationDropdown = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-110 active:scale-95"
+        className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
         aria-label="Notifications"
       >
-        <IoNotificationsOutline className="text-2xl text-gray-700 dark:text-gray-300 transition-transform duration-300 hover:rotate-12" />
+        <IoNotificationsOutline className="w-6 h-6 text-gray-600" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-red-500 via-pink-500 to-rose-600 rounded-full shadow-lg animate-pulse ring-2 ring-white dark:ring-gray-900">
+          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center text-xs font-bold text-white bg-primary rounded-full shadow-md">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-[420px] bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="px-4 py-3 bg-gradient-to-r from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div className="absolute right-0 mt-3 w-96 max-w-[90vw] bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+          <div className="px-4 py-3 bg-white border-b border-gray-100">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2.5">
-                <h2 className="text-lg font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent">
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-gray-900">
                   Notifications
                 </h2>
                 {unreadCount > 0 && (
-                  <span className="px-2 py-0.5 text-xs font-bold text-white bg-gradient-to-r from-red-500 to-pink-600 rounded-full shadow-md">
+                  <span className="px-2 py-0.5 text-xs font-semibold text-white bg-primary rounded-full">
                     {unreadCount} new
                   </span>
                 )}
@@ -162,7 +162,7 @@ const NotificationDropdown = () => {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="px-3 py-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-300"
+                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                 >
                   Mark all read
                 </button>
@@ -170,38 +170,23 @@ const NotificationDropdown = () => {
             </div>
           </div>
 
-          <div className="max-h-[540px] overflow-y-auto overscroll-contain custom-scrollbar">
+          <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4">
-                <div className="relative mb-4 animate-bounce">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-pink-900/30 rounded-full flex items-center justify-center shadow-lg">
-                    <IoNotificationsOutline className="text-3xl text-blue-500 dark:text-blue-400" />
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center shadow-lg animate-pulse">
-                    <svg
-                      className="w-3 h-3 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                  <IoNotificationsOutline className="text-3xl text-gray-400" />
                 </div>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">
+                <h3 className="text-base font-semibold text-gray-900 mb-1">
                   You're all caught up!
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 text-center max-w-xs leading-relaxed">
+                <p className="text-sm text-gray-500 text-center max-w-xs">
                   Check back later for new notifications about your recipes and
                   followers
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                {notifications.map((notification, index) => (
+              <div className="divide-y divide-gray-100">
+                {notifications.map((notification) => (
                   <Link
                     key={notification.id}
                     to={getNotificationLink(notification)}
@@ -211,12 +196,11 @@ const NotificationDropdown = () => {
                       }
                       setIsOpen(false);
                     }}
-                    className={`group flex items-start gap-3 px-4 py-3 transition-all duration-200 ${
+                    className={`flex items-start gap-3 px-4 py-3 transition-colors ${
                       !notification.read
-                        ? "bg-blue-50/60 dark:bg-blue-900/10 hover:bg-blue-100/60 dark:hover:bg-blue-900/20"
-                        : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                        ? "bg-primary/5 hover:bg-primary/10"
+                        : "hover:bg-gray-50"
                     }`}
-                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="relative flex-shrink-0">
                       <img
@@ -224,29 +208,29 @@ const NotificationDropdown = () => {
                           notification.sender.avatarUrl || "/auth/sampleAva.jpg"
                         }
                         alt={notification.sender.username}
-                        className="w-10 h-10 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-2 transition-all duration-200"
+                        className="w-10 h-10 rounded-full object-cover border border-gray-200"
                       />
                       {!notification.read && (
-                        <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-white dark:border-gray-900"></div>
+                        <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full border-2 border-white"></div>
                       )}
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <p className="text-sm leading-snug">
-                        <span className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                        <span className="font-semibold text-gray-900">
                           {notification.sender.fullName ||
                             notification.sender.username}
                         </span>
-                        <span className="text-gray-600 dark:text-gray-300 ml-1">
+                        <span className="text-gray-600 ml-1">
                           {getNotificationText(notification)}
                         </span>
                       </p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs text-gray-500">
                           {getTimeAgo(notification.createdAt)}
                         </p>
                         {!notification.read && (
-                          <span className="px-1.5 py-0.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded">
+                          <span className="text-xs font-medium text-primary">
                             New
                           </span>
                         )}
@@ -256,7 +240,7 @@ const NotificationDropdown = () => {
                     {!notification.read && (
                       <button
                         onClick={(e) => handleMarkAsRead(notification.id, e)}
-                        className="flex-shrink-0 w-2.5 h-2.5 bg-blue-500 rounded-full mt-1.5 opacity-70 group-hover:opacity-100 hover:scale-125 transition-all duration-200"
+                        className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-1.5"
                         aria-label="Mark as read"
                         title="Mark as read"
                       />
