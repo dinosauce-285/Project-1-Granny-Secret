@@ -31,12 +31,36 @@ function Dashboard() {
 
   useEffect(() => {
     const search = searchParams.get("search");
+    const filterType = searchParams.get("filter");
+    const categoryId = searchParams.get("category");
+
     if (search) {
       setFilter((prev) => ({ ...prev, type: "search", search }));
       setPage(1);
       setRecipes([]);
+    } else if (filterType === "favourite") {
+      setFilter({ type: "favourite" });
+      setActiveFilter("favourites");
+      setPage(1);
+      setRecipes([]);
+    } else if (filterType === "my-recipes") {
+      setFilter({ type: "my-recipes" });
+      setActiveFilter("my-recipes");
+      setPage(1);
+      setRecipes([]);
+    } else if (filterType === "saved") {
+      setFilter({ type: "saved" });
+      setActiveFilter("saved");
+      setPage(1);
+      setRecipes([]);
+    } else if (categoryId) {
+      setFilter({ type: "category", categoryId });
+      setActiveFilter(categoryId);
+      setPage(1);
+      setRecipes([]);
     } else {
-      setFilter((prev) => ({ ...prev, search: "" }));
+      setFilter((prev) => ({ ...prev, search: "", type: "all" }));
+      setActiveFilter("all");
     }
   }, [searchParams]);
 
@@ -155,6 +179,7 @@ function Dashboard() {
           }}
           activeFilter={activeFilter}
           isMobile={true}
+          onClose={() => setIsMobileMenuOpen(false)}
         />
       </MobileDrawer>
 
@@ -180,7 +205,6 @@ function Dashboard() {
               </p>
             </div>
           ) : (
-            // List of Recipes
             <>
               {recipes.map((r, index) => {
                 if (recipes.length === index + 1) {

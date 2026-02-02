@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { LuCirclePlus, LuSearch } from "react-icons/lu";
+import { LuCirclePlus, LuSearch, LuPlus } from "react-icons/lu";
 import { Link, Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import SearchBar from "../ui/SearchBar";
 import { supabase } from "../../supabaseClient";
 import NotificationDropdown from "../notification/NotificationDropdown";
 import HamburgerButton from "../ui/HamburgerButton";
+import MobileDrawer from "../ui/MobileDrawer";
+import LeftSidebar from "./LeftSidebar";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
@@ -41,6 +43,22 @@ function MainLayout() {
       navigate(`/?search=${encodeURIComponent(query)}`);
     } else {
       navigate("/");
+    }
+  };
+
+  const handleFilterChange = (filter) => {
+    setIsMobileMenuOpen(false);
+
+    if (filter.type === "all") {
+      navigate("/");
+    } else if (filter.type === "favourite") {
+      navigate("/?filter=favourite");
+    } else if (filter.type === "my-recipes") {
+      navigate("/?filter=my-recipes");
+    } else if (filter.type === "saved") {
+      navigate("/?filter=saved");
+    } else if (filter.type === "category") {
+      navigate(`/?category=${filter.categoryId}`);
     }
   };
 
@@ -166,6 +184,28 @@ function MainLayout() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Drawer for Navigation */}
+      <MobileDrawer
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        title="Menu"
+      >
+        <Link
+          to="/create"
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="flex items-center justify-center gap-2 w-full px-4 py-3 mb-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-sm"
+        >
+          <LuPlus className="w-5 h-5" />
+          Create Recipe
+        </Link>
+        <LeftSidebar
+          onFilterChange={handleFilterChange}
+          activeFilter={null}
+          isMobile={true}
+          onClose={() => setIsMobileMenuOpen(false)}
+        />
+      </MobileDrawer>
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto">

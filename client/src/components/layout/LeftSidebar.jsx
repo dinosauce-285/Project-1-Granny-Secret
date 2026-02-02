@@ -1,6 +1,6 @@
 import FilterButton from "../filters/FilterButton";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import api from "../../api/api";
 import {
   LuGlobe,
@@ -10,10 +10,17 @@ import {
   LuHeart,
 } from "react-icons/lu";
 
-function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
+function LeftSidebar({
+  onFilterChange,
+  activeFilter,
+  isMobile = false,
+  onClose,
+}) {
   const [categories, setCategories] = useState([]);
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
+  const location = useLocation();
+  const isOnOwnProfile = location.pathname === `/profile/${user?.id}`;
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -55,9 +62,16 @@ function LeftSidebar({ onFilterChange, activeFilter, isMobile = false }) {
     >
       <div className="rounded-xl shadow-sm p-4 mb-4">
         <h3 className="font-semibold text-gray-900 mb-3 text-sm">Profile</h3>
-        <Link to={`/profile/${user?.id}`}>
+        <Link
+          to={`/profile/${user?.id}`}
+          onClick={() => {
+            if (onClose && isMobile) {
+              onClose();
+            }
+          }}
+        >
           <FilterButton
-            isActive={false}
+            isActive={isOnOwnProfile}
             className="w-full justify-start"
             icon={<LuUser className="w-4 h-4" />}
           >
