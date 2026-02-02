@@ -7,6 +7,7 @@ import NotificationDropdown from "../notification/NotificationDropdown";
 import HamburgerButton from "../ui/HamburgerButton";
 import MobileDrawer from "../ui/MobileDrawer";
 import LeftSidebar from "./LeftSidebar";
+import CookatWidget from "../ai/CookatWidget";
 
 const defaultAvatar = "/avatars/sampleAvatar.jpg";
 
@@ -216,6 +217,7 @@ function MainLayout() {
           }}
         />
       </div>
+      <CookatWidget />
     </div>
   );
 }
