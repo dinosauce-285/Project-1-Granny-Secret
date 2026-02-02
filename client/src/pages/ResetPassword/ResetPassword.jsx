@@ -103,12 +103,6 @@ function ResetPassword() {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSubmit(e);
-    }
-  };
-
   return (
     <div className="min-h-screen flex bg-page">
       <div
@@ -140,7 +134,6 @@ function ResetPassword() {
                 placeholder="Enter new password"
                 value={formData.newPassword}
                 onChange={(e) => handleChange("newPassword", e.target.value)}
-                onKeyPress={handleKeyPress}
                 className="pr-10 !mt-0"
               />
               <button
@@ -172,7 +165,6 @@ function ResetPassword() {
                 onChange={(e) =>
                   handleChange("confirmPassword", e.target.value)
                 }
-                onKeyPress={handleKeyPress}
                 className="pr-10 !mt-0"
               />
               <button

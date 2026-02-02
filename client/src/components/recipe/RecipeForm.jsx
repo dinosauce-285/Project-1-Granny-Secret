@@ -144,6 +144,17 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
         }
 
         setErrors(fieldErrors);
+
+        if (Object.keys(fieldErrors).length > 0) {
+          const firstErrorField = Object.keys(fieldErrors)[0];
+          const element = document.getElementById(
+            firstErrorField.split(".")[0],
+          );
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.focus();
+          }
+        }
         return;
       }
 

@@ -143,35 +143,36 @@ const CommentItem = ({ comment, currentUser, onReply, onEdit, onDelete }) => {
           </div>
 
           {isReplying && (
-            <div className="mt-2 pl-2 border-l-2 border-gray-200">
+            <form
+              className="mt-2 pl-2 border-l-2 border-gray-200"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleReplySubmit();
+              }}
+            >
               <textarea
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Write a reply..."
                 className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
                 rows="2"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleReplySubmit();
-                  }
-                }}
               />
               <div className="flex justify-end gap-2 mt-1">
                 <button
+                  type="button"
                   onClick={() => setIsReplying(false)}
                   className="text-xs text-gray-500 px-2 py-1"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleReplySubmit}
+                  type="submit"
                   className="text-xs bg-primary text-white px-3 py-1 rounded"
                 >
                   Reply
                 </button>
               </div>
-            </div>
+            </form>
           )}
         </div>
       </div>
@@ -664,30 +665,30 @@ function RecipeDetail() {
           </h3>
 
           {/* Add Comment */}
-          <div className="mb-6">
+          <form
+            className="mb-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handlePostComment();
+            }}
+          >
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handlePostComment();
-                }
-              }}
               placeholder="Share your thoughts or ask a question..."
               className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               rows="3"
             />
             <div className="flex justify-end mt-2">
               <button
-                onClick={() => handlePostComment()}
+                type="submit"
                 disabled={!newComment.trim()}
                 className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
               >
                 Post Comment
               </button>
             </div>
-          </div>
+          </form>
 
           {/* Comments List */}
           <div className="space-y-4">

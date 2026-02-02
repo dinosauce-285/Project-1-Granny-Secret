@@ -661,19 +661,22 @@ function Settings() {
         }}
         message="This action cannot be undone. All your recipes, comments, and data will be permanently deleted."
       >
-        <Input
-          id="delete-password"
-          label="Enter your password to confirm"
-          type="password"
-          value={deletePassword}
-          onChange={(e) => setDeletePassword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !deleteLoading) {
-              handleDeleteAccount();
-            }
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleDeleteAccount();
           }}
-          placeholder="Password"
-        />
+        >
+          <Input
+            id="delete-password"
+            label="Enter your password to confirm"
+            type="password"
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+            placeholder="Password"
+            autoFocus
+          />
+        </form>
       </Dialog>
 
       <Toast
