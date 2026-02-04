@@ -1,5 +1,8 @@
 import { userService } from "../services/user.services.js";
 import cloudinary from "../config/cloudinary.config.js";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const userController = {
   async getMe(req, res) {
@@ -64,9 +67,23 @@ export const userController = {
     const { id } = req.params;
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
+
+    let currentUserId = null;
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        currentUserId = decoded.userId;
+      } catch (error) {
+        console.log("Auth failed:", error.message);
+      }
+    }
+
     const recipes = await userService.getUserRecipes(
       id,
-      req.user?.userId,
+      currentUserId,
       page,
       limit,
     );
