@@ -87,8 +87,10 @@ const NotificationDropdown = () => {
   };
 
   const handleMarkAsRead = async (id, e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     try {
       await markAsRead(id);
       setNotifications((prev) =>
@@ -97,6 +99,18 @@ const NotificationDropdown = () => {
     } catch (error) {
       console.error("Failed to mark notification as read", error);
     }
+  };
+
+  const handleNotificationClick = (id) => {
+    if (notifications.find((n) => n.id === id && !n.read)) {
+      markAsRead(id).catch((err) =>
+        console.error("Failed to mark read on click", err),
+      );
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
+    }
+    setIsOpen(false);
   };
 
   const handleMarkAllRead = async () => {
@@ -219,12 +233,7 @@ const NotificationDropdown = () => {
                   <Link
                     key={notification.id}
                     to={getNotificationLink(notification)}
-                    onClick={(e) => {
-                      if (!notification.read) {
-                        handleMarkAsRead(notification.id, e);
-                      }
-                      setIsOpen(false);
-                    }}
+                    onClick={() => handleNotificationClick(notification.id)}
                     className={`flex items-start gap-3 px-4 py-3 transition-colors ${
                       !notification.read
                         ? "bg-primary/5 hover:bg-primary/10"
