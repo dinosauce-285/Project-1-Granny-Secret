@@ -11,6 +11,7 @@ COPY prisma ./prisma
 RUN npm install
 
 COPY src ./src
+COPY server.js ./
 
 RUN npx prisma generate
 
