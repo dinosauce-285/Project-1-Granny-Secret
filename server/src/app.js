@@ -45,15 +45,24 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/preferences", preferenceRoutes);
 app.use("/api/ai", aiRoutes);
 
-const clientBuildPath = path.join(__dirname, "../../client/build");
-app.use(express.static(clientBuildPath));
+import fs from "fs";
 
-app.get(/(.*)/, (req, res, next) => {
-  if (req.url.startsWith("/api")) {
-    return next();
-  }
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
+const clientBuildPath = path.join(__dirname, "../../client/build");
+
+if (fs.existsSync(clientBuildPath)) {
+  app.use(express.static(clientBuildPath));
+
+  app.get(/(.*)/, (req, res, next) => {
+    if (req.url.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running...");
+  });
+}
 
 app.use(notFoundHandler);
 app.use(errorHandler);
