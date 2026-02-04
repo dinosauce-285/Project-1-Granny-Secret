@@ -80,7 +80,7 @@ function SearchBar({ initialValue = "", onSearch }) {
   const handleUserClick = (userId) => {
     setShowDropdown(false);
     setValue("");
-    navigate(`/user/${userId}`);
+    navigate(`/profile/${userId}`);
   };
 
   const clearSearch = () => {
