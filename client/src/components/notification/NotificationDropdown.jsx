@@ -1,10 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { API_URL } from "../../api/api";
 import {
   getNotifications,
   markAsRead,
   markAllAsRead,
 } from "../../api/notification.api";
+import { EventSourcePolyfill } from "event-source-polyfill";
 import { IoNotificationsOutline } from "react-icons/io5";
 
 const NotificationDropdown = () => {
@@ -24,11 +26,38 @@ const NotificationDropdown = () => {
   useEffect(() => {
     if (!userInfo) return;
 
-    const interval = setInterval(() => {
-      fetchNotifications();
-    }, 10000);
+    fetchNotifications();
 
-    return () => clearInterval(interval);
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const eventSource = new EventSourcePolyfill(
+      `${API_URL}/notifications/stream`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    eventSource.onmessage = (event) => {
+      try {
+        const newNotification = JSON.parse(event.data);
+        console.log("New notification received:", newNotification);
+        setNotifications((prev) => [newNotification, ...prev]);
+      } catch (error) {
+        console.error("Error parsing notification:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("EventSource failed:", error);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, [userInfo]);
 
   useEffect(() => {

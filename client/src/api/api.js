@@ -1,12 +1,12 @@
 import axios from "axios";
-const API_URL = process.env.REACT_APP_API_URL || "/api";
+export const API_URL = process.env.REACT_APP_API_URL;
 
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
   timeout: 60000,
-  headers: process.env.REACT_APP_API_KEY 
-    ? { "x-api-key": process.env.REACT_APP_API_KEY } 
+  headers: process.env.REACT_APP_API_KEY
+    ? { "x-api-key": process.env.REACT_APP_API_KEY }
     : {},
 });
 
@@ -20,7 +20,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

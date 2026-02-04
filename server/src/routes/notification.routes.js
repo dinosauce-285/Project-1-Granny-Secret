@@ -7,6 +7,7 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.get("/", notificationController.getNotifications);
+router.get("/stream", notificationController.streamNotifications);
 router.put("/:id/read", notificationController.readNotification);
 router.put("/read-all", notificationController.readAllNotifications);
 

@@ -1,4 +1,5 @@
 import { prisma } from "../prisma.js";
+import { sseManager } from "../utils/sse.utils.js";
 
 export const notificationService = {
   async createNotification({ recipientId, senderId, type, recipeId }) {
@@ -16,14 +17,34 @@ export const notificationService = {
       if (type === "COMMENT" && !preferences.notifyOnComment) return null;
     }
 
-    return await prisma.notification.create({
+    const notification = await prisma.notification.create({
       data: {
         recipientId: Number(recipientId),
         senderId: Number(senderId),
         type,
         recipeId: recipeId ? Number(recipeId) : null,
       },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+            avatarUrl: true,
+          },
+        },
+        recipe: {
+          select: {
+            id: true,
+            title: true,
+            imageUrl: true,
+          },
+        },
+      },
     });
+
+    sseManager.sendToUser(recipientId, notification);
+    return notification;
   },
 
   async getUserNotifications(userId, page = 1, limit = 10) {

@@ -1,4 +1,5 @@
 import { notificationService } from "../services/notification.services.js";
+import { sseManager } from "../utils/sse.utils.js";
 
 export const notificationController = {
   async getNotifications(req, res, next) {
@@ -48,5 +49,21 @@ export const notificationController = {
     } catch (error) {
       next(error);
     }
+  },
+
+  async streamNotifications(req, res) {
+    const userId = req.user.userId;
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
+    sseManager.addConnection(userId, res);
+
+    req.on("close", () => {
+      sseManager.removeConnection(userId, res);
+      res.end();
+    });
   },
 };
