@@ -1,12 +1,14 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ButtonPrimary from "../../components/ui/ButtonPrimary";
 import Input from "../../components/ui/Input";
 import api from "../../api/api";
 import { RegisterSchema } from "../../schemas/auth.schema";
 import { LuEye, LuEyeOff } from "react-icons/lu";
+import { supabase } from "../../supabaseClient";
+import Toast from "../../components/ui/Toast";
 
 const accountPic = "/auth/accountPic.jpg";
 const logoGoogle = "/auth/logoGoogle.png";
@@ -25,13 +27,94 @@ function SignUp() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("error");
+
+  const handleBackendExchange = useCallback(
+    async (accessToken) => {
+      try {
+        setLoading(true);
+        const response = await api.post("/auth/google-login", {
+          token: accessToken,
+        });
+        const { user, token } = response.data.data;
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        const from = location.state?.from?.pathname || "/";
+        navigate(from, { replace: true });
+      } catch (error) {
+        console.error("Google login error:", error);
+        setToastMessage(
+          error.response?.data?.message ||
+            "Failed to authenticate with Google.",
+        );
+        setToastType("error");
+        setShowToast(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate, location],
+  );
 
   useEffect(() => {
     AOS.init({
       duration: 1000,
       once: true,
     });
-  }, []);
+
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        handleBackendExchange(session.access_token);
+      }
+    };
+
+    checkSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        handleBackendExchange(session.access_token);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [handleBackendExchange]);
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/signup`,
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      setErrors({ general: error.message });
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "facebook",
+        options: {
+          redirectTo: `${window.location.origin}/signup`,
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      setErrors({ general: error.message });
+    }
+  };
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -204,7 +287,10 @@ function SignUp() {
         </div>
 
         <div className="methods mt-6 sm:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <ButtonPrimary className="flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">
+          <ButtonPrimary
+            onClick={handleGoogleLogin}
+            className="flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none"
+          >
             <img
               className="h-5 w-5 object-contain mr-2"
               src={logoGoogle}
@@ -212,7 +298,10 @@ function SignUp() {
             />
             Sign up with Google
           </ButtonPrimary>
-          <ButtonPrimary className="flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none">
+          <ButtonPrimary
+            onClick={handleFacebookLogin}
+            className="flex items-center justify-center text-black py-2.5 sm:py-3 text-sm sm:text-base bg-white w-full transition-all duration-300 hover:scale-105 hover:shadow-lg border-none"
+          >
             <img
               className="h-5 w-5 object-contain mr-2"
               src={logoFacebook}
@@ -241,6 +330,13 @@ function SignUp() {
           alt=""
         />
       </div>
+
+      <Toast
+        isOpen={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }
