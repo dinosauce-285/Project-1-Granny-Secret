@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { LuMessageCircle, LuX, LuSend, LuLoader } from "react-icons/lu";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { chatWithCookat } from "../../api/ai.api";
 
 function CookatWidget() {
@@ -114,7 +116,36 @@ function CookatWidget() {
                     : "bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm"
                 }`}
               >
-                {msg.content}
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ node, ...props }) => (
+                      <p {...props} className="mb-2 last:mb-0" />
+                    ),
+                    ul: ({ node, ...props }) => (
+                      <ul {...props} className="list-disc pl-4 mb-2" />
+                    ),
+                    ol: ({ node, ...props }) => (
+                      <ol {...props} className="list-decimal pl-4 mb-2" />
+                    ),
+                    li: ({ node, ...props }) => (
+                      <li {...props} className="mb-1" />
+                    ),
+                    strong: ({ node, ...props }) => (
+                      <strong {...props} className="font-bold" />
+                    ),
+                    a: ({ node, ...props }) => (
+                      <a
+                        {...props}
+                        className="text-blue-500 hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    ),
+                  }}
+                >
+                  {msg.content}
+                </ReactMarkdown>
               </div>
             </div>
           ))}
