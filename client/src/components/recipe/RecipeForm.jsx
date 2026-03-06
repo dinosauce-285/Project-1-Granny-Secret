@@ -301,7 +301,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
         <div className="recipeName w-full space-y-2">
           <label
             htmlFor="title"
-            className="font-medium text-lg sm:text-xl lg:text-2xl"
+            className="font-medium text-lg sm:text-xl 2xl:text-2xl"
           >
             Recipe Title
           </label>
@@ -323,7 +323,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
           <div className="image w-full space-y-2">
             <label
               htmlFor="image"
-              className="font-medium text-lg sm:text-xl lg:text-2xl"
+              className="font-medium text-lg sm:text-xl 2xl:text-2xl"
             >
               Recipe Image
             </label>
@@ -376,7 +376,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             <div className="flex flex-col space-y-2">
               <label
                 htmlFor="prepTime"
-                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                className="font-medium text-lg sm:text-xl 2xl:text-2xl"
               >
                 Prep Time (mins)
               </label>
@@ -398,7 +398,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             <div className="flex flex-col space-y-2">
               <label
                 htmlFor="cookTime"
-                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                className="font-medium text-lg sm:text-xl 2xl:text-2xl"
               >
                 Cook Time (mins)
               </label>
@@ -420,7 +420,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             <div className="flex flex-col space-y-2">
               <label
                 htmlFor="servings"
-                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                className="font-medium text-lg sm:text-xl 2xl:text-2xl"
               >
                 Serving
               </label>
@@ -442,7 +442,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
             <div className="flex flex-col space-y-2">
               <label
                 htmlFor="spiciness"
-                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                className="font-medium text-lg sm:text-xl 2xl:text-2xl"
               >
                 Spiciness (0-5)
               </label>
@@ -467,7 +467,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
           <div className="flex flex-col sm:flex-row w-full gap-4 sm:gap-6">
             <div className="w-full sm:w-1/2">
               <label
-                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                className="font-medium text-lg sm:text-xl 2xl:text-2xl"
                 htmlFor="difficulty"
               >
                 Difficulty
@@ -495,7 +495,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
 
             <div className="w-full sm:w-1/2">
               <label
-                className="font-medium text-lg sm:text-xl lg:text-2xl"
+                className="font-medium text-lg sm:text-xl 2xl:text-2xl"
                 htmlFor="category"
               >
                 Category / Tag
@@ -691,7 +691,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
 
           <div className="notes flex flex-col space-y-2 w-full">
             <label
-              className="font-medium text-lg sm:text-xl lg:text-2xl"
+              className="font-medium text-lg sm:text-xl 2xl:text-2xl"
               htmlFor="note"
             >
               Additional Notes
