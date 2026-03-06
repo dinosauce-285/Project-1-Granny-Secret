@@ -6,6 +6,8 @@ import {
 } from "../../schemas/recipe.schema";
 import ButtonPrimary from "../ui/ButtonPrimary";
 import Toast from "../../components/ui/Toast";
+import Dialog from "../../components/ui/Dialog";
+import { useBlocker } from "react-router-dom";
 import * as aiApi from "../../api/ai.api";
 
 function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
@@ -34,6 +36,84 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("info");
+
+  // Navigation Blocker state
+  const [isSubmitSuccess, setIsSubmitSuccess] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty && currentLocation.pathname !== nextLocation.pathname,
+  );
+
+  useEffect(() => {
+    if (isSubmitSuccess) {
+      setIsDirty(false);
+      return;
+    }
+
+    let dirty = false;
+    if (!initialData) {
+      const isFormDataEmpty = Object.values(formData).every(
+        (val) => val === "" || val === null || val === undefined,
+      );
+      const isIngredientsEmpty =
+        ingredients.length === 1 &&
+        ingredients[0].name === "" &&
+        ingredients[0].amount === "" &&
+        ingredients[0].unit === "";
+      const isStepsEmpty = steps.length === 1 && steps[0] === "";
+      dirty =
+        !isFormDataEmpty ||
+        !isIngredientsEmpty ||
+        !isStepsEmpty ||
+        imagePreview !== null;
+    } else {
+      const initialCat = initialData.categoryId
+        ? String(initialData.categoryId)
+        : "";
+      dirty =
+        formData.title !== (initialData.title || "") ||
+        String(formData.prepTime || "") !==
+          String(initialData.prepTime || "") ||
+        String(formData.cookTime || "") !==
+          String(initialData.cookTime || "") ||
+        String(formData.servings || "") !==
+          String(initialData.servings || "") ||
+        String(formData.spiciness || "") !==
+          String(initialData.spiciness || "") ||
+        formData.difficulty !== (initialData.difficulty || "") ||
+        formData.category !== initialCat ||
+        formData.note !== (initialData.note || "");
+
+      if (!dirty) {
+        const initialIngs = initialData.ingredients?.map((i) => ({
+          name: i.name || "",
+          amount: i.amount || "",
+          unit: i.unit || "",
+        })) || [{ name: "", amount: "", unit: "" }];
+        dirty = JSON.stringify(ingredients) !== JSON.stringify(initialIngs);
+      }
+
+      if (!dirty) {
+        const initialStps = initialData.steps?.map((s) => s.content || "") || [
+          "",
+        ];
+        dirty = JSON.stringify(steps) !== JSON.stringify(initialStps);
+      }
+
+      if (!dirty) {
+        dirty = imagePreview !== (initialData.imageUrl || null);
+      }
+    }
+    setIsDirty(dirty);
+  }, [
+    formData,
+    ingredients,
+    steps,
+    imagePreview,
+    initialData,
+    isSubmitSuccess,
+  ]);
 
   const handleGenerateRecipe = async () => {
     if (!aiPrompt.trim()) {
@@ -231,6 +311,7 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
       setIsSubmitting(true);
       try {
         await onSubmit(submitData);
+        setIsSubmitSuccess(true);
       } finally {
         setIsSubmitting(false);
       }
@@ -730,6 +811,18 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
         message={toastMessage}
         type={toastType}
         onClose={() => setShowToast(false)}
+      />
+
+      <Dialog
+        isOpen={blocker.state === "blocked"}
+        onClose={() => blocker.reset?.()}
+        onConfirm={() => blocker.proceed?.()}
+        onCancel={() => blocker.reset?.()}
+        title="Unsaved Changes"
+        message="You have unsaved changes. Are you sure you want to leave without saving?"
+        confirmText="Yes, leave"
+        cancelText="No, stay"
+        confirmStyle="danger"
       />
     </div>
   );

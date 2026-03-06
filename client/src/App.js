@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
@@ -15,30 +15,34 @@ import SearchResults from "./pages/SearchResults/SearchResults";
 import MainLayout from "./components/layout/MainLayout";
 import ProtectedRoute from "./components/route/ProtectedRoute";
 
+const router = createBrowserRouter([
+  { path: "/landing-page", element: <LandingPage /> },
+  { path: "/signin", element: <SignIn /> },
+  { path: "/signup", element: <SignUp /> },
+  { path: "/profile-setup", element: <ProfileSetup /> },
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: "/reset-password/:token", element: <ResetPassword /> },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <MainLayout />,
+        children: [
+          { path: "/", element: <Dashboard /> },
+          { path: "/create", element: <CreateRecipe /> },
+          { path: "/edit/:id", element: <EditRecipe /> },
+          { path: "/recipe/:id", element: <RecipeDetail /> },
+          { path: "/settings", element: <Settings /> },
+          { path: "/profile/:id", element: <UserProfile /> },
+          { path: "/search", element: <SearchResults /> },
+        ],
+      },
+    ],
+  },
+]);
+
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/landing-page" element={<LandingPage />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/profile-setup" element={<ProfileSetup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/create" element={<CreateRecipe />} />
-            <Route path="/edit/:id" element={<EditRecipe />} />
-            <Route path="/recipe/:id" element={<RecipeDetail />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile/:id" element={<UserProfile />} />
-            <Route path="/search" element={<SearchResults />} />
-          </Route>
-        </Route>
-      </Routes>
-    </Router>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
