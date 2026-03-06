@@ -129,11 +129,8 @@ function MainLayout() {
             <span>Create Recipe</span>
           </Link>
 
-          {/* Desktop Only: Avatar Dropdown */}
-          <div
-            className="hidden lg:block relative flex-shrink-0"
-            ref={dropdownRef}
-          >
+          {/* Avatar Dropdown */}
+          <div className="flex-shrink-0 relative" ref={dropdownRef}>
             <div
               className="avatar border border-white border-2 shadow-xl hover:border-olive hover:border-[2.5px] transition-all duration-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden cursor-pointer"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
