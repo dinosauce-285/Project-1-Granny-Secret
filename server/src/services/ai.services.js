@@ -102,3 +102,56 @@ export const generateCookingTip = async () => {
     return "Taste your food as you cook!";
   }
 };
+
+export const generateRecipeDetails = async (prompt) => {
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert chef and an API that strictly returns pure JSON. Do not include markdown codeblocks (\`\`\`json) or any other conversational text. Just the raw JSON object. Use the following schema to answer the user's prompt:
+{
+  "title": "Recipe Title (string)",
+  "prepTime": "preparation time in minutes (number)",
+  "cookTime": "cooking time in minutes (number)",
+  "servings": "number of servings (number)",
+  "spiciness": "spiciness level from 0 to 5 (number)",
+  "difficulty": "Easy, Medium, or Hard (string)",
+  "category": "category ID from 1 to 11 (string: '1' for Soup/Stew, '2' for Rice Dish, '3' for Noodle Dish, '4' for Salad, '5' for Grilled/Fried Dish, '6' for Stir-fried/Sautéed Dish, '7' for Bakery/Pastry, '8' for Dessert/Sweet, '9' for Drink/Beverage, '10' for Sauce/Dip/Condiment, '11' for Vegetarian/Vegan Dish)",
+  "ingredients": [
+    {
+      "name": "ingredient name (string)",
+      "amount": "quantity (string or number)",
+      "unit": "measurement unit (string)"
+    }
+  ],
+  "steps": [
+    {
+      "content": "instruction step (string)"
+    }
+  ],
+  "note": "Any additional tips or serving suggestions (string)"
+}`,
+        },
+        {
+          role: "user",
+          content: `Please generate a recipe for: ${prompt}`,
+        },
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_tokens: 1500,
+    });
+
+    const responseContent = chatCompletion.choices[0]?.message?.content || "{}";
+    const cleanedContent = responseContent
+      .replace(/^\`\`\`json/i, "")
+      .replace(/\`\`\`$/i, "")
+      .trim();
+
+    return JSON.parse(cleanedContent);
+  } catch (error) {
+    console.error("Error in generateRecipeDetails:", error?.error || error);
+    throw new Error("Failed to generate recipe details. Please try again.");
+  }
+};

@@ -26,3 +26,20 @@ export const getCookingTip = async (req, res) => {
     res.status(500).json({ message: "Unable to fetch tip" });
   }
 };
+
+export const generateRecipe = async (req, res) => {
+  try {
+    const { prompt } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ message: "Prompt is required" });
+    }
+
+    const recipeData = await aiService.generateRecipeDetails(prompt);
+
+    res.status(200).json(recipeData);
+  } catch (error) {
+    console.error("Controller Error:", error);
+    res.status(500).json({ message: error.message || "Internal Server Error" });
+  }
+};

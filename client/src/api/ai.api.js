@@ -7,3 +7,7 @@ export const chatWithCookat = (message, history) => {
 export const getCookingTip = () => {
   return api.get("/ai/tip");
 };
+
+export const generateRecipeDetails = (prompt) => {
+  return api.post("/ai/generate-recipe", { prompt });
+};

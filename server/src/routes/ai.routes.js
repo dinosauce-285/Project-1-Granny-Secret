@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post("/chat", aiController.chat);
 router.get("/tip", aiController.getCookingTip);
+router.post("/generate-recipe", aiController.generateRecipe);
 
 export default router;

@@ -5,6 +5,8 @@ import {
   EditRecipeSchema,
 } from "../../schemas/recipe.schema";
 import ButtonPrimary from "../ui/ButtonPrimary";
+import Toast from "../../components/ui/Toast";
+import * as aiApi from "../../api/ai.api";
 
 function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
   const [errors, setErrors] = useState({});
@@ -24,6 +26,61 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
     category: "",
     note: "",
   });
+
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Toast state
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("info");
+
+  const handleGenerateRecipe = async () => {
+    if (!aiPrompt.trim()) {
+      setToastMessage("Please enter a recipe description first!");
+      setToastType("warning");
+      setShowToast(true);
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const res = await aiApi.generateRecipeDetails(aiPrompt);
+      const data = res.data;
+
+      setFormData({
+        title: data.title || "",
+        prepTime: data.prepTime || "",
+        cookTime: data.cookTime || "",
+        servings: data.servings || "",
+        spiciness: data.spiciness || "",
+        difficulty: data.difficulty || "",
+        category: data.category || "",
+        note: data.note || "",
+      });
+
+      if (data.ingredients && data.ingredients.length > 0) {
+        setIngredients(data.ingredients);
+      }
+
+      if (data.steps && data.steps.length > 0) {
+        setSteps(data.steps.map((s) => s.content || ""));
+      }
+
+      setErrors({});
+      setToastMessage("Recipe generated successfully!");
+      setToastType("success");
+      setShowToast(true);
+    } catch (error) {
+      console.error("AI Generation failed:", error);
+      setToastMessage(
+        "Failed to generate recipe. Please try again or check your prompt.",
+      );
+      setToastType("error");
+      setShowToast(true);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   useEffect(() => {
     if (initialData) {
@@ -189,9 +246,57 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
         onSubmit={handleSubmit}
         className="w-full max-w-4xl shadow-2xl font-inter mx-auto bg-white rounded-2xl py-6 sm:py-8 px-4 sm:px-6 lg:px-8 flex flex-col space-y-6 sm:space-y-8 lg:space-y-10 justify-between items-start border border-dashed border-gray-300"
       >
-        <div className="title font-bold text-2xl sm:text-3xl lg:text-4xl">
-          {isEdit ? "Edit Recipe" : "Create New Recipe"}
+        <div className="title font-bold text-2xl sm:text-3xl lg:text-4xl flex items-center justify-between flex-wrap gap-4">
+          <span>{isEdit ? "Edit Recipe" : "Create New Recipe"}</span>
         </div>
+
+        {/* Compact, Theme-matching AI Auto-fill Block */}
+        {!isEdit && (
+          <div className="w-full bg-surface border border-input-border rounded-xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm hover:border-olive transition-colors relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10 group-hover:bg-olive/10 transition-colors duration-500"></div>
+
+            <div className="flex items-center gap-3 relative z-10 md:w-1/3">
+              <div className="flex flex-col">
+                <h3 className="text-primary font-bold text-sm sm:text-base leading-snug">
+                  AI Auto-fill
+                </h3>
+                <p className="text-gray-500 text-xs sm:text-sm truncate">
+                  Describe it, we fill it.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 w-full relative z-10 group/input flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="E.g., A quick vegan mushroom pasta..."
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="w-full bg-white border border-input-border rounded-lg py-2.5 px-4 outline-none focus:border-olive focus:ring-1 focus:ring-olive text-gray-800 placeholder-gray-400 text-sm transition-all shadow-inner"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleGenerateRecipe();
+                  }
+                }}
+              />
+              <ButtonPrimary
+                onClick={handleGenerateRecipe}
+                disabled={isGenerating}
+                className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-white font-medium transition-all duration-300 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] flex-shrink-0"
+              >
+                {isGenerating ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
+                    <span>Loading</span>
+                  </div>
+                ) : (
+                  "Generate"
+                )}
+              </ButtonPrimary>
+            </div>
+          </div>
+        )}
 
         <div className="recipeName w-full space-y-2">
           <label
@@ -267,7 +372,6 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
               <p className="text-red-500 text-sm">{errors.image[0]}</p>
             )}
           </div>
-
           <div className="options grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full">
             <div className="flex flex-col space-y-2">
               <label
@@ -620,6 +724,13 @@ function RecipeForm({ initialData = null, onSubmit, isEdit = false }) {
           </div>
         </div>
       </form>
+
+      <Toast
+        isOpen={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 }
